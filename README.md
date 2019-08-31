@@ -1,25 +1,34 @@
-一个 Flutter 的 MVVM(Model-View-ViewModel) 实现。 通过数据绑定，它可以在视图模型(ViewModel)与视图(View)之间建立联系，当视图模型(ViewModel)中数据发生变化时视图(View)也将相应变化。 它简化了数据与视图之间繁杂的关联关系，使我们可以从视图状态管理中得以脱身。
 
 
-# 关系图
+  
+  
+
+一个 Flutter 的 MVVM(Model-View-ViewModel) 实现。 它通过数据绑定，在视图模型 (ViewModel) 与视图 (View) 之间建立联系，当视图模型 (ViewModel) 中数据发生变化时视图 (View) 也将相应变化。 它简化了数据与视图之间繁杂的关联关系，使我们可以从视图状态管理中得以脱身。
+
+  
+[Example](./example/lib/main.dart)
+  
+
+## 关系图
 
 ![Alt text](./img.png)
 
-# 使用
+## 使用
 
-将以下行内容添加到 pubspec.yaml 文件的 dependencies 部分：
+将以下行内容添加到 pubspec.yaml 文件的 dependencies 部分
 
 ```
-mvvm: ^0.1.0
+dependencies:
+  mvvm: ^0.1.0
 ```
 
-在代码中使用下行内容导入包：
-```
+在代码中使用下行内容导入包
+```dart
 import 'package:mvvm/mvvm.dart';
 ```
 
 
-## 创建视图模型(ViewModel)
+### 1. 创建视图模型(ViewModel)
 
 新的视图模型类需从 [ViewModel](./lib/view_model.dart) 类继承
 
@@ -51,7 +60,7 @@ class PageViewModel extends ViewModel {
 ```
 
 
-## 创建视图(View)
+### 2. 创建视图(View)
 
 新的视图类需从 [View](./lib/view.dart) 类继承，并指定使用刚刚创建的视图模型
 
@@ -114,7 +123,9 @@ class Page extends View<PageViewModel> {
 }
 ```
 
-## 使用视图
+
+
+### 3. 使用视图
 
 应用新的视图
 
@@ -143,11 +154,12 @@ class App extends StatelessWidget {
 
 
 
-# 示例
+## 示例
 
 [Example](./example/lib/main.dart)
 
-
+  
+   
 
 ## License
 
