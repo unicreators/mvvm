@@ -2,9 +2,9 @@
 
 一个 Flutter 的 MVVM(Model-View-ViewModel) 实现。 它通过数据绑定，在视图模型 (ViewModel) 与视图 (View) 之间建立联系，当视图模型 (ViewModel) 中数据发生变化时视图 (View) 也将相应变化。 它简化了数据与视图之间繁杂的关联关系，使我们可以从视图状态管理中得以脱身。
 
-
-[Example](./example/lib/main.dart)
 ##
+[Example](./example/lib/main.dart)
+
   
 
 
