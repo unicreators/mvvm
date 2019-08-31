@@ -1,0 +1,19 @@
+//////////////////////////////////////////
+/// yichen <d.unicreators@gmail.com>
+///
+
+library mvvm;
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+
+part './adapter.dart';
+
+part './property.dart';
+part './property_adaptive.dart';
+part './property_async.dart';
+
+part './view_model.dart';
+part './view.dart';
+
+part './view_context.dart';
