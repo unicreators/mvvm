@@ -6,9 +6,12 @@ A Flutter MVVM (Model-View-ViewModel) implementation. It uses property-based dat
 
 一个 Flutter 的 MVVM(Model-View-ViewModel) 实现。 它使用基于属性 (property) 的数据绑定，在视图模型 (ViewModel) 与视图 (View) 之间建立连接，并通过视图模型 (ViewModel) 驱动视图 (View) 变化。 
   
-  
-##      
+##   
+ 
+[Documentation](https://pub.dev/documentation/mvvm/latest/mvvm/mvvm-library.html)  & [Full example](./example/lib/main.dart) 
 
+
+ 
 ```dart
 import 'package:flutter/widgets.dart';
 import 'package:mvvm/mvvm.dart';
@@ -17,6 +20,8 @@ import 'dart:async';
 /// define ViewModel
 class Demo1ViewModel extends ViewModel {
   Demo1ViewModel() {
+
+    /// define bindable property
     property<String>("time", initial: "");
 
     Timer.periodic(const Duration(seconds: 1), (_) {
@@ -35,8 +40,10 @@ class Demo1 extends View<Demo1ViewModel> {
     return Container(
         margin: EdgeInsets.symmetric(vertical: 100),
         padding: EdgeInsets.all(40),
+        
         /// binding
-        child: $.watchFor("time", builder: $.builder1((t) => Text("$t", textDirection: TextDirection.ltr))));
+        child: $.watchFor("time", 
+            builder: $.builder1((t) => Text("$t", textDirection: TextDirection.ltr))));
   }
 }
 
@@ -46,13 +53,7 @@ void main() => runApp(Demo1());
 ```
 
 
-##    
 
-[Documentation](https://pub.dev/documentation/mvvm/latest/mvvm/mvvm-library.html)  & [Full example](./example/lib/main.dart) 
-
-
-
-##   
 
 ![mvvm](./img.png)
 
