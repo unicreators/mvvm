@@ -10,6 +10,11 @@ part of '../mvvm.dart';
 mixin ViewContextWatchHelperMixin<TViewModel extends ViewModelBase>
     on _ViewContextBase<TViewModel> {
   ///
+  /// 绑定到指定 `valueListenable`
+  /// 
+  ///   当值发生变化时, 使用 `builder` 构建 [Widget] 
+  ///   `child` 用于向构建方法中传入 [Widget]
+  /// 
   /// ```dart
   /// @override
   /// Widget buildCore(BuildContext context) {
@@ -22,6 +27,11 @@ mixin ViewContextWatchHelperMixin<TViewModel extends ViewModelBase>
       build(valueListenable, builder: builder, child: child);
 
   ///
+  /// 绑定到指定 `propertyKey`
+  /// 
+  ///   当值发生变化时, 使用 `builder` 构建 [Widget] 
+  ///   `child` 用于向构建方法中传入 [Widget]
+  /// 
   /// ```dart
   /// @override
   /// Widget buildCore(BuildContext context) {
@@ -35,6 +45,13 @@ mixin ViewContextWatchHelperMixin<TViewModel extends ViewModelBase>
           builder: builder, child: child);
 
   ///
+  /// 绑定到指定 `valueListenable` 集合
+  /// 
+  ///   当任一 `valueListenable` 值发生变化时, 使用 `builder` 构建 [Widget] 
+  ///   其中 `builder` 方法中 [TValue] 将被包装为 [Iterable<dynamic>]
+  /// 
+  ///   `child` 用于向构建方法中传入 [Widget]
+  /// 
   /// ```dart
   /// @override
   /// Widget buildCore(BuildContext context) {
@@ -47,6 +64,13 @@ mixin ViewContextWatchHelperMixin<TViewModel extends ViewModelBase>
       build(ValueNotifierJoinAdapter(valueListenable),
           builder: builder, child: child);
 
+  ///
+  /// 绑定到指定 `prepertyKeys` 集合
+  /// 
+  ///   当任一 `prepertyKeys` 对应的属性值发生变化时, 使用 `builder` 构建 [Widget] 
+  ///   其中 `builder` 方法中 [TValue] 将被包装为 [Iterable<dynamic>]
+  /// 
+  ///   `child` 用于向构建方法中传入 [Widget]
   ///
   /// ```dart
   /// @override

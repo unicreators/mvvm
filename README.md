@@ -1,10 +1,10 @@
   
-  
-A Flutter MVVM (Model-View-ViewModel) implementation. It uses property-based data binding, establishes a connection between the ViewModel and the View, and drives the View through the ViewModel.
+
+A Flutter MVVM (Model-View-ViewModel) implementation. It uses property-based data binding to establish a connection between the ViewModel and the View, and drives the View changes through the ViewModel.
   
   
 
-一个 Flutter 的 MVVM(Model-View-ViewModel) 实现。 它使用基于属性 (property) 的数据绑定，在视图模型 (ViewModel) 与视图 (View) 之间建立连接，并通过视图模型 (ViewModel) 驱动视图 (View) 变化。 
+一个 Flutter 的 MVVM(Model-View-ViewModel) 实现。 它使用基于属性 (property) 的数据绑定在视图模型 (ViewModel) 与视图 (View) 之间建立连接，并通过视图模型 (ViewModel) 驱动视图 (View) 变化。 
   
 ##   
  
@@ -40,10 +40,11 @@ class Demo1 extends View<Demo1ViewModel> {
     return Container(
         margin: EdgeInsets.symmetric(vertical: 100),
         padding: EdgeInsets.all(40),
-        
+
         /// binding
         child: $.watchFor("time", 
-            builder: $.builder1((t) => Text("$t", textDirection: TextDirection.ltr))));
+            builder: $.builder1((t) => 
+              Text("$t", textDirection: TextDirection.ltr))));
   }
 }
 
@@ -53,9 +54,8 @@ void main() => runApp(Demo1());
 ```
 
 
-
-
 ![mvvm](./img.png)
+
 
 
 

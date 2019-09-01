@@ -19,6 +19,9 @@ class ViewContext<TViewModel extends ViewModelBase>
 
 class _ViewContextBase<TViewModel extends ViewModelBase> {
   final TViewModel _model;
+
+  ///
+  /// 视图模型 [ViewModel]
   TViewModel get model => _model;
 
   _ViewContextBase(this._model);
@@ -29,6 +32,8 @@ class _ViewContextBase<TViewModel extends ViewModelBase> {
           Iterable<Object> propertyKeys) =>
       model.getPropertiesValueListenable(propertyKeys);
 
+  ///
+  /// 生成一个空 [Widget]
   ValueWidgetBuilder _emptyWidgetBuilder() => (_, __, ___) => SizedBox.shrink();
 
   dynamic _ensureValue<TValue>(
@@ -40,12 +45,24 @@ class _ViewContextBase<TViewModel extends ViewModelBase> {
       (context, value, child) =>
           (selector(value) ?? _emptyWidgetBuilder())(context, value, child);
 
+  ///
+  /// 绑定到指定 `propertyKey`
+  ///
+  ///   当值发生变化时, 使用 `builder` 构建 [Widget]
+  ///   `child` 用于向构建方法中传入 [Widget]
+  ///
   @protected
   Widget buildFor<TValue>(Object propertyKey,
           {ValueWidgetBuilder<TValue> builder, Widget child}) =>
       build<TValue>(_propertyValueListenable(propertyKey),
           builder: builder, child: child);
 
+  ///
+  /// 绑定到指定 `valueListenable`
+  ///
+  ///   当值发生变化时, 使用 `builder` 构建 [Widget]
+  ///   `child` 用于向构建方法中传入 [Widget]
+  ///
   @protected
   Widget build<TValue>(ValueListenable<TValue> valueListenable,
           {ValueWidgetBuilder<TValue> builder, Widget child}) =>

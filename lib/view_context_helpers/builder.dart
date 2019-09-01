@@ -10,6 +10,10 @@ part of '../mvvm.dart';
 mixin ViewContextBuilderHelperMixin<TViewModel extends ViewModelBase>
     on _ViewContextBase<TViewModel> {
   ///
+  /// 生成 [Widget] 构建方法
+  /// 
+  ///   通过 `builder` 指定一个无参的 [Widget] 构建方法 
+  /// 
   /// ```dart
   /// @override
   /// Widget buildCore(BuildContext context) {
@@ -20,6 +24,10 @@ mixin ViewContextBuilderHelperMixin<TViewModel extends ViewModelBase>
   ValueWidgetBuilder builder0(Widget Function() builder) =>
       (context, value, child) => builder();
 
+  ///
+  /// 生成 [Widget] 构建方法
+  /// 
+  ///   通过 `builder` 指定一个接收 [TValue] 的 [Widget] 构建方法 
   ///
   /// ```dart
   /// @override
@@ -32,6 +40,10 @@ mixin ViewContextBuilderHelperMixin<TViewModel extends ViewModelBase>
           Widget Function(TValue) builder) =>
       (context, value, child) => builder(value);
 
+  ///
+  /// 生成 [Widget] 构建方法
+  /// 
+  ///   通过 `builder` 指定一个接收 `value` [TValue], `child` [Widget] 的 [Widget] 构建方法 
   ///
   /// ```dart
   /// @override

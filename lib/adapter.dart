@@ -4,16 +4,19 @@
 
 part of './mvvm.dart';
 
-class ValueNotifierAdapter<TFromValue, TToValue,
-        TAdaptee extends ValueNotifier<TFromValue>>
-    extends ValueNotifier<TToValue> {
+class ValueNotifierAdapter<TAdapteeValue, TValue,
+        TAdaptee extends ValueNotifier<TAdapteeValue>>
+    extends ValueNotifier<TValue> {
   final TAdaptee _adaptee;
-  final TToValue Function(TAdaptee) _toValue;
-  final void Function(TAdaptee, TToValue) _fromValue;
+  final TValue Function(TAdaptee) _getAdapteeValue;
+  final void Function(TAdaptee, TValue) _setAdapteeValue;
 
-  ValueNotifierAdapter(this._adaptee, this._toValue, this._fromValue,
-      {TToValue initial})
-      : assert(_adaptee != null && _toValue != null && _fromValue != null),
+  ValueNotifierAdapter(
+      this._adaptee, this._getAdapteeValue, this._setAdapteeValue,
+      {TValue initial})
+      : assert(_adaptee != null &&
+            _getAdapteeValue != null &&
+            _setAdapteeValue != null),
         super(null) {
     this._adaptee.addListener(notifyListeners);
     // emit
@@ -21,9 +24,9 @@ class ValueNotifierAdapter<TFromValue, TToValue,
   }
 
   @protected
-  TToValue get value => _toValue(_adaptee);
+  TValue get value => _getAdapteeValue(_adaptee);
   @protected
-  set value(TToValue v) => value != v ? _fromValue(_adaptee, v) : null;
+  set value(TValue v) => value != v ? _setAdapteeValue(_adaptee, v) : null;
 
   @override
   void dispose() {
