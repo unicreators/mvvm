@@ -1,10 +1,10 @@
-//////////////////////////////////////////
+///
 /// yichen <d.unicreators@gmail.com>
 ///
 
 part of './mvvm.dart';
 
-/// Property
+/// ViewModelProperty
 ///
 ///
 
@@ -23,7 +23,7 @@ class ViewModelProperty<TValue> {
   set value(TValue v) => _valueNotifier.value = v;
 }
 
-mixin ValueViewModelMixin on ViewModelBase {
+mixin ValueViewModelMixin on _ViewModelBase {
   ViewModelProperty<TValue> property<TValue>(Object key, {TValue initial}) =>
       registryProperty(ViewModelProperty(key, ValueNotifier(initial)));
 }

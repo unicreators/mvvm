@@ -1,4 +1,4 @@
-//////////////////////////////////////////
+///
 /// yichen <d.unicreators@gmail.com>
 ///
 
@@ -8,10 +8,12 @@ part of './mvvm.dart';
 ///
 ///
 
-abstract class ViewModel extends ViewModelBase
+abstract class ViewModel extends ViewModelBase {}
+
+abstract class ViewModelBase extends _ViewModelBase
     with ValueViewModelMixin, AdaptiveViewModelMixin {}
 
-abstract class ViewModelBase {
+abstract class _ViewModelBase {
   final _properties = Map<Object, ViewModelProperty<dynamic>>();
 
   @protected

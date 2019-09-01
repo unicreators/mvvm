@@ -1,5 +1,5 @@
-//////////////////////////////////////////
-/// yichen <yichen.unicreators@gmail.com>
+///
+/// yichen <d.unicreators@gmail.com>
 ///
 
 part of './mvvm.dart';

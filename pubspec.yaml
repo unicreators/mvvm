@@ -1,6 +1,6 @@
 name: mvvm
-description: MVVM for Flutter. 
-version: 0.1.0
+description: A Flutter MVVM (Model-View-ViewModel) implementation. It uses property-based data binding, establishes a connection between the ViewModel and the View, and drives the View through the ViewModel.
+version: 0.1.2
 author: yichen <d.unicreators@gmail.com>
 homepage: https://github.com/unicreators/mvvm
 repository: https://github.com/unicreators/mvvm

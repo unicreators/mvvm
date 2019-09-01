@@ -1,26 +1,64 @@
-
-
-一个 Flutter 的 MVVM(Model-View-ViewModel) 实现。 它通过数据绑定，在视图模型 (ViewModel) 与视图 (View) 之间建立联系，当视图模型 (ViewModel) 中数据发生变化时视图 (View) 也将相应变化。 它简化了数据与视图之间繁杂的关联关系，使我们可以从视图状态管理中得以脱身。
-
-##
-[Example](./example/lib/main.dart)
-
   
+  
+A Flutter MVVM (Model-View-ViewModel) implementation. It uses property-based data binding, establishes a connection between the ViewModel and the View, and drives the View through the ViewModel.
+  
+  
+
+一个 Flutter 的 MVVM(Model-View-ViewModel) 实现。 它使用基于属性 (property) 的数据绑定，在视图模型 (ViewModel) 与视图 (View) 之间建立连接，并通过视图模型 (ViewModel) 驱动视图 (View) 变化。 
+  
+  
+##      
+
+```dart
+import 'package:flutter/widgets.dart';
+import 'package:mvvm/mvvm.dart';
+import 'dart:async';
+
+/// define ViewModel
+class Demo1ViewModel extends ViewModel {
+  Demo1ViewModel() {
+    property<String>("time", initial: "");
+
+    Timer.periodic(const Duration(seconds: 1), (_) {
+      var now = DateTime.now();
+      setValue<String>("time", "${now.hour}:${now.minute}:${now.second}");
+    });
+  }
+}
+
+/// define View
+class Demo1 extends View<Demo1ViewModel> {
+  Demo1() : super(Demo1ViewModel());
+
+  @override
+  Widget buildCore(BuildContext context) {
+    return Container(
+        margin: EdgeInsets.symmetric(vertical: 100),
+        padding: EdgeInsets.all(40),
+        /// binding
+        child: $.watchFor("time", builder: $.builder1((t) => Text("$t", textDirection: TextDirection.ltr))));
+  }
+}
+
+/// run
+void main() => runApp(Demo1());
+
+```
+
+
+##    
+
+[Documentation](https://pub.dev/documentation/mvvm/latest/mvvm/mvvm-library.html)  & [Full example](./example/lib/main.dart) 
+
+
+
+##   
+
+![mvvm](./img.png)
+
 
 
 ## 使用
-
-将以下行内容添加到 pubspec.yaml 文件的 dependencies 部分
-
-```
-dependencies:
-  mvvm: ^0.1.0
-```
-
-在代码中使用下行内容导入包
-```dart
-import 'package:mvvm/mvvm.dart';
-```
 
 
 ### 1. 创建视图模型(ViewModel)
@@ -68,6 +106,7 @@ class Page extends View<PageViewModel> {
 在新的视图类中重写 Widget BuildCore(BuildContext) 方法，并在方法内使用 `$` ([ViewContext](./lib/view_context.dart)) 和 `$Model` ([ViewModel](./lib/view_model.dart)) 辅助属性构建视图 Widget 
 
 ```dart
+
 class Page extends View<PageViewModel> {
   Page() : super(PageViewModel());
 
@@ -127,7 +166,6 @@ class Page extends View<PageViewModel> {
 
 ```dart
 /// main.dart
-
 void main() => runApp(App());
 
 class App extends StatelessWidget {
@@ -148,17 +186,6 @@ class App extends StatelessWidget {
 ```
 
 
-
-## 关系图
-
-![Alt text](./img.png)
-
-
-
-
-## 示例
-
-[Example](./example/lib/main.dart)
 
   
    

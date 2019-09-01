@@ -1,4 +1,4 @@
-//////////////////////////////////////////
+///
 /// yichen <d.unicreators@gmail.com>
 ///
 
@@ -17,3 +17,6 @@ part './view_model.dart';
 part './view.dart';
 
 part './view_context.dart';
+part './view_context_helpers/watch.dart';
+part './view_context_helpers/logical.dart';
+part './view_context_helpers/builder.dart';

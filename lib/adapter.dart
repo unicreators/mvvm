@@ -1,4 +1,4 @@
-//////////////////////////////////////////
+///
 /// yichen <d.unicreators@gmail.com>
 ///
 
@@ -16,7 +16,7 @@ class ValueNotifierAdapter<TFromValue, TToValue,
       : assert(_adaptee != null && _toValue != null && _fromValue != null),
         super(null) {
     this._adaptee.addListener(notifyListeners);
-    // emit 
+    // emit
     this.value = initial;
   }
 
@@ -38,19 +38,19 @@ class ValueNotifierJoinAdapter<TValue> extends ValueNotifier<List<TValue>> {
   ValueNotifierJoinAdapter(this._valueNotifiers)
       : assert(_valueNotifiers != null),
         super(null) {
-    _valueNotifiers.forEach((vn) => vn.addListener(_anyValueChange));
+    _valueNotifiers.forEach((vn) => vn.addListener(_valueChange));
   }
 
   _getValues() => _valueNotifiers.map((vn) => vn.value);
 
-  void _anyValueChange() {
+  void _valueChange() {
     value = _getValues();
     notifyListeners();
   }
 
   @override
   void dispose() {
-    _valueNotifiers.forEach((vn) => vn.removeListener(_anyValueChange));
+    _valueNotifiers.forEach((vn) => vn.removeListener(_valueChange));
     super.dispose();
   }
 }

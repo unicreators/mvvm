@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:mvvm/mvvm.dart';
 import 'package:flutter/material.dart';
@@ -54,6 +55,7 @@ class PageViewModel extends ViewModel with AsyncViewModelMixin {
     /// define property
     property<String>(AnyProperty, initial: "jerry");
     property<int>(AgeProperty, initial: -1);
+    property<String>("time", initial: "");
 
     ///
     /// define adaptive property
@@ -68,17 +70,25 @@ class PageViewModel extends ViewModel with AsyncViewModelMixin {
         initial: name);
 
     ///
-    /// define async property
+    /// define Future property
     propertyAsync(
         AsyncProperty,
 
         ///
-        /// a async method
+        /// async method
         () => service.findUser(this.name),
 
         ///
         /// data handle on success
         handle: (user) => age = user.age);
+
+    // time
+    var pad = (int v) => "$v".padLeft(2, "0");
+    Timer.periodic(const Duration(seconds: 1), (_) {
+      var now = DateTime.now();
+      setValue<String>(
+          "time", "${pad(now.hour)}:${pad(now.minute)}:${pad(now.second)}");
+    });
   }
 
   ///
@@ -134,6 +144,11 @@ class Page extends View<PageViewModel> {
             padding: EdgeInsets.all(20),
             child: Column(
               children: [
+                $.watchFor("time",
+                    builder: $.builder1((t) => Text(t,
+                        style:
+                            TextStyle(color: Colors.redAccent, fontSize: 48)))),
+                SizedBox(height: 10),
                 TextField(
                   controller: $Model.nameCtrl,
                   decoration: InputDecoration(
@@ -182,6 +197,7 @@ class Page extends View<PageViewModel> {
                         ///
                         /// $Model.link
                         onPressed: $Model.link(PageViewModel.AsyncProperty))),
+
                 Expanded(child: SizedBox.shrink()),
                 Text("age", style: TextStyle(color: Colors.grey, fontSize: 22)),
                 Row(
@@ -369,5 +385,3 @@ class Page1 extends ViewBase<PageViewModel, PageViewContext<PageViewModel>> {
             child: $.hello()));
   }
 }
-
-

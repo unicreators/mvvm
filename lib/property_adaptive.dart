@@ -1,9 +1,8 @@
-//////////////////////////////////////////
+///
 /// yichen <d.unicreators@gmail.com>
 ///
 
 part of './mvvm.dart';
-
 
 /// AdaptiveViewModelProperty
 ///
@@ -25,8 +24,7 @@ class AdaptiveViewModelProperty<TValue, TFromValue,
                 initial: initial));
 }
 
-
-mixin AdaptiveViewModelMixin on ViewModelBase {
+mixin AdaptiveViewModelMixin on _ViewModelBase {
   AdaptiveViewModelProperty<TValue, TFromValue, TAdaptee> propertyAdaptive<
               TValue, TFromValue, TAdaptee extends ValueNotifier<TFromValue>>(
           Object key,
