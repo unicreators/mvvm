@@ -10,12 +10,13 @@ part of '../mvvm.dart';
 mixin ViewContextWatchHelperMixin<TViewModel extends ViewModelBase>
     on _ViewContextBase<TViewModel> {
   ///
-  /// 绑定到指定 `valueListenable`
-  /// 
-  ///   当值发生变化时, 使用 `builder` 构建 [Widget] 
-  ///   `child` 用于向构建方法中传入 [Widget]
-  /// 
+  /// 绑定到指定 [valueListenable], 当 [valueListenable] 值发生变化时,
+  /// 使用 [builder] 构建 [Widget]
+  ///
+  /// [child] 用于向构建方法中传入 [Widget]
+  ///
   /// ```dart
+  /// // example
   /// @override
   /// Widget buildCore(BuildContext context) {
   ///   return $.watch<String>($Model.prop1,
@@ -27,12 +28,13 @@ mixin ViewContextWatchHelperMixin<TViewModel extends ViewModelBase>
       build(valueListenable, builder: builder, child: child);
 
   ///
-  /// 绑定到指定 `propertyKey`
-  /// 
-  ///   当值发生变化时, 使用 `builder` 构建 [Widget] 
-  ///   `child` 用于向构建方法中传入 [Widget]
-  /// 
+  /// 绑定到指定属性, 当 [propertyKey] 对应属性值发生变化时,
+  /// 使用 [builder] 构建 [Widget]
+  ///
+  /// [child] 用于向构建方法中传入 [Widget]
+  ///
   /// ```dart
+  /// // example
   /// @override
   /// Widget buildCore(BuildContext context) {
   ///   return $.watchFor<String>("account",
@@ -45,17 +47,17 @@ mixin ViewContextWatchHelperMixin<TViewModel extends ViewModelBase>
           builder: builder, child: child);
 
   ///
-  /// 绑定到指定 `valueListenable` 集合
-  /// 
-  ///   当任一 `valueListenable` 值发生变化时, 使用 `builder` 构建 [Widget] 
-  ///   其中 `builder` 方法中 [TValue] 将被包装为 [Iterable<dynamic>]
-  /// 
-  ///   `child` 用于向构建方法中传入 [Widget]
-  /// 
-  /// ```dart
+  /// 绑定到指定 [valueListenable] 集合, 当任一 [valueListenable] 值发生变化时,
+  /// 使用 [builder] 构建 [Widget]
+  ///
+  /// [builder] 方法中 `TValue` 将被包装为 [Iterable<dynamic>]
+  /// [child] 用于向构建方法中传入 [Widget]
+  ///
+  ///```dart
+  /// // example
   /// @override
   /// Widget buildCore(BuildContext context) {
-  ///   return $.watchAny(const [$Model.prop1, $Model.prop2],
+  ///   return $.watchAny([$Model.prop1, $Model.prop2],
   ///     builder: $.builder1((values) => Text(values[0])));
   /// }
   /// ```
@@ -65,14 +67,14 @@ mixin ViewContextWatchHelperMixin<TViewModel extends ViewModelBase>
           builder: builder, child: child);
 
   ///
-  /// 绑定到指定 `prepertyKeys` 集合
-  /// 
-  ///   当任一 `prepertyKeys` 对应的属性值发生变化时, 使用 `builder` 构建 [Widget] 
-  ///   其中 `builder` 方法中 [TValue] 将被包装为 [Iterable<dynamic>]
-  /// 
-  ///   `child` 用于向构建方法中传入 [Widget]
+  /// 绑定到指定属性集合, 当任一 [prepertyKeys] 对应属性值发生变化时,
+  /// 使用 [builder] 构建 [Widget]
   ///
-  /// ```dart
+  /// [builder] 方法中 `TValue` 将被包装为 [Iterable<dynamic>]
+  /// [child] 用于向构建方法中传入 [Widget]
+  ///
+  ///```dart
+  /// // example
   /// @override
   /// Widget buildCore(BuildContext context) {
   ///   return $.watchAnyFor(const ["account", "password"],

@@ -8,9 +8,9 @@ part of './mvvm.dart';
 ///
 ///
 
-class AdaptiveViewModelProperty<TValue, TAdapteeValue,
-        TAdaptee extends ValueNotifier<TAdapteeValue>>
+class AdaptiveViewModelProperty<TValue, TAdaptee extends Listenable>
     extends ViewModelProperty<TValue> {
+  /// AdaptiveViewModelProperty
   AdaptiveViewModelProperty(
       Object key,
       TAdaptee adaptee,
@@ -19,7 +19,7 @@ class AdaptiveViewModelProperty<TValue, TAdapteeValue,
       {TValue initial})
       : super(
             key,
-            ValueNotifierAdapter<TAdapteeValue, TValue, TAdaptee>(
+            ValueNotifierAdapter<TValue, TAdaptee>(
                 adaptee, getAdapteeValue, setAdapteeValue,
                 initial: initial));
 }
@@ -28,22 +28,19 @@ mixin AdaptiveViewModelMixin on _ViewModelBase {
   ///
   /// 创建一个适配属性
   ///
-  ///   `key` 指定属性键
-  ///   `adaptee` 被适配者
-  ///   `getAdapteeValue` 指定从被适配者获取值的方法
-  ///   `setAdapteeValue` 指定设置被适配者值的方法
+  /// [propertyKey] 指定属性键
+  /// [adaptee] 被适配者实例，适配者必须继承自 [Listenable]
+  /// [getAdapteeValue] 指定从被适配者获取值的方法
+  /// [setAdapteeValue] 指定设置被适配者值的方法
   ///
-  AdaptiveViewModelProperty<TValue, TAdapteeValue, TAdaptee> propertyAdaptive<
-              TValue,
-              TAdapteeValue,
-              TAdaptee extends ValueNotifier<TAdapteeValue>>(
-          Object key,
-          TAdaptee adaptee,
-          TValue Function(TAdaptee) getAdapteeValue,
-          void Function(TAdaptee, TValue) setAdapteeValue,
-          {TValue initial}) =>
-      registryProperty(
-          AdaptiveViewModelProperty<TValue, TAdapteeValue, TAdaptee>(
-              key, adaptee, getAdapteeValue, setAdapteeValue,
+  AdaptiveViewModelProperty<TValue, TAdaptee>
+      propertyAdaptive<TValue, TAdaptee extends Listenable>(
+              Object propertyKey,
+              TAdaptee adaptee,
+              TValue Function(TAdaptee) getAdapteeValue,
+              void Function(TAdaptee, TValue) setAdapteeValue,
+              {TValue initial}) =>
+          registryProperty(AdaptiveViewModelProperty<TValue, TAdaptee>(
+              propertyKey, adaptee, getAdapteeValue, setAdapteeValue,
               initial: initial));
 }

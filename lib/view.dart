@@ -10,13 +10,16 @@ part of './mvvm.dart';
 
 abstract class View<TViewModel extends ViewModel>
     extends ViewBase<TViewModel, ViewContext<TViewModel>> {
+  /// View
   View(TViewModel model)
       : assert(model != null),
         super(ViewContext<TViewModel>(model));
 }
 
+/// ViewBase
 abstract class ViewBase<TViewModel extends ViewModel,
     TViewContext extends ViewContext<TViewModel>> extends StatelessWidget {
+  /// ViewBase
   ViewBase(this._context);
 
   final TViewContext _context;
@@ -35,9 +38,11 @@ abstract class ViewBase<TViewModel extends ViewModel,
     return buildCore(context);
   }
 
+  /// buildCore
   @protected
   Widget buildCore(BuildContext context);
 
+  /// initView
   @protected
   void initView(BuildContext context) {}
 }

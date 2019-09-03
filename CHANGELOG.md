@@ -1,3 +1,11 @@
+## 0.1.3
+* 完善代码注释文档
+* 增加 `analysis_options.yaml`
+* `ViewModel` 中 `property(..)` 方法重命名为 `propertyValue(..)`, `propertyAdaptive` 方法去除 `TAdapteeValue` 泛型参数
+* `ValueNotifierAdapter` 中 `TAdaptee` 泛型参数约束调整
+* 更新 example
+* 更新 README.md
+
 ## 0.1.2+1
 * 增加代码注释文档
 

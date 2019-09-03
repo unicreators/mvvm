@@ -17,21 +17,25 @@ import 'package:flutter/widgets.dart';
 import 'package:mvvm/mvvm.dart';
 import 'dart:async';
 
-/// define ViewModel
+// define ViewModel
 class Demo1ViewModel extends ViewModel {
   Demo1ViewModel() {
-
-    /// define bindable property
+    // define bindable property
     property<String>("time", initial: "");
+    // timer
+    start();
+  }
 
-    Timer.periodic(const Duration(seconds: 1), (_) {
-      var now = DateTime.now();
-      setValue<String>("time", "${now.hour}:${now.minute}:${now.second}");
-    });
+  start() {
+      Timer.periodic(const Duration(seconds: 1), (_) {
+        var now = DateTime.now();
+        // call setValue
+        setValue<String>("time", "${now.hour}:${now.minute}:${now.second}");
+      });
   }
 }
 
-/// define View
+// define View
 class Demo1 extends View<Demo1ViewModel> {
   Demo1() : super(Demo1ViewModel());
 
@@ -41,14 +45,14 @@ class Demo1 extends View<Demo1ViewModel> {
         margin: EdgeInsets.symmetric(vertical: 100),
         padding: EdgeInsets.all(40),
 
-        /// binding
+        // binding
         child: $.watchFor("time", 
             builder: $.builder1((t) => 
               Text("$t", textDirection: TextDirection.ltr))));
   }
 }
 
-/// run
+// run
 void main() => runApp(Demo1());
 
 ```
@@ -57,134 +61,366 @@ void main() => runApp(Demo1());
 ![mvvm](./img.png)
 
 
+## APIs
 
+### ViewContext ($.*)
 
-## 使用
+#### Methods
 
+**`watch<TValue>(ValueListenable<TValue> valueListenable, { ValueWidgetBuilder<TValue> builder, Widget child }) → Widget`**
 
-### 1. 创建视图模型(ViewModel)
+绑定到指定 `valueListenable`, 当 `valueListenable` 值发生变化时, 使用 `builder` 构建 `Widget`
 
-新的视图模型类需从 [ViewModel](./lib/view_model.dart) 类继承
+- `child` 用于向构建方法中传入 `Widget`
 
 ```dart
-class PageViewModel extends ViewModel {
-    /// ..
+// example
+@override
+Widget buildCore(BuildContext context) {
+  return $.watch<String>($Model.prop1,
+    builder: $.builder1((value) => Text(value)));
 }
 ```
 
-在构造方法中使用 super.property 方法创建需要绑定支持的属性([ModelViewProperty](./lib/property.dart))
+
+**`watchFor<TValue>(Object propertyKey, { ValueWidgetBuilder<TValue> builder, Widget child }) → Widget`**
+
+绑定到指定属性, 当 `propertyKey` 对应属性值发生变化时, 使用 `builder` 构建 `Widget`
+
+- `child` 用于向构建方法中传入 `Widget`
 
 ```dart
+// example
+@override
+Widget buildCore(BuildContext context) {
+  return $.watchFor<String>("account",
+    builder: $.builder1((value) => Text(value)));
+}
+```
+
+**`watchAny(Iterable<ValueListenable> valueListenable, { ValueWidgetBuilder<Iterable> builder, Widget child }) → Widget`**
+
+绑定到指定 `valueListenable` 集合, 当任一 `valueListenable` 值发生变化时, 使用 `builder` 构建 `Widget`
+
+- `builder` 方法中 `TValue` 将被包装为 `Iterable<dynamic>`
+- `child` 用于向构建方法中传入 `Widget`
+
+```dart
+// example
+@override
+Widget buildCore(BuildContext context) {
+  return $.watchAny([$Model.prop1, $Model.prop2],
+    builder: $.builder1((values) => Text(values[0])));
+}
+```
+
+
+**`watchAnyFor(Iterable<Object> prepertyKeys, { ValueWidgetBuilder<Iterable> builder, Widget child }) → Widget`**
+
+绑定到指定属性集合, 当任一 `propertyKeys` 对应属性值发生变化时, 使用 `builder` 构建 `Widget`
+
+- `builder` 方法中 `TValue` 将被包装为 `Iterable<dynamic>`
+- `child` 用于向构建方法中传入 `Widget`
+
+```dart
+// example
+@override
+Widget buildCore(BuildContext context) {
+  return $.watchAnyFor(const ["account", "password"],
+    builder: $.builder1((values) => Text(values[0])));
+}
+```
+
+
+
+**`builder0(Widget builder()) → ValueWidgetBuilder`**
+
+生成 `Widget` 构建方法
+
+- 通过 `builder` 指定一个无参的 `Widget` 构建方法
+
+```dart
+// example
+@override
+Widget buildCore(BuildContext context) {
+  return $.watch<String>($Model.prop1,
+    builder: $.builder0(() => Text("hello!")));
+}
+```
+
+
+
+**`builder1<TValue>(Widget builder(TValue)) → ValueWidgetBuilder<TValue>`**
+
+生成 `Widget` 构建方法
+
+- 通过 `builder` 指定一个接收 `TValue` 的 `Widget` 构建方法
+
+```dart
+// example
+@override
+Widget buildCore(BuildContext context) {
+  return $.watch<String>($Model.prop1,
+    builder: $.builder1((value) => Text(value)));
+}
+```
+
+
+**`builder2<TValue>(Widget builder(TValue, Widget)) → ValueWidgetBuilder<TValue>`**
+
+生成 `Widget` 构建方法
+
+- 通过 `builder` 指定一个接收 `TValue`, `Widget` 的 `Widget` 构建方法
+
+```dart
+// example
+@override
+Widget buildCore(BuildContext context) {
+  return $.watch<String>($Model.prop1,
+    builder: $.builder2((value, child) => Column(children:[Text("$value"), child]),
+    child: Text("child"));
+}
+```
+
+
+**`$cond<TValue>(ValueListenable<TValue> valueListenable, { ValueWidgetBuilder<TValue> $true, ValueWidgetBuilder<TValue> $false, Widget child, bool valueHandle(TValue) }) → Widget`**
+
+绑定到指定 `valueListenable`, 当 `valueListenable` 值发生变化时, 若值判定结果为 `true` 则使用 `$true` 构建 `Widget`, 否则使用 `$false` 构建 `Widget`
+
+- 当值类型不为 `bool` 时, 非 `null` 即被判定为 `true`, 否则判定为 `false` 
+- 可通过指定 `valueHandle` 对值进行处理 
+- `child` 用于向构建方法中传入 `Widget`
+
+```dart
+// example
+@override
+Widget buildCore(BuildContext context) {
+  return $.$cond<int>($Model.prop1,
+    $true: $.builder0(() => Text("tom!")),
+    $false: $.builder0(() => Text("jerry!")),
+    valueHandle: (value) => value == 1);
+}
+```
+
+
+**`$condFor<TValue>(Object propertyKey, { ValueWidgetBuilder<TValue> $true, ValueWidgetBuilder<TValue> $false, Widget child, bool valueHandle(TValue) }) → Widget`**
+
+绑定到指定属性, 当 `propertyKey` 对应属性值发生变化时, 若值判定结果为 `true` 则使用 `$true` 构建 `Widget`, 否则使用 `$false` 构建 `Widget`
+
+- 当值类型不为 `bool` 时, 非 `null` 即被判定为 `true`, 否则判定为 `false` 
+- 可通过指定 `valueHandle` 对值进行处理 
+- `child` 用于向构建方法中传入 `Widget`
+
+```dart
+// example
+@override
+Widget buildCore(BuildContext context) {
+  return $.$condFor<String>("account",
+    $true: $.builder0(() => Text("tom!")),
+    $false: $.builder0(() => Text("jerry!")),
+    valueHandle: (value) => value == "tom");
+}
+```
+
+&nbsp;
+
+**`$if<TValue>(ValueListenable<TValue> valueListenable, { ValueWidgetBuilder<TValue> builder, Widget child, bool valueHandle(TValue) }) → Widget`**
+
+绑定到指定 `valueListenable`, 当值发生变化时, 若值判定结果为 `true` 时使用 `builder` 构建 `Widget` 否则不构建 `Widget`
+
+- 当值类型不为 `bool` 时, 非 `null` 即被判定为 `true`, 否则判定为 `false` 
+- 可通过指定 `valueHandle` 对值进行处理 
+- `child` 用于向构建方法中传入 `Widget`
+
+```dart
+// example
+@override
+Widget buildCore(BuildContext context) {
+  return $.$if<int>($Model.prop1,
+    builder: $.builder0(() => Text("tom!")),
+    valueHandle: (value) => value == 1);
+}
+```
+
+
+
+**`$ifFor<TValue>(Object propertyKey, { ValueWidgetBuilder<TValue> builder, Widget child, bool valueHandle(TValue) }) → Widget`**
+
+绑定到指定属性, 当 `propertyKey` 对应属性值发生变化时, 若值判定结果为 `true` 时使用 `builder` 构建 `Widget` 否则不构建 `Widget`
+
+- 当值类型不为 `bool` 时, 非 `null` 即被判定为 `true`, 否则判定为 `false` 
+- 可通过指定 `valueHandle` 对值进行处理 
+- `child` 用于向构建方法中传入 `Widget`
+
+```dart
+// example
+@override
+Widget buildCore(BuildContext context) {
+  return $.$ifFor<String>("account",
+    builder: $.builder0(() => Text("tom!")),
+    valueHandle: (value) => value == "tom");
+}
+```
+
+
+**`$switch<TKey, TValue>(ValueListenable<TValue> valueListenable, { Map<TKey, ValueWidgetBuilder<TValue>> options, ValueWidgetBuilder<TValue> defalut, Widget child, TKey valueToKey(TValue) }) → Widget`**
+
+绑定到指定 `valueListenable`, 当 `valueListenable` 值发生变化时, 其值做为 `key` 到 `options` 中查找对应 `Widget` 构建方法, 若未找到则使用 `default` 构建, 如 `default` 为 `null` 则不构建 `Widget`
+
+- 如值与 `options` 中 `key` 类型不同, 可通过指定 `valueToKey` 进行转换 
+- `child` 用于向构建方法中传入 `Widget`
+
+```dart
+// example
+@override
+Widget buildCore(BuildContext context) {
+  return $.$switch<String, int>($Model.prop1,
+    options: { "1.": $.builder1((value) => Text("$value")),              "2.": $.builder0(() => Text("2")) },
+    default: $.builder0(() => Text("default")),
+    valueToKey: (value) => "${value}.");
+}
+```
+
+
+
+**`$switchFor<TKey, TValue>(Object propertyKey, { Map<TKey, ValueWidgetBuilder<TValue>> options, ValueWidgetBuilder<TValue> defalut, Widget child, TKey valueToKey(TValue) }) → Widget`**
+
+绑定到指定属性, 当 `propertyKey` 对应属性值发生变化时, 其值做为 `key` 到 `options` 中查找对应 `Widget` 构建方法, 若未找到则使用 `default` 构建, 如 `default` 为 `null` 则不构建 `Widget`
+
+- 如值与 `options` 中 `key` 类型不同, 可通过指定 `valueToKey` 进行转换 
+- `child` 用于向构建方法中传入 `Widget`
+
+```dart
+// example
+@override
+Widget buildCore(BuildContext context) {
+  return $.$switchFor<String, int>("account",
+    options: { "tom": $.builder1((value) => Text("${value}! cat")),                    "jerry": $.builder0(() => Text("mouse")) },
+    default: $.builder0(() => Text("default"));
+}
+```
+
+
+
+### ViewModel
+
+#### Methods
+
+
+**`propertyValue<TValue>(Object propertyKey, { TValue initial }) → ViewModelProperty<TValue>`**
+
+创建一个值属性
+
+- `propertyKey` 指定属性键 
+- `initial` 指定初始值
+
+```dart
+// example
 class PageViewModel extends ViewModel {
-
-    /// 
-    /// property key
-    static const Object AnyProperty = Object();
-
     PageViewModel() {
-        property<String>(AnyProperty, initial: "jerry");
+        propertyValue<String>("name", initial: "tom");
+    }
+}
+```
+
+
+
+**`propertyAdaptive<TValue, TAdaptee extends Listenable>(Object propertyKey, TAdaptee adaptee, TValue getAdapteeValue(TAdaptee), void setAdapteeValue(TAdaptee, TValue), { TValue initial }) → AdaptiveViewModelProperty<TValue, TAdaptee>`**
+
+创建一个适配属性
+
+- `propertyKey` 指定属性键 
+- `adaptee` 被适配者实例，适配者必须继承自 `Listenable`
+- `getAdapteeValue` 指定从被适配者获取值的方法
+- `setAdapteeValue` 指定设置被适配者值的方法
+- `initial` 指定初始值
+
+```dart
+// example
+class PageViewModel extends ViewModel {
+    final TextEditingController _nameCtrl = TextEditingController();
+    PageViewModel() {
+        propertyAdaptive<String, TextEditingController>(
+            "name", _nameCtrl,
+            (v) => v.text,
+            (a, v) => a.text = v,
+            initial: name);
     }
 
-    ///
-    /// shortcut
-    String get any => getValue<String>(AnyProperty);
-    set any(String value) => setValue<String>(AnyProperty, value);
-
+    // TextField used
+    TextEditingController get nameCtrl => _nameCtrl;
 }
 ```
 
 
-### 2. 创建视图(View)
 
-新的视图类需从 [View](./lib/view.dart) 类继承，并指定使用刚刚创建的视图模型
+**`propertyAsync<TValue>(Object propertyKey, AsyncValueGetter<TValue> futureGetter, { TValue handle(TValue), TValue initial }) → AsyncViewModelProperty<TValue>`**
+
+创建一个异步请求属性
+*要使用此属性的 `ViewModel` 需要 `with` 到 `AsyncViewModelMixin`*
+
+- `propertyKey` 指定属性键 
+- `futureGetter` 用于获取 `Future<TValue>` 的方法
+- `handle` 指定当请求成功时对结果处理的方法
+- `initial` 指定初始值
 
 ```dart
-class Page extends View<PageViewModel> {
-    Page() : super(PageViewModel());
+// example
+class User {
+  String name;
+  User(this.name);
 }
-```
 
-在新的视图类中重写 Widget BuildCore(BuildContext) 方法，并在方法内使用 `$` ([ViewContext](./lib/view_context.dart)) 和 `$Model` ([ViewModel](./lib/view_model.dart)) 辅助属性构建视图 Widget 
+class RemoteService {
+    Future<User> findUser() async {
+        return Future.delayed(
+        Duration(seconds: 3), () => User("tom_${DateTime.now().second}"));
+    }
+}
 
-```dart
+class PageViewModel extends ViewModel with AsyncViewModelMixin {
+    final RemoteService _service;
+    PageViewModel(this._service) {
+        propertyAsync<User>(
+            "findUserAsync",
+            () => _service.findUser(),        
+            handle: (User user) {
+                user.name = "hello, ${user.name}";
+                return user;
+            });
+    }
 
-class Page extends View<PageViewModel> {
-  Page() : super(PageViewModel());
+    // ViewModel used
+    find() => invoke("findUserAsync");
+}
 
-  @override
-  Widget buildCore(BuildContext context) {
-    return Scaffold(
-        body: Container(
-            margin: EdgeInsets.only(top: 100),
-            padding: EdgeInsets.all(20),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    RaisedButton(
-                        child: Text("prev"),
-                        onPressed: () {
-                          ///
-                          /// 设置新值，触发变更
-                          /// $Model 为我们定义的ViewModel实例
-                          $Model.any = "prev";
-                        }),
+class PageView extends View<PageViewModel> {
+    PageView(): super(PageViewModel(RemoteService()));
 
-                    ///
-                    /// 使用属性键(propertyKey)对属性进行绑定
-                    /// $ 为视图上下文(ViewContext)实例
-                    /// 详见 $.* 用法
-                    $.watchFor(PageViewModel.AnyProperty,
-
-                        ///
-                        /// 定义当值变化时如何变更widget
-                        /// 详见 $.builder* 用法
-                        builder: $.builder1((value) => Text("$value",
-                            style: TextStyle(
-                                color: Colors.blueAccent, fontSize: 26)))),
-                    RaisedButton(
-                        child: Text("next"),
-                        onPressed: () {
-                          ///
-                          /// 设置新值，触发变更
-                          $Model.any = "next";
-                        })
-                  ],
-                )
-              ],
-            )));
-  }
+    @override
+    Widget buildCore(BuildContext context) {
+        return Column(children: [
+            $.watchFor("findUserAsync",
+                builder: $.builder2((AsyncSnapshot<User> snapshot, child) =>
+                            snapshot.connectionState == ConnectionState.waiting && snapshot.hasData 
+                                ? Text("${snapshot.data.name}", textDirection: TextDirection.ltr)
+                                : child),
+                child: Text("empty", textDirection: TextDirection.ltr)), 
+            RaisedButton(
+                child: $.watchFor("findUserAsync",
+                    builder: $.builder2((AsyncSnapshot<User> snapshot, child) =>
+                        snapshot.connectionState == ConnectionState.waiting
+                            ? CircularProgressIndicator() : child),
+                    child: Text("find", textDirection: TextDirection.ltr)), 
+                // or: onPressed: () { $Model.find(); }
+                onPressed: $Model.link("findUserAsync"))]);
+    }
 }
 ```
 
 
 
-### 3. 使用视图
-
-应用新的视图
-
-
-```dart
-/// main.dart
-void main() => runApp(App());
-
-class App extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) => MaterialApp(
-        title: 'Flutter MVVM',
-        theme: ThemeData(
-            primarySwatch: Colors.blue,
-            buttonTheme: ButtonThemeData(
-              buttonColor: Colors.blueAccent,
-              textTheme: ButtonTextTheme.primary,
-            )),
-        ///
-        /// 创建视图实例
-        home: Page(),
-      );
-}
-```
+[Documentation](https://pub.dev/documentation/mvvm/latest/mvvm/mvvm-library.html)
 
 
 

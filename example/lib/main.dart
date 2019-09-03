@@ -53,13 +53,13 @@ class PageViewModel extends ViewModel with AsyncViewModelMixin {
   PageViewModel(this.service, {String name}) {
     ///
     /// define property
-    property<String>(AnyProperty, initial: "jerry");
-    property<int>(AgeProperty, initial: -1);
-    property<String>("time", initial: "");
+    propertyValue<String>(AnyProperty, initial: "jerry");
+    propertyValue<int>(AgeProperty, initial: -1);
+    propertyValue<String>("time", initial: "");
 
     ///
     /// define adaptive property
-    propertyAdaptive(
+    propertyAdaptive<String, TextEditingController>(
         NameProperty,
         nameCtrl,
 
@@ -71,7 +71,7 @@ class PageViewModel extends ViewModel with AsyncViewModelMixin {
 
     ///
     /// define Future property
-    propertyAsync(
+    propertyAsync<User>(
         AsyncProperty,
 
         ///
@@ -80,20 +80,29 @@ class PageViewModel extends ViewModel with AsyncViewModelMixin {
 
         ///
         /// data handle on success
-        handle: (user) => age = user.age);
+        handle: (user) {
+      age = user.age;
+      return user;
+    });
 
-    // time
-    var pad = (int v) => "$v".padLeft(2, "0");
+    // timer
+    start();
+  }
+
+  final _pad = (int v) => "$v".padLeft(2, "0");
+
+  start() {
     Timer.periodic(const Duration(seconds: 1), (_) {
       var now = DateTime.now();
+      // call setValue
       setValue<String>(
-          "time", "${pad(now.hour)}:${pad(now.minute)}:${pad(now.second)}");
+          "time", "${_pad(now.hour)}:${_pad(now.minute)}:${_pad(now.second)}");
     });
   }
 
   ///
   /// valueListenable shortcut
-  ValueNotifier<String> get anyValueListenable =>
+  ValueListenable<String> get anyValueListenable =>
       getPropertyValueListenable<String>(AnyProperty);
 
   ///
@@ -116,7 +125,7 @@ class PageViewModel extends ViewModel with AsyncViewModelMixin {
       _index = _names.length - 1;
     else
       _index--;
-    anyValueListenable.value = _names[_index];
+    setValue(AnyProperty, _names[_index]);
   }
 
   next() {
@@ -124,7 +133,7 @@ class PageViewModel extends ViewModel with AsyncViewModelMixin {
       _index = 0;
     else
       _index++;
-    anyValueListenable.value = _names[_index];
+    setValue(AnyProperty, _names[_index]);
   }
 }
 
@@ -144,7 +153,7 @@ class Page extends View<PageViewModel> {
             padding: EdgeInsets.all(20),
             child: Column(
               children: [
-                $.watchFor("time",
+                $.watchFor<String>("time",
                     builder: $.builder1((t) => Text(t,
                         style:
                             TextStyle(color: Colors.redAccent, fontSize: 48)))),
@@ -236,7 +245,7 @@ class Page extends View<PageViewModel> {
 
                     ///
                     /// $.$condFor
-                    $.$condFor(PageViewModel.AgeProperty,
+                    $.$condFor<int>(PageViewModel.AgeProperty,
                         valueHandle: (v) => v < 3,
                         $true: $.builder0(() => Text("(age < 3) == true")),
                         $false: $.builder0(() => Text("(age < 3) == false"))),
@@ -251,7 +260,7 @@ class Page extends View<PageViewModel> {
 
                       ///
                       /// $.$ifFor
-                      $.$ifFor(PageViewModel.AgeProperty,
+                      $.$ifFor<int>(PageViewModel.AgeProperty,
                           valueHandle: (v) => v < 3,
                           builder: $.builder0(() => Text("age < 3")))
                     ]),

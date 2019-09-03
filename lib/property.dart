@@ -9,10 +9,13 @@ part of './mvvm.dart';
 ///
 
 class ViewModelProperty<TValue> {
+  /// propertyKey
   final Object propertyKey;
   final ValueNotifier<TValue> _valueNotifier;
 
-  ViewModelProperty(this.propertyKey, this._valueNotifier, {TValue initial})
+  /// ViewModelProperty
+  ViewModelProperty(this.propertyKey, this._valueNotifier
+      /* , {TValue initial} */)
       : assert(propertyKey != null && _valueNotifier != null);
 
   //ValueNotifier<TValue> get valueNotifier => _valueNotifier;
@@ -32,9 +35,10 @@ mixin ValueViewModelMixin on _ViewModelBase {
   ///
   /// 创建一个值属性
   ///
-  ///   `key` 指定属性键
-  ///   `initial` 指定初始值
+  /// [propertyKey] 指定属性键
+  /// [initial] 指定初始值
   ///
-  ViewModelProperty<TValue> property<TValue>(Object key, {TValue initial}) =>
-      registryProperty(ViewModelProperty(key, ValueNotifier(initial)));
+  ViewModelProperty<TValue> propertyValue<TValue>(Object propertyKey,
+          {TValue initial}) =>
+      registryProperty(ViewModelProperty(propertyKey, ValueNotifier(initial)));
 }

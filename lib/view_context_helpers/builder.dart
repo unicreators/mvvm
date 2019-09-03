@@ -11,10 +11,11 @@ mixin ViewContextBuilderHelperMixin<TViewModel extends ViewModelBase>
     on _ViewContextBase<TViewModel> {
   ///
   /// 生成 [Widget] 构建方法
-  /// 
-  ///   通过 `builder` 指定一个无参的 [Widget] 构建方法 
-  /// 
+  ///
+  /// 通过 [builder] 指定一个无参的 [Widget] 构建方法
+  ///
   /// ```dart
+  /// // example
   /// @override
   /// Widget buildCore(BuildContext context) {
   ///   return $.watch<String>($Model.prop1,
@@ -22,14 +23,15 @@ mixin ViewContextBuilderHelperMixin<TViewModel extends ViewModelBase>
   /// }
   /// ```
   ValueWidgetBuilder builder0(Widget Function() builder) =>
-      (context, value, child) => builder();
+      (context, dynamic value, child) => builder();
 
   ///
   /// 生成 [Widget] 构建方法
-  /// 
-  ///   通过 `builder` 指定一个接收 [TValue] 的 [Widget] 构建方法 
+  ///
+  /// 通过 [builder] 指定一个接收 [TValue] 的 [Widget] 构建方法
   ///
   /// ```dart
+  /// // example
   /// @override
   /// Widget buildCore(BuildContext context) {
   ///   return $.watch<String>($Model.prop1,
@@ -42,14 +44,16 @@ mixin ViewContextBuilderHelperMixin<TViewModel extends ViewModelBase>
 
   ///
   /// 生成 [Widget] 构建方法
-  /// 
-  ///   通过 `builder` 指定一个接收 `value` [TValue], `child` [Widget] 的 [Widget] 构建方法 
+  ///
+  /// 通过 [builder] 指定一个接收 [TValue], [Widget] 的 [Widget] 构建方法
   ///
   /// ```dart
+  /// // example
   /// @override
   /// Widget buildCore(BuildContext context) {
   ///   return $.watch<String>($Model.prop1,
-  ///     builder: $.builder2((value, child) => Column(children:[Text("$value"), child]),
+  ///     builder: $.builder2((value, child) =>
+  ///                   Column(children:[Text("$value"), child]),
   ///     child: Text("child"));
   /// }
   /// ```
