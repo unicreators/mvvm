@@ -4,7 +4,7 @@ A Flutter MVVM (Model-View-ViewModel) implementation. It uses property-based dat
   
   
 
-一个 Flutter 的 MVVM(Model-View-ViewModel) 实现。 它使用基于属性 (property) 的数据绑定在视图模型 (ViewModel) 与视图 (View) 之间建立连接，并通过视图模型 (ViewModel) 驱动视图 (View) 变化。 
+一个 Flutter 的 MVVM(Model-View-ViewModel) 实现。 它使用基于属性 (property) 的数据绑定在视图模型 (ViewModel) 与视图 (View) 之间建立关联，并通过视图模型 (ViewModel) 驱动视图 (View) 变化。 
   
 ##   
  
@@ -21,7 +21,7 @@ import 'dart:async';
 class Demo1ViewModel extends ViewModel {
   Demo1ViewModel() {
     // define bindable property
-    property<String>("time", initial: "");
+    propertyValue<String>("time", initial: "");
     // timer
     start();
   }
