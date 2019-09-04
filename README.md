@@ -17,13 +17,14 @@ import 'package:flutter/widgets.dart';
 import 'package:mvvm/mvvm.dart';
 import 'dart:async';
 
-// define ViewModel
+// ViewModel
 class Demo1ViewModel extends ViewModel {
+
   Demo1ViewModel() {
-    // define bindable property
-    propertyValue<String>("time", initial: "");
-    // timer
-    start();
+      // define bindable property
+      propertyValue<String>("time", initial: "");
+      // timer
+      start();
   }
 
   start() {
@@ -35,7 +36,7 @@ class Demo1ViewModel extends ViewModel {
   }
 }
 
-// define View
+// View
 class Demo1 extends View<Demo1ViewModel> {
   Demo1() : super(Demo1ViewModel());
 
