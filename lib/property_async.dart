@@ -57,7 +57,7 @@ mixin AsyncViewModelMixin on ViewModelBase {
   /// [handle] 指定当请求成功时对结果处理的方法
   /// [initial] 初始值
   ///
-  AsyncViewModelProperty<TValue> propertyAsync<TValue>(
+  Property<AsyncSnapshot<TValue>> propertyAsync<TValue>(
           Object propertyKey, AsyncValueGetter<TValue> futureGetter,
           {TValue Function(TValue) handle, TValue initial}) =>
       registryProperty(AsyncViewModelProperty<TValue>(propertyKey, futureGetter,

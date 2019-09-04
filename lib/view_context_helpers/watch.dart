@@ -47,7 +47,7 @@ mixin ViewContextWatchHelperMixin<TViewModel extends ViewModelBase>
           builder: builder, child: child);
 
   ///
-  /// 绑定到指定 [valueListenable] 集合, 当任一 [valueListenable] 值发生变化时,
+  /// 绑定到指定 [valueListenables] 集合, 当任一 [valueListenables] 值发生变化时,
   /// 使用 [builder] 构建 [Widget]
   ///
   /// [builder] 方法中 `TValue` 将被包装为 [Iterable<dynamic>]
@@ -61,9 +61,9 @@ mixin ViewContextWatchHelperMixin<TViewModel extends ViewModelBase>
   ///     builder: $.builder1((values) => Text(values[0])));
   /// }
   /// ```
-  Widget watchAny(Iterable<ValueListenable> valueListenable,
+  Widget watchAny(Iterable<ValueListenable> valueListenables,
           {ValueWidgetBuilder<Iterable<dynamic>> builder, Widget child}) =>
-      build(ValueNotifierJoinAdapter(valueListenable),
+      build(ValueNotifierJoinAdapter(valueListenables),
           builder: builder, child: child);
 
   ///
@@ -83,6 +83,6 @@ mixin ViewContextWatchHelperMixin<TViewModel extends ViewModelBase>
   /// ```
   Widget watchAnyFor(Iterable<Object> prepertyKeys,
           {ValueWidgetBuilder<Iterable<dynamic>> builder, Widget child}) =>
-      watchAny(_propertiesValueListenable(prepertyKeys),
+      watchAny(_propertiesValueListenables(prepertyKeys),
           builder: builder, child: child);
 }

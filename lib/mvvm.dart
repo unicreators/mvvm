@@ -9,7 +9,8 @@ import 'package:flutter/widgets.dart';
 
 part './adapter.dart';
 
-part './property.dart';
+part './bindable.dart';
+part './property_value.dart';
 part './property_adaptive.dart';
 part './property_async.dart';
 

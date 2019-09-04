@@ -33,14 +33,13 @@ mixin AdaptiveViewModelMixin on _ViewModelBase {
   /// [getAdapteeValue] 指定从被适配者获取值的方法
   /// [setAdapteeValue] 指定设置被适配者值的方法
   ///
-  AdaptiveViewModelProperty<TValue, TAdaptee>
-      propertyAdaptive<TValue, TAdaptee extends Listenable>(
-              Object propertyKey,
-              TAdaptee adaptee,
-              TValue Function(TAdaptee) getAdapteeValue,
-              void Function(TAdaptee, TValue) setAdapteeValue,
-              {TValue initial}) =>
-          registryProperty(AdaptiveViewModelProperty<TValue, TAdaptee>(
-              propertyKey, adaptee, getAdapteeValue, setAdapteeValue,
-              initial: initial));
+  Property<TValue> propertyAdaptive<TValue, TAdaptee extends Listenable>(
+          Object propertyKey,
+          TAdaptee adaptee,
+          TValue Function(TAdaptee) getAdapteeValue,
+          void Function(TAdaptee, TValue) setAdapteeValue,
+          {TValue initial}) =>
+      registryProperty(AdaptiveViewModelProperty<TValue, TAdaptee>(
+          propertyKey, adaptee, getAdapteeValue, setAdapteeValue,
+          initial: initial));
 }

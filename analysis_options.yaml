@@ -10,7 +10,6 @@ analyzer:
     include_file_not_found: ignore
 linter:
   rules:
-    invalid_assignment
     - public_member_api_docs
     - annotate_overrides
     - avoid_empty_else

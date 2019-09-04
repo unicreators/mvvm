@@ -20,19 +20,20 @@ class ViewContext<TViewModel extends ViewModelBase>
 
 class _ViewContextBase<TViewModel extends ViewModelBase> {
   final TViewModel _model;
+  final bool nullBuilderToEmptyWidget;
 
   ///
   /// 视图模型 [ViewModel]
   TViewModel get model => _model;
 
-  _ViewContextBase(this._model);
+  _ViewContextBase(this._model, {this.nullBuilderToEmptyWidget: true});
 
   ValueListenable<TValue> _propertyValueListenable<TValue>(
           Object propertyKey) =>
-      model.getPropertyValueListenable<TValue>(propertyKey);
-  Iterable<ValueListenable> _propertiesValueListenable(
+      model?.getValueListenable<TValue>(propertyKey);
+  Iterable<ValueListenable> _propertiesValueListenables(
           Iterable<Object> propertyKeys) =>
-      model.getPropertiesValueListenable(propertyKeys);
+      model?.getValueListenables(propertyKeys);
 
   ///
   /// 生成一个空 [Widget] 构建方法
@@ -63,6 +64,19 @@ class _ViewContextBase<TViewModel extends ViewModelBase> {
   ///
   /// 绑定到指定 [valueListenable]
   ///
+  /// 当值发生变化时, 使用 [selector] 选择器中提供的构建方法构建 [Widget]
+  /// [child] 用于向构建方法中传入 [Widget]
+  ///
+  @protected
+  Widget buildFromSelector<TValue>(ValueListenable<TValue> valueListenable,
+          {ValueWidgetBuilder<TValue> Function(TValue) selector,
+          Widget child}) =>
+      build<TValue>(valueListenable,
+          builder: _builderSelector(selector), child: child);
+
+  ///
+  /// 绑定到指定 [valueListenable]
+  ///
   /// 当值发生变化时, 使用 [builder] 构建 [Widget]
   /// [child] 用于向构建方法中传入 [Widget]
   ///
@@ -70,5 +84,8 @@ class _ViewContextBase<TViewModel extends ViewModelBase> {
   Widget build<TValue>(ValueListenable<TValue> valueListenable,
           {ValueWidgetBuilder<TValue> builder, Widget child}) =>
       ValueListenableBuilder<TValue>(
-          valueListenable: valueListenable, builder: builder, child: child);
+          valueListenable: valueListenable,
+          builder: builder ??
+              (nullBuilderToEmptyWidget ? _emptyWidgetBuilder() : null),
+          child: child);
 }

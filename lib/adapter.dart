@@ -41,26 +41,24 @@ class ValueNotifierAdapter<TValue, TAdaptee extends Listenable>
 /// ValueNotifierJoinAdapter
 ///
 class ValueNotifierJoinAdapter extends ValueNotifier<Iterable<dynamic>> {
-  final Iterable<ValueListenable> _valueListenable;
+  final Iterable<ValueListenable> _valueListenables;
 
   /// ValueNotifierJoinAdapter
-  ValueNotifierJoinAdapter(this._valueListenable)
-      : assert(_valueListenable != null),
+  ValueNotifierJoinAdapter(this._valueListenables)
+      : assert(_valueListenables != null),
         super(null) {
-    _valueListenable.forEach(((vn) => vn.addListener(_valueChange)));
+    _valueChange();
+    _valueListenables.forEach(((vn) => vn?.addListener(_valueChange)));
   }
 
   Iterable<dynamic> _getValues() =>
-      _valueListenable.map<dynamic>((vn) => vn.value);
+      _valueListenables.map<dynamic>((vn) => vn?.value);
 
-  void _valueChange() {
-    value = _getValues();
-    notifyListeners();
-  }
+  void _valueChange() => value = _getValues();
 
   @override
   void dispose() {
-    _valueListenable.forEach(((vn) => vn.removeListener(_valueChange)));
+    _valueListenables.forEach(((vn) => vn.removeListener(_valueChange)));
     super.dispose();
   }
 }

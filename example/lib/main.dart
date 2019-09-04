@@ -103,7 +103,7 @@ class PageViewModel extends ViewModel with AsyncViewModelMixin {
   ///
   /// valueListenable shortcut
   ValueListenable<String> get anyValueListenable =>
-      getPropertyValueListenable<String>(AnyProperty);
+      getValueListenable<String>(AnyProperty);
 
   ///
   /// property shortcut
