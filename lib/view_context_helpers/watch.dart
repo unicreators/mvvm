@@ -37,7 +37,7 @@ mixin ViewContextWatchHelperMixin<TViewModel extends ViewModelBase>
   /// // example
   /// @override
   /// Widget buildCore(BuildContext context) {
-  ///   return $.watchFor<String>("account",
+  ///   return $.watchFor<String>(#account,
   ///     builder: $.builder1((value) => Text(value)));
   /// }
   /// ```
@@ -61,9 +61,9 @@ mixin ViewContextWatchHelperMixin<TViewModel extends ViewModelBase>
   ///     builder: $.builder1((values) => Text(values[0])));
   /// }
   /// ```
-  Widget watchAny(Iterable<ValueListenable> valueListenables,
-          {ValueWidgetBuilder<Iterable<dynamic>> builder, Widget child}) =>
-      build(ValueNotifierJoinAdapter(valueListenables),
+  Widget watchAny<TValue>(Iterable<ValueListenable<TValue>> valueListenables,
+          {ValueWidgetBuilder<Iterable<TValue>> builder, Widget child}) =>
+      build(ValueNotifierJoinAdapter<TValue>(valueListenables),
           builder: builder, child: child);
 
   ///
@@ -77,12 +77,12 @@ mixin ViewContextWatchHelperMixin<TViewModel extends ViewModelBase>
   /// // example
   /// @override
   /// Widget buildCore(BuildContext context) {
-  ///   return $.watchAnyFor(const ["account", "password"],
+  ///   return $.watchAnyFor(const [#account, #password],
   ///     builder: $.builder1((values) => Text(values[0])));
   /// }
   /// ```
-  Widget watchAnyFor(Iterable<Object> prepertyKeys,
-          {ValueWidgetBuilder<Iterable<dynamic>> builder, Widget child}) =>
-      watchAny(_propertiesValueListenables(prepertyKeys),
+  Widget watchAnyFor<TValue>(Iterable<Object> prepertyKeys,
+          {ValueWidgetBuilder<Iterable<TValue>> builder, Widget child}) =>
+      watchAny(_propertiesValueListenables<TValue>(prepertyKeys),
           builder: builder, child: child);
 }

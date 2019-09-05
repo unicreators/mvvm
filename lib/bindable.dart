@@ -4,7 +4,6 @@
 
 part of './mvvm.dart';
 
-
 /// BindableObject
 ///
 abstract class BindableObject {
@@ -79,7 +78,7 @@ abstract class BindableObject {
   ///
   /// 获取指定 [propertyKeys] 对应的属性 [ValueListenable] 集合
   @protected
-  Iterable<ValueListenable> getValueListenables(
+  Iterable<ValueListenable<TValue>> getValueListenables<TValue>(
           Iterable<Object> propertyKeys) =>
       propertyKeys.map(getValueListenable);
 }

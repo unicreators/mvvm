@@ -29,9 +29,9 @@ class _ViewContextBase<TViewModel extends ViewModelBase> {
   ValueListenable<TValue> _propertyValueListenable<TValue>(
           Object propertyKey) =>
       model?.getValueListenable<TValue>(propertyKey);
-  Iterable<ValueListenable> _propertiesValueListenables(
+  Iterable<ValueListenable<TValue>> _propertiesValueListenables<TValue>(
           Iterable<Object> propertyKeys) =>
-      model?.getValueListenables(propertyKeys);
+      model?.getValueListenables<TValue>(propertyKeys);
 
   ///
   /// 生成一个空 [Widget] 构建方法

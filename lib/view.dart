@@ -6,8 +6,6 @@ part of './mvvm.dart';
 
 /// View
 ///
-///
-
 abstract class View<TViewModel extends ViewModel>
     extends ViewBase<TViewModel, ViewContext<TViewModel>> {
   /// View

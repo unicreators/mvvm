@@ -88,7 +88,12 @@ mixin AsyncViewModelMixin on ViewModelBase {
           void Function(dynamic) onError,
           TValue initial}) =>
       registryProperty(AsyncViewModelProperty<TValue>(propertyKey, futureGetter,
-          handle: handle, initial: initial));
+          handle: handle,
+          onStart: onStart,
+          onEnd: onEnd,
+          onSuccess: onSuccess,
+          onError: onError,
+          initial: initial));
 
   ///
   /// 获取指定 [propertyKey] 对应异步请求属性的请求发起方法

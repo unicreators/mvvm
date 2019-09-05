@@ -6,7 +6,6 @@ part of './mvvm.dart';
 
 /// ViewModel
 ///
-///
 abstract class ViewModel extends ViewModelBase {}
 
 /// ViewModelBase

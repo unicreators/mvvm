@@ -58,7 +58,7 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
   /// // example
   /// @override
   /// Widget buildCore(BuildContext context) {
-  ///   return $.$condFor<String>("account",
+  ///   return $.$condFor<String>(#account,
   ///     $true: $.builder0(() => Text("tom!")),
   ///     $false: $.builder0(() => Text("jerry!")),
   ///     valueHandle: (value) => value == "tom");
@@ -108,7 +108,7 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
   /// // example
   /// @override
   /// Widget buildCore(BuildContext context) {
-  ///   return $.$ifFor<String>("account",
+  ///   return $.$ifFor<String>(#account,
   ///     builder: $.builder0(() => Text("tom!")),
   ///     valueHandle: (value) => value == "tom");
   /// }
@@ -164,7 +164,7 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
   /// // example
   /// @override
   /// Widget buildCore(BuildContext context) {
-  ///   return $.$switchFor<String, int>("account",
+  ///   return $.$switchFor<String, int>(#account,
   ///     options: { "tom": $.builder1((value) => Text("${value}! cat")),
   ///                "jerry": $.builder0(() => Text("mouse")) },
   ///     default: $.builder0(() => Text("default"));
