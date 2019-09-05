@@ -22,7 +22,7 @@ class Demo1ViewModel extends ViewModel {
 
   Demo1ViewModel() {
       // define bindable property
-      propertyValue<String>("time", initial: "");
+      propertyValue<String>(#time, initial: "");
       // timer
       start();
   }
@@ -31,7 +31,7 @@ class Demo1ViewModel extends ViewModel {
       Timer.periodic(const Duration(seconds: 1), (_) {
         var now = DateTime.now();
         // call setValue
-        setValue<String>("time", "${now.hour}:${now.minute}:${now.second}");
+        setValue<String>(#time, "${now.hour}:${now.minute}:${now.second}");
       });
   }
 }
@@ -47,9 +47,9 @@ class Demo1 extends View<Demo1ViewModel> {
         padding: EdgeInsets.all(40),
 
         // binding
-        child: $.watchFor("time", 
+        child: $.watchFor(#time, 
             builder: $.builder1((t) => 
-              Text("$t", textDirection: TextDirection.ltr))));
+              Text(t, textDirection: TextDirection.ltr))));
   }
 }
 
@@ -94,7 +94,7 @@ Widget buildCore(BuildContext context) {
 // example
 @override
 Widget buildCore(BuildContext context) {
-  return $.watchFor<String>("account",
+  return $.watchFor<String>(#account,
     builder: $.builder1((value) => Text(value)));
 }
 ```
@@ -127,7 +127,7 @@ Widget buildCore(BuildContext context) {
 // example
 @override
 Widget buildCore(BuildContext context) {
-  return $.watchAnyFor(const ["account", "password"],
+  return $.watchAnyFor(const [#account, #password],
     builder: $.builder1((values) => Text(values[0])));
 }
 ```
@@ -216,7 +216,7 @@ Widget buildCore(BuildContext context) {
 // example
 @override
 Widget buildCore(BuildContext context) {
-  return $.$condFor<String>("account",
+  return $.$condFor<String>(#account,
     $true: $.builder0(() => Text("tom!")),
     $false: $.builder0(() => Text("jerry!")),
     valueHandle: (value) => value == "tom");
@@ -257,7 +257,7 @@ Widget buildCore(BuildContext context) {
 // example
 @override
 Widget buildCore(BuildContext context) {
-  return $.$ifFor<String>("account",
+  return $.$ifFor<String>(#account,
     builder: $.builder0(() => Text("tom!")),
     valueHandle: (value) => value == "tom");
 }
@@ -276,7 +276,8 @@ Widget buildCore(BuildContext context) {
 @override
 Widget buildCore(BuildContext context) {
   return $.$switch<String, int>($Model.prop1,
-    options: { "1.": $.builder1((value) => Text("$value")),              "2.": $.builder0(() => Text("2")) },
+    options: { "1.": $.builder1((value) => Text("$value")),              
+               "2.": $.builder0(() => Text("2")) },
     default: $.builder0(() => Text("default")),
     valueToKey: (value) => "${value}.");
 }
@@ -295,8 +296,9 @@ Widget buildCore(BuildContext context) {
 // example
 @override
 Widget buildCore(BuildContext context) {
-  return $.$switchFor<String, int>("account",
-    options: { "tom": $.builder1((value) => Text("${value}! cat")),                    "jerry": $.builder0(() => Text("mouse")) },
+  return $.$switchFor<String, int>(#account,
+    options: { "tom": $.builder1((value) => Text("${value}! cat")),                    
+               "jerry": $.builder0(() => Text("mouse")) },
     default: $.builder0(() => Text("default"));
 }
 ```
@@ -319,7 +321,7 @@ Widget buildCore(BuildContext context) {
 // example
 class PageViewModel extends ViewModel {
     PageViewModel() {
-        propertyValue<String>("name", initial: "tom");
+        propertyValue<String>(#name, initial: "tom");
     }
 }
 ```
@@ -342,7 +344,7 @@ class PageViewModel extends ViewModel {
     final TextEditingController _nameCtrl = TextEditingController();
     PageViewModel() {
         propertyAdaptive<String, TextEditingController>(
-            "name", _nameCtrl,
+            #name, _nameCtrl,
             (v) => v.text,
             (a, v) => a.text = v,
             initial: name);
@@ -362,7 +364,11 @@ class PageViewModel extends ViewModel {
 
 - `propertyKey` 指定属性键 
 - `futureGetter` 用于获取 `Future<TValue>` 的方法
-- `handle` 指定当请求成功时对结果处理的方法
+- `handle` 指定请求成功时对结果进行处理的方法
+- `onStart` 指定请求发起时执行的方法
+- `onEnd` 指定请求结束时执行的方法
+- `onSuccess` 指定请求成功时执行的方法
+- `onError` 指定请求出错时执行的方法
 - `initial` 指定初始值
 
 ```dart
@@ -383,7 +389,7 @@ class PageViewModel extends ViewModel with AsyncViewModelMixin {
     final RemoteService _service;
     PageViewModel(this._service) {
         propertyAsync<User>(
-            "findUserAsync",
+            #findUserAsync,
             () => _service.findUser(),        
             handle: (User user) {
                 user.name = "hello, ${user.name}";
@@ -392,7 +398,7 @@ class PageViewModel extends ViewModel with AsyncViewModelMixin {
     }
 
     // ViewModel used
-    find() => invoke("findUserAsync");
+    find() => invoke(#findUserAsync);
 }
 
 class PageView extends View<PageViewModel> {
@@ -401,20 +407,20 @@ class PageView extends View<PageViewModel> {
     @override
     Widget buildCore(BuildContext context) {
         return Column(children: [
-            $.watchFor("findUserAsync",
+            $.watchFor(#findUserAsync,
                 builder: $.builder2((AsyncSnapshot<User> snapshot, child) =>
                             snapshot.connectionState == ConnectionState.waiting && snapshot.hasData 
                                 ? Text("${snapshot.data.name}", textDirection: TextDirection.ltr)
                                 : child),
                 child: Text("empty", textDirection: TextDirection.ltr)), 
             RaisedButton(
-                child: $.watchFor("findUserAsync",
+                child: $.watchFor(#findUserAsync,
                     builder: $.builder2((AsyncSnapshot<User> snapshot, child) =>
                         snapshot.connectionState == ConnectionState.waiting
                             ? CircularProgressIndicator() : child),
                     child: Text("find", textDirection: TextDirection.ltr)), 
                 // or: onPressed: () { $Model.find(); }
-                onPressed: $Model.link("findUserAsync"))]);
+                onPressed: $Model.link(#findUserAsync))]);
     }
 }
 ```

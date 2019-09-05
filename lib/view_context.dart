@@ -6,8 +6,6 @@ part of './mvvm.dart';
 
 /// ViewContext
 ///
-///
-
 class ViewContext<TViewModel extends ViewModelBase>
     extends _ViewContextBase<TViewModel>
     with
@@ -26,7 +24,7 @@ class _ViewContextBase<TViewModel extends ViewModelBase> {
   /// 视图模型 [ViewModel]
   TViewModel get model => _model;
 
-  _ViewContextBase(this._model, {this.nullBuilderToEmptyWidget: true});
+  _ViewContextBase(this._model, {this.nullBuilderToEmptyWidget = true});
 
   ValueListenable<TValue> _propertyValueListenable<TValue>(
           Object propertyKey) =>

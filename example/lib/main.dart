@@ -19,16 +19,14 @@ class App extends StatelessWidget {
       );
 }
 
-/// Model
-///
+// Model
 class User {
   String name;
   int age;
   User(this.name, this.age);
 }
 
-/// Service
-///
+// Service
 class RemoteService {
   Future<User> findUser(String name) async {
     return Future.delayed(
@@ -36,86 +34,65 @@ class RemoteService {
   }
 }
 
-/// ViewModel
-///
+// ViewModel
+//
 class PageViewModel extends ViewModel with AsyncViewModelMixin {
   final RemoteService service;
 
   final TextEditingController nameCtrl = TextEditingController();
 
-  ///
-  /// define property keys
-  static const Object AnyProperty = Object();
-  static const String NameProperty = "name";
-  static const String AgeProperty = "age";
-  static const String AsyncProperty = "async";
-
   PageViewModel(this.service, {String name}) {
-    ///
-    /// define property
-    propertyValue<String>(AnyProperty, initial: "jerry");
-    propertyValue<int>(AgeProperty, initial: -1);
-    propertyValue<String>("time", initial: "");
+    // define bindable property
+    propertyValue<String>(#any, initial: "jerry");
+    propertyValue<int>(#age, initial: -1);
+    propertyValue<DateTime>(#time, initial: DateTime.now());
 
-    ///
-    /// define adaptive property
+    // define adaptive property
     propertyAdaptive<String, TextEditingController>(
-        NameProperty,
+        #name,
         nameCtrl,
 
-        ///
-        /// value convert
+        // convert
         (v) => v.text,
         (a, v) => a.text = v,
         initial: name);
 
-    ///
-    /// define Future property
+    // define Future property
     propertyAsync<User>(
-        AsyncProperty,
+        #getUser,
 
-        ///
-        /// async method
+        // async method
         () => service.findUser(this.name),
 
-        ///
-        /// data handle on success
-        handle: (user) {
-      age = user.age;
-      return user;
-    });
+        // on success
+        onSuccess: (user) => age = user.age);
 
     // timer
     start();
   }
 
   final _pad = (int v) => "$v".padLeft(2, "0");
+  String format(DateTime dt) =>
+      "${_pad(dt.hour)}:${_pad(dt.minute)}:${_pad(dt.second)}";
 
   start() {
-    Timer.periodic(const Duration(seconds: 1), (_) {
-      var now = DateTime.now();
-      // call setValue
-      setValue<String>(
-          "time", "${_pad(now.hour)}:${_pad(now.minute)}:${_pad(now.second)}");
-    });
+    Timer.periodic(const Duration(seconds: 1),
+        (_) => setValue<DateTime>(#time, DateTime.now()));
   }
 
-  ///
-  /// valueListenable shortcut
+  // valueListenable ref
   ValueListenable<String> get anyValueListenable =>
-      getValueListenable<String>(AnyProperty);
+      getValueListenable<String>(#any);
 
-  ///
-  /// property shortcut
-  String get name => getValue<String>(NameProperty);
-  set name(String value) => setValue<String>(NameProperty, value);
+  // property ref
+  String get name => getValue<String>(#name);
+  set name(String value) => setValue<String>(#name, value);
 
-  int get age => getValue<int>(AgeProperty);
-  set age(int value) => setValue<int>(AgeProperty, value);
+  int get age => getValue<int>(#age);
+  set age(int value) => setValue<int>(#age, value);
 
-  ///
-  /// invoke asyc shortcut
-  find() => invoke(AsyncProperty);
+  // invoke asyc
+  find() => invoke(#getUser);
 
   final _names = ["tom", "lucy", "lily", "jerry", "pony"];
   int _index = 0;
@@ -125,7 +102,7 @@ class PageViewModel extends ViewModel with AsyncViewModelMixin {
       _index = _names.length - 1;
     else
       _index--;
-    setValue(AnyProperty, _names[_index]);
+    setValue(#any, _names[_index]);
   }
 
   next() {
@@ -133,12 +110,12 @@ class PageViewModel extends ViewModel with AsyncViewModelMixin {
       _index = 0;
     else
       _index++;
-    setValue(AnyProperty, _names[_index]);
+    setValue(#any, _names[_index]);
   }
 }
 
-/// View
-///
+// View
+//
 class Page extends View<PageViewModel> {
   Page() : super(PageViewModel(RemoteService(), name: "tom"));
 
@@ -153,8 +130,8 @@ class Page extends View<PageViewModel> {
             padding: EdgeInsets.all(20),
             child: Column(
               children: [
-                $.watchFor<String>("time",
-                    builder: $.builder1((t) => Text(t,
+                $.watchFor<DateTime>(#time,
+                    builder: $.builder1((t) => Text($Model.format(t),
                         style:
                             TextStyle(color: Colors.redAccent, fontSize: 48)))),
                 SizedBox(height: 10),
@@ -172,12 +149,12 @@ class Page extends View<PageViewModel> {
                     Text("\$.watchFor(name):",
                         style: TextStyle(color: Colors.grey)),
 
-                    ///
-                    /// $.watchFor
-                    $.watchFor(PageViewModel.NameProperty,
+                    //
+                    // $.watchFor
+                    $.watchFor(#name,
 
-                        ///
-                        /// $.builder*
+                        //
+                        // $.builder*
                         builder: $.builder1((value) => Text("$value"))),
                   ],
                 ),
@@ -185,10 +162,10 @@ class Page extends View<PageViewModel> {
                     margin: EdgeInsets.only(top: 10),
                     width: double.infinity,
                     child: RaisedButton(
-                        child: $.watchFor(PageViewModel.AsyncProperty,
+                        child: $.watchFor(#getUser,
 
-                            ///
-                            /// $.builder*
+                            //
+                            // $.builder*
                             builder: $.builder2(
                                 (AsyncSnapshot snapshot, child) =>
                                     snapshot.connectionState ==
@@ -203,9 +180,9 @@ class Page extends View<PageViewModel> {
                                         : child),
                             child: Text("remote")),
 
-                        ///
-                        /// $Model.link
-                        onPressed: $Model.link(PageViewModel.AsyncProperty))),
+                        //
+                        // $Model.link
+                        onPressed: $Model.link(#getUser))),
 
                 Expanded(child: SizedBox.shrink()),
                 Text("age", style: TextStyle(color: Colors.grey, fontSize: 22)),
@@ -215,37 +192,37 @@ class Page extends View<PageViewModel> {
                     RaisedButton(
                         child: Text("-"),
                         onPressed: () {
-                          ///
-                          /// $Model.prop
+                          //
+                          // $Model.prop
                           $Model.age--;
                         }),
-                    $.watchFor(PageViewModel.AgeProperty,
+                    $.watchFor(#age,
                         builder: $.builder1((value) => Text("$value",
                             style: TextStyle(
                                 color: Colors.blueAccent, fontSize: 26)))),
                     RaisedButton(
                         child: Text("+"),
                         onPressed: () {
-                          ///
-                          /// $Model.prop
+                          //
+                          // $Model.prop
                           $Model.age++;
                         })
                   ],
                 ),
                 SizedBox(height: 40),
 
-                ///
-                /// binding for (propertyKey)
-                ///
+                //
+                // binding for (propertyKey)
+                //
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text("\$.\$condFor(age):",
                         style: TextStyle(color: Colors.grey)),
 
-                    ///
-                    /// $.$condFor
-                    $.$condFor<int>(PageViewModel.AgeProperty,
+                    //
+                    // $.$condFor
+                    $.$condFor<int>(#age,
                         valueHandle: (v) => v < 3,
                         $true: $.builder0(() => Text("(age < 3) == true")),
                         $false: $.builder0(() => Text("(age < 3) == false"))),
@@ -258,9 +235,9 @@ class Page extends View<PageViewModel> {
                       Text("\$.\$ifFor(age):",
                           style: TextStyle(color: Colors.grey)),
 
-                      ///
-                      /// $.$ifFor
-                      $.$ifFor<int>(PageViewModel.AgeProperty,
+                      //
+                      // $.$ifFor
+                      $.$ifFor<int>(#age,
                           valueHandle: (v) => v < 3,
                           builder: $.builder0(() => Text("age < 3")))
                     ]),
@@ -271,9 +248,9 @@ class Page extends View<PageViewModel> {
                       Text("\$.\$switchFor(age):",
                           style: TextStyle(color: Colors.grey)),
 
-                      ///
-                      /// $.$switchFor
-                      $.$switchFor(PageViewModel.AgeProperty,
+                      //
+                      // $.$switchFor
+                      $.$switchFor(#age,
                           options: {
                             1: $.builder0(() => Text("case 1")),
                             3: $.builder0(() => Text("case 3"))
@@ -282,16 +259,16 @@ class Page extends View<PageViewModel> {
                     ]),
                 SizedBox(height: 40),
 
-                ///
-                /// binding (valueListenable)
-                ///
+                //
+                // binding (valueListenable)
+                //
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     RaisedButton(child: Text("<"), onPressed: $Model.prev),
 
-                    ///
-                    /// $.watch
+                    //
+                    // $.watch
                     $.watch($Model.anyValueListenable,
                         builder: $.builder1((value) => Text("$value",
                             style: TextStyle(
@@ -306,8 +283,8 @@ class Page extends View<PageViewModel> {
                     Text("\$.\$cond(valueListenable):",
                         style: TextStyle(color: Colors.grey)),
 
-                    ///
-                    /// $.$cond
+                    //
+                    // $.$cond
                     $.$cond($Model.anyValueListenable,
                         valueHandle: (v) => v == "jerry",
                         $true: $.builder0(() => Text("mouse")),
@@ -321,8 +298,8 @@ class Page extends View<PageViewModel> {
                       Text("\$.\$if(valueListenable):",
                           style: TextStyle(color: Colors.grey)),
 
-                      ///
-                      /// $.$if
+                      //
+                      // $.$if
                       $.$if($Model.anyValueListenable,
                           valueHandle: (v) => v == "lily",
                           builder: $.builder0(() => Text("lily")))
@@ -334,8 +311,8 @@ class Page extends View<PageViewModel> {
                       Text("\$.\$switch(valueListenable):",
                           style: TextStyle(color: Colors.grey)),
 
-                      ///
-                      /// $.switch
+                      //
+                      // $.switch
                       $.$switch($Model.anyValueListenable,
                           options: {
                             "tom": $.builder1(
@@ -351,30 +328,30 @@ class Page extends View<PageViewModel> {
   }
 }
 
-/// Custom ViewContext
-///
+// Custom ViewContext
+//
 class PageViewContext<TViewModel extends ViewModelBase>
     extends ViewContext<TViewModel> {
   PageViewContext(TViewModel viewModel) : super(viewModel);
 
-  /// custom
-  ///
+  // custom
+  //
   Widget hello() {
-    /// use super.*
-    ///
+    // use super.*
+    //
     return Text("hello!");
   }
 
-  ///
-  /// more..
-  ///
+  //
+  // more..
+  //
 }
 
-/// View
-///
+// View
+//
 class Page1 extends ViewBase<PageViewModel, PageViewContext<PageViewModel>> {
-  ///
-  /// inject PageViewContext
+  //
+  // inject PageViewContext
   Page1()
       : super(PageViewContext<PageViewModel>(
             PageViewModel(RemoteService(), name: "tom")));
@@ -389,8 +366,8 @@ class Page1 extends ViewBase<PageViewModel, PageViewContext<PageViewModel>> {
             margin: EdgeInsets.only(top: 100, bottom: 60),
             padding: EdgeInsets.all(20),
 
-            ///
-            /// use custom method..
+            //
+            // use custom method..
             child: $.hello()));
   }
 }

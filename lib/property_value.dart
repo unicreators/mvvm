@@ -4,13 +4,16 @@
 
 part of './mvvm.dart';
 
-/// ViewModelProperty
+/// ValueViewModelProperty
 ///
-///
-class ViewModelProperty<TValue> extends Property<TValue> {
-  /// ViewModelProperty
-  ViewModelProperty(Object propertyKey, ValueNotifier<TValue> valueNotifier)
-      : super(propertyKey, valueNotifier);
+class ValueViewModelProperty<TValue> extends BindableProperty<TValue> {
+  /// ValueProperty
+  ValueViewModelProperty(Object propertyKey, TValue value)
+      : super(propertyKey, ValueNotifier<TValue>(value));
+
+  /// create
+  ValueViewModelProperty.create(Object propertyKey, {TValue initial})
+      : this(propertyKey, initial);
 }
 
 mixin ValueViewModelMixin on _ViewModelBase {
@@ -20,8 +23,7 @@ mixin ValueViewModelMixin on _ViewModelBase {
   /// [propertyKey] 指定属性键
   /// [initial] 指定初始值
   ///
-  Property<TValue> propertyValue<TValue>(Object propertyKey,
+  BindableProperty<TValue> propertyValue<TValue>(Object propertyKey,
           {TValue initial}) =>
-      registryProperty(ViewModelProperty<TValue>(
-          propertyKey, ValueNotifier<TValue>(initial)));
+      registryProperty(ValueViewModelProperty<TValue>(propertyKey, initial));
 }

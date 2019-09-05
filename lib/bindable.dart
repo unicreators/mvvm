@@ -4,22 +4,23 @@
 
 part of './mvvm.dart';
 
-///
+
 /// BindableObject
 ///
 abstract class BindableObject {
-  final _properties = <Object, Property<dynamic>>{};
+  final _properties = <Object, BindableProperty<dynamic>>{};
 
   ///
   /// 获取所有已注册的属性
   @protected
-  Iterable<MapEntry<Object, Property<dynamic>>> get properties =>
+  Iterable<MapEntry<Object, BindableProperty<dynamic>>> get properties =>
       _properties.entries;
 
   ///
   /// 注册一个属性
   @protected
-  Property<TValue> registryProperty<TValue>(Property<TValue> property) {
+  BindableProperty<TValue> registryProperty<TValue>(
+      BindableProperty<TValue> property) {
     assert(property != null);
     _properties[property.key] = property;
     return property;
@@ -28,20 +29,22 @@ abstract class BindableObject {
   ///
   /// 获取指定 [propertyKeys] 对应的属性集合
   @protected
-  Iterable<Property<dynamic>> getProperties(Iterable<Object> propertyKeys) =>
+  Iterable<BindableProperty<dynamic>> getProperties(
+          Iterable<Object> propertyKeys) =>
       propertyKeys.map(getProperty);
 
   ///
   /// 获取指定 [propertyKey] 对应的属性
   @protected
-  Property<TValue> getProperty<TValue>(Object propertyKey) =>
-      _properties[propertyKey] as Property<TValue>;
+  BindableProperty<TValue> getProperty<TValue>(Object propertyKey) =>
+      _properties[propertyKey] as BindableProperty<TValue>;
 
   ///
   /// 获取指定 [propertyKey] 对应 [TProperty] 类型属性
   @protected
-  Property<TValue> getPropertyOf<TValue, TProperty extends Property<TValue>>(
-      Object propertyKey) {
+  BindableProperty<TValue>
+      getPropertyOf<TValue, TProperty extends BindableProperty<TValue>>(
+          Object propertyKey) {
     var property = getProperty<TValue>(propertyKey);
     if (property is TProperty) return property;
     return null;
@@ -69,7 +72,7 @@ abstract class BindableObject {
   /// 获取指定 [propertyKey] 对应 [TProperty] 类型属性的 [ValueListenable]
   @protected
   ValueListenable<TValue>
-      getValueListenableOf<TValue, TProperty extends Property<TValue>>(
+      getValueListenableOf<TValue, TProperty extends BindableProperty<TValue>>(
               Object propertyKey) =>
           getPropertyOf<TValue, TProperty>(propertyKey)?._valueNotifier;
 
@@ -81,15 +84,15 @@ abstract class BindableObject {
       propertyKeys.map(getValueListenable);
 }
 
-/// Property
+/// BindableProperty
 ///
-abstract class Property<TValue> {
+abstract class BindableProperty<TValue> {
   /// key
   final Object key;
   final ValueNotifier<TValue> _valueNotifier;
 
-  /// Property
-  Property(this.key, this._valueNotifier
+  /// BindableProperty
+  BindableProperty(this.key, this._valueNotifier
       /* , {TValue initial} */)
       : assert(key != null && _valueNotifier != null);
 

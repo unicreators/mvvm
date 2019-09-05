@@ -6,10 +6,8 @@ part of './mvvm.dart';
 
 /// AdaptiveViewModelProperty
 ///
-///
-
 class AdaptiveViewModelProperty<TValue, TAdaptee extends Listenable>
-    extends ViewModelProperty<TValue> {
+    extends BindableProperty<TValue> {
   /// AdaptiveViewModelProperty
   AdaptiveViewModelProperty(
       Object key,
@@ -33,13 +31,14 @@ mixin AdaptiveViewModelMixin on _ViewModelBase {
   /// [getAdapteeValue] 指定从被适配者获取值的方法
   /// [setAdapteeValue] 指定设置被适配者值的方法
   ///
-  Property<TValue> propertyAdaptive<TValue, TAdaptee extends Listenable>(
-          Object propertyKey,
-          TAdaptee adaptee,
-          TValue Function(TAdaptee) getAdapteeValue,
-          void Function(TAdaptee, TValue) setAdapteeValue,
-          {TValue initial}) =>
-      registryProperty(AdaptiveViewModelProperty<TValue, TAdaptee>(
-          propertyKey, adaptee, getAdapteeValue, setAdapteeValue,
-          initial: initial));
+  BindableProperty<TValue>
+      propertyAdaptive<TValue, TAdaptee extends Listenable>(
+              Object propertyKey,
+              TAdaptee adaptee,
+              TValue Function(TAdaptee) getAdapteeValue,
+              void Function(TAdaptee, TValue) setAdapteeValue,
+              {TValue initial}) =>
+          registryProperty(AdaptiveViewModelProperty<TValue, TAdaptee>(
+              propertyKey, adaptee, getAdapteeValue, setAdapteeValue,
+              initial: initial));
 }
