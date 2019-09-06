@@ -40,8 +40,13 @@ class AsyncViewModelProperty<TValue>
   /// 发起请求
   ///
   @protected
-  void invoke() {
+  void invoke({bool resetOnBefore}) {
     if (_futureGetter == null) return;
+
+    if (resetOnBefore != null && resetOnBefore) {
+      value = AsyncSnapshot<TValue>.nothing();
+    }
+
     var future = _futureGetter();
     if (future == null) return;
 
@@ -99,11 +104,16 @@ mixin AsyncViewModelMixin on ViewModelBase {
   /// 获取指定 [propertyKey] 对应异步请求属性的请求发起方法
   ///
   /// [propertyKey] 对应属性必须为 [AsyncViewModelProperty] 否则返回 `null`
+  /// [resetOnBefore] 指定发起请求之前是否重置属性值
+  ///   当其值为 `true` 时, 发起请求之前属性值将先被重置为 `AsyncSnapshot<TValue>.nothing()`
+  ///
   /// 调用其返回的方法将发起异步请求
   ///
-  void Function() getInvoke(Object propertyKey) {
+  void Function() getInvoke(Object propertyKey, {bool resetOnBefore}) {
     var property = getProperty<dynamic>(propertyKey);
-    if (property is AsyncViewModelProperty) return property.invoke;
+    if (property is AsyncViewModelProperty) {
+      return () => property.invoke(resetOnBefore: resetOnBefore);
+    }
     return null;
   }
 
@@ -111,13 +121,21 @@ mixin AsyncViewModelMixin on ViewModelBase {
   /// 发起指定 [propertyKey] 对应的异步请求
   ///
   /// [propertyKey] 对应属性必须为 [AsyncViewModelProperty] 否则空操作
+  /// [resetOnBefore] 指定发起请求之前是否重置属性值
+  ///   当其值为 `true` 时, 发起请求之前属性值将先被重置为 `AsyncSnapshot<TValue>.nothing()`
+  ///
   /// 调用其返回的方法将发起异步请求
   ///
-  void invoke(Object propertyKey) => getInvoke(propertyKey)?.call();
+  void invoke(Object propertyKey, {bool resetOnBefore}) =>
+      getInvoke(propertyKey, resetOnBefore: resetOnBefore)?.call();
 
   ///
   /// 获取指定 [propertyKey] 对应异步请求发起链接
+  /// [resetOnBefore] 指定发起请求之前是否重置属性值
+  ///   当其值为 `true` 时, 发起请求之前属性值将先被重置为 `AsyncSnapshot<TValue>.nothing()`
+  ///
   /// 其实质为 [getInvoke] 的快捷操作
   ///
-  void Function() link(Object propertyKey) => getInvoke(propertyKey);
+  void Function() link(Object propertyKey, {bool resetOnBefore}) =>
+      getInvoke(propertyKey, resetOnBefore: resetOnBefore);
 }

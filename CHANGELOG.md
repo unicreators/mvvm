@@ -1,3 +1,6 @@
+## 0.1.3+4
+* 增加 `AsyncViewModelProperty` 类 `resetOnBefore` 参数功能
+
 ## 0.1.3+3
 * 代码优化
 
