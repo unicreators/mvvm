@@ -1,4 +1,7 @@
-///
+// Copyright (c) 2019 yichen <d.unicreators@gmail.com>. All rights reserved.
+// Use of this source code is governed by a MIT license that can be
+// found in the LICENSE file.
+
 /// yichen <d.unicreators@gmail.com>
 ///
 
@@ -21,3 +24,5 @@ part './view_context.dart';
 part './view_context_helpers/watch.dart';
 part './view_context_helpers/logical.dart';
 part './view_context_helpers/builder.dart';
+part './view_context_helpers/adapter.dart';
+

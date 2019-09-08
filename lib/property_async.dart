@@ -1,6 +1,6 @@
-///
-/// yichen <d.unicreators@gmail.com>
-///
+// Copyright (c) 2019 yichen <d.unicreators@gmail.com>. All rights reserved.
+// Use of this source code is governed by a MIT license that can be
+// found in the LICENSE file.
 
 part of './mvvm.dart';
 
@@ -25,6 +25,7 @@ class AsyncViewModelProperty<TValue>
       void Function() onEnd,
       void Function(TValue) onSuccess,
       void Function(dynamic) onError,
+      PropertyValueChanged<AsyncSnapshot<TValue>> valueChanged,
       TValue initial})
       : _handle = handle,
         _onStart = onStart,
@@ -34,7 +35,8 @@ class AsyncViewModelProperty<TValue>
         super(
             key,
             ValueNotifier(
-                AsyncSnapshot<TValue>.withData(ConnectionState.none, initial)));
+                AsyncSnapshot<TValue>.withData(ConnectionState.none, initial)),
+            valueChanged: valueChanged);
 
   ///
   /// 发起请求
@@ -82,7 +84,8 @@ mixin AsyncViewModelMixin on ViewModelBase {
   /// [onEnd] 指定请求结束时执行的方法
   /// [onSuccess] 指定请求成功时执行的方法
   /// [onError] 指定请求出错时执行的方法
-  /// [initial] 初始值
+  /// [valueChanged] 指定属性值变更后的回调方法
+  /// [initial] 指定初始值
   ///
   BindableProperty<AsyncSnapshot<TValue>> propertyAsync<TValue>(
           Object propertyKey, AsyncValueGetter<TValue> futureGetter,
@@ -91,6 +94,7 @@ mixin AsyncViewModelMixin on ViewModelBase {
           void Function() onEnd,
           void Function(TValue) onSuccess,
           void Function(dynamic) onError,
+          PropertyValueChanged<AsyncSnapshot<TValue>> valueChanged,
           TValue initial}) =>
       registryProperty(AsyncViewModelProperty<TValue>(propertyKey, futureGetter,
           handle: handle,
@@ -98,6 +102,7 @@ mixin AsyncViewModelMixin on ViewModelBase {
           onEnd: onEnd,
           onSuccess: onSuccess,
           onError: onError,
+          valueChanged: valueChanged,
           initial: initial));
 
   ///

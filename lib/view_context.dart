@@ -1,6 +1,6 @@
-///
-/// yichen <d.unicreators@gmail.com>
-///
+// Copyright (c) 2019 yichen <d.unicreators@gmail.com>. All rights reserved.
+// Use of this source code is governed by a MIT license that can be
+// found in the LICENSE file.
 
 part of './mvvm.dart';
 
@@ -11,7 +11,8 @@ class ViewContext<TViewModel extends ViewModelBase>
     with
         ViewContextWatchHelperMixin,
         ViewContextLogicalHelperMixin,
-        ViewContextBuilderHelperMixin {
+        ViewContextBuilderHelperMixin,
+        ViewContextAdaptorHelperMixin {
   /// ViewContext
   ViewContext(TViewModel model) : super(model);
 }
@@ -32,6 +33,34 @@ class _ViewContextBase<TViewModel extends ViewModelBase> {
   Iterable<ValueListenable<TValue>> _propertiesValueListenables<TValue>(
           Iterable<Object> propertyKeys) =>
       model?.getValueListenables<TValue>(propertyKeys);
+
+  // 获取 [propertyKey] 对应属性的值
+  TValue getValueFor<TValue>(Object propertyKey) =>
+      model.getValue<TValue>(propertyKey);
+
+  /// 设置 [propertyKey] 对应属性的值,
+  /// [value] 指定属性值
+  /// [valueCheck] 指定是否对值进行检查,
+  ///   当其值为 `true` 时, 多次设置相同值将不会触发值变更通知
+  ///   默认为 `false`
+  void setValueFor<TValue>(Object propertyKey, TValue value,
+          {bool valueCheck = false}) =>
+      model.setValue<TValue>(propertyKey, value, valueCheck: valueCheck);
+
+  /// 注册绑定属性
+  ///
+  /// [propertyKey] 指定属性键
+  /// [valueNotifier] 指定值变更通知器
+  /// [valueChanged] 指定属性值变更后的回调方法
+  ///
+  @protected
+  void registryProperty<TValue>(
+      Object propertyKey, ValueNotifier<TValue> valueNotifier,
+      {PropertyValueChanged<TValue> valueChanged}) {
+    model.registryProperty(BindableProperty.create<TValue>(
+        propertyKey, valueNotifier,
+        valueChanged: valueChanged));
+  }
 
   ///
   /// 生成一个空 [Widget] 构建方法

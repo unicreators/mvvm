@@ -8,7 +8,7 @@ A Flutter MVVM (Model-View-ViewModel) implementation. It uses property-based dat
   
 ##   
  
-[Documentation](https://pub.dev/documentation/mvvm/latest/mvvm/mvvm-library.html)  & [Full example](./example/lib/main.dart) 
+[Documentation](https://pub.dev/documentation/mvvm/latest/mvvm/mvvm-library.html)  & [Example](./example/lib/login/main.dart) 
 
 
  
@@ -37,8 +37,8 @@ class Demo1ViewModel extends ViewModel {
 }
 
 // View
-class Demo1 extends View<Demo1ViewModel> {
-  Demo1() : super(Demo1ViewModel());
+class Demo1View extends View<Demo1ViewModel> {
+  Demo1View() : super(Demo1ViewModel());
 
   @override
   Widget buildCore(BuildContext context) {
@@ -47,14 +47,14 @@ class Demo1 extends View<Demo1ViewModel> {
         padding: EdgeInsets.all(40),
 
         // binding
-        child: $.watchFor(#time, 
+        child: $.watchFor<String>(#time, 
             builder: $.builder1((t) => 
               Text(t, textDirection: TextDirection.ltr))));
   }
 }
 
 // run
-void main() => runApp(Demo1());
+void main() => runApp(Demo1View());
 
 ```
 
@@ -303,6 +303,27 @@ Widget buildCore(BuildContext context) {
 }
 ```
 
+**`adapt<TValue>(Object propertyKey, {Widget Function(void Function({TValue value})) builder, ValueGetter<TValue> valueGetter, ValueSetter<TValue> valueSetter, PropertyValueChanged<TValue> valueChanged, TValue initial )) → Widget`**
+
+创建一个适配属性, 使用 `builder` 构建 `Widget`, 在 `builder` 方法中使用参数回调触发属性值变化通知
+ 
+- `valueGetter` 指定从 `Widget` 获取值方法
+- `valueSetter` 指定属性值变更时将该值设置回 `Widget` 方法
+- `valueChanged` 指定属性值变更后的回调方法
+- `initial` 指定初始值
+
+```dart
+// example
+@override
+Widget buildCore(BuildContext context) {
+  return $.adapt<String>(#name,
+      builder: (emit) => TextField(
+        onChanged: (v) => emit(), controller: $Model.nameCtrl),
+      valueGetter: () => $Model.nameCtrl.text,
+      valueSetter: (v) => $Model.nameCtrl.text = v);
+}
+```
+
 
 
 ### ViewModel
@@ -310,11 +331,12 @@ Widget buildCore(BuildContext context) {
 #### Methods
 
 
-**`propertyValue<TValue>(Object propertyKey, { TValue initial }) → ViewModelProperty<TValue>`**
+**`propertyValue<TValue>(Object propertyKey, { PropertyValueChanged<TValue> valueChanged, TValue initial }) → ViewModelProperty<TValue>`**
 
 创建一个值属性
 
 - `propertyKey` 指定属性键 
+- `valueChanged` 指定属性值变更后的回调方法
 - `initial` 指定初始值
 
 ```dart
@@ -328,7 +350,7 @@ class PageViewModel extends ViewModel {
 
 
 
-**`propertyAdaptive<TValue, TAdaptee extends Listenable>(Object propertyKey, TAdaptee adaptee, TValue getAdapteeValue(TAdaptee), void setAdapteeValue(TAdaptee, TValue), { TValue initial }) → AdaptiveViewModelProperty<TValue, TAdaptee>`**
+**`propertyAdaptive<TValue, TAdaptee extends Listenable>(Object propertyKey, TAdaptee adaptee, TValue getAdapteeValue(TAdaptee), void setAdapteeValue(TAdaptee, TValue), { PropertyValueChanged<TValue> valueChanged, TValue initial }) → AdaptiveViewModelProperty<TValue, TAdaptee>`**
 
 创建一个适配属性
 
@@ -336,6 +358,7 @@ class PageViewModel extends ViewModel {
 - `adaptee` 被适配者实例，适配者必须继承自 `Listenable`
 - `getAdapteeValue` 指定从被适配者获取值的方法
 - `setAdapteeValue` 指定设置被适配者值的方法
+- `valueChanged` 指定属性值变更后的回调方法
 - `initial` 指定初始值
 
 ```dart
@@ -357,7 +380,7 @@ class PageViewModel extends ViewModel {
 
 
 
-**`propertyAsync<TValue>(Object propertyKey, AsyncValueGetter<TValue> futureGetter, { TValue handle(TValue), TValue initial }) → AsyncViewModelProperty<TValue>`**
+**`propertyAsync<TValue>(Object propertyKey, AsyncValueGetter<TValue> futureGetter, { TValue handle(TValue), PropertyValueChanged<TValue> valueChanged, TValue initial }) → AsyncViewModelProperty<TValue>`**
 
 创建一个异步请求属性
 *要使用此属性的 `ViewModel` 需要 `with` 到 `AsyncViewModelMixin`*
@@ -369,6 +392,7 @@ class PageViewModel extends ViewModel {
 - `onEnd` 指定请求结束时执行的方法
 - `onSuccess` 指定请求成功时执行的方法
 - `onError` 指定请求出错时执行的方法
+- `valueChanged` 指定属性值变更后的回调方法
 - `initial` 指定初始值
 
 ```dart

@@ -1,35 +1,56 @@
-///
-/// yichen <d.unicreators@gmail.com>
-///
+// Copyright (c) 2019 yichen <d.unicreators@gmail.com>. All rights reserved.
+// Use of this source code is governed by a MIT license that can be
+// found in the LICENSE file.
 
 part of './mvvm.dart';
 
+/// CustomValueNotifier
+class CustomValueNotifier<TValue> extends ValueNotifier<TValue> {
+  final ValueGetter<TValue> _valueGetter;
+  final ValueSetter<TValue> _valueSetter;
+
+  /// CustomValueNotifier
+  CustomValueNotifier(
+      ValueGetter<TValue> valueGetter, ValueSetter<TValue> valueSetter,
+      {TValue initial})
+      : assert(valueGetter != null && valueSetter != null),
+        _valueGetter = valueGetter,
+        _valueSetter = valueSetter,
+        super(initial);
+
+  @protected
+  @override
+  TValue get value => _valueGetter();
+
+  @protected
+  @override
+  set value(TValue v) {
+    if (value != v) _valueSetter(v);
+    // force notify
+    notifyListeners();
+  }
+}
+
 /// ValueNotifierAdapter
 class ValueNotifierAdapter<TValue, TAdaptee extends Listenable>
-    extends ValueNotifier<TValue> {
+    extends CustomValueNotifier<TValue> {
   final TAdaptee _adaptee;
-  final TValue Function(TAdaptee) _getAdapteeValue;
-  final void Function(TAdaptee, TValue) _setAdapteeValue;
 
   /// ValueNotifierAdapter
   ValueNotifierAdapter(
-      this._adaptee, this._getAdapteeValue, this._setAdapteeValue,
+      TAdaptee adaptee,
+      TValue Function(TAdaptee) adapteeValueGetter,
+      void Function(TAdaptee, TValue) adapteeValueSetter,
       {TValue initial})
-      : assert(_adaptee != null &&
-            _getAdapteeValue != null &&
-            _setAdapteeValue != null),
-        super(null) {
+      : assert(adaptee != null &&
+            adapteeValueGetter != null &&
+            adapteeValueSetter != null),
+        _adaptee = adaptee,
+        super(() => adapteeValueGetter(adaptee),
+            (v) => adapteeValueSetter(adaptee, v),
+            initial: initial) {
     _adaptee.addListener(notifyListeners);
-    // emit
-    value = initial;
   }
-
-  @protected
-  @override
-  TValue get value => _getAdapteeValue(_adaptee);
-  @protected
-  @override
-  set value(TValue v) => value != v ? _setAdapteeValue(_adaptee, v) : null;
 
   @override
   void dispose() {

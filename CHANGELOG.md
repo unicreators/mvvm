@@ -1,3 +1,10 @@
+## 0.1.4
+* 绑定属性 `BindableProperty` 增加 `valueChanged` 属性值变更后回调方法
+* 视图上下文 `ViewContext` 增加 `adapt` 辅助方法, 用于在 `View` 中动态创建适配到 `Widget` 的绑定属性
+* 视图上下文 `ViewContext` 增加 `getValueFor`、`setValueFor` 辅助方法, 用于在 `View` 中手动获取或设置绑定属性值
+* 代码优化、完善文件头信息
+* 更新 example、README.md
+
 ## 0.1.3+4
 * 增加 `AsyncViewModelProperty` 类 `resetOnBefore` 参数功能
 
@@ -23,7 +30,7 @@
 * 增加代码注释文档
 
 ## 0.1.2
-* 拆分视图上下文(ViewContext)功能 
+* 拆分视图上下文 `ViewContext` 功能 
 * 更新示例程序
 
 ## 0.1.1

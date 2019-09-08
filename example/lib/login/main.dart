@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mvvm/mvvm.dart';
+import 'dart:async';
 
 void main() => runApp(MaterialApp(home: LoginView()));
 
@@ -28,20 +29,30 @@ class LoginViewModel extends ViewModel with AsyncViewModelMixin {
   final TextEditingController passwordCtrl = TextEditingController();
 
   LoginViewModel(this._service) {
+    propertyValue<DateTime>(#time, initial: DateTime.now());
+    // timer
+    start();
+
     propertyAdaptive<String, TextEditingController>(
         #userName, userNameCtrl, (v) => v.text, (a, v) => a.text = v,
-        initial: "");
-
-    propertyAdaptive<String, TextEditingController>(
-        #password, passwordCtrl, (v) => v.text, (a, v) => a.text = v,
-        initial: "");
+        valueChanged: (v, k) => print("$k: $v"), initial: "");
 
     propertyAsync<User>(
-        #login, () => _service.login(userNameCtrl.text, passwordCtrl.text));
+        #login, () => _service.login(userNameCtrl.text, passwordCtrl.text),
+        valueChanged: (v, k) => print("$k: $v"));
   }
 
   bool get inputValid =>
       userNameCtrl.text.length > 2 && passwordCtrl.text.length > 2;
+
+  final _pad = (int v) => "$v".padLeft(2, "0");
+  String format(DateTime dt) =>
+      "${_pad(dt.hour)}:${_pad(dt.minute)}:${_pad(dt.second)}";
+
+  start() {
+    Timer.periodic(const Duration(seconds: 1),
+        (_) => setValue<DateTime>(#time, DateTime.now()));
+  }
 }
 
 // View
@@ -57,7 +68,11 @@ class LoginView extends View<LoginViewModel> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 10),
+                $.watchFor<DateTime>(#time,
+                    builder: $.builder1((t) => Text($Model.format(t),
+                        style:
+                            TextStyle(color: Colors.redAccent, fontSize: 48)))),
+                SizedBox(height: 30),
                 TextField(
                   controller: $Model.userNameCtrl,
                   decoration: InputDecoration(
@@ -66,14 +81,19 @@ class LoginView extends View<LoginViewModel> {
                   ),
                 ),
                 SizedBox(height: 10),
-                TextField(
-                  obscureText: true,
-                  controller: $Model.passwordCtrl,
-                  decoration: InputDecoration(
-                    border: UnderlineInputBorder(),
-                    labelText: 'Password',
-                  ),
-                ),
+                $.adapt<String>(#password,
+                    builder: (emit) => TextField(
+                          onChanged: (v) => emit(),
+                          obscureText: true,
+                          controller: $Model.passwordCtrl,
+                          decoration: InputDecoration(
+                            border: UnderlineInputBorder(),
+                            labelText: 'Password',
+                          ),
+                        ),
+                    valueGetter: () => $Model.passwordCtrl.text,
+                    valueSetter: (v) => $Model.passwordCtrl.text = v,
+                    valueChanged: (v, k) => print("$k: $v")),
                 SizedBox(height: 10),
                 $.$ifFor(#login,
                     valueHandle: (AsyncSnapshot snapshot) => snapshot.hasError,
