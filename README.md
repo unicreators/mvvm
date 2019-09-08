@@ -7,6 +7,9 @@ A Flutter MVVM (Model-View-ViewModel) implementation. It uses property-based dat
 一个 Flutter 的 MVVM(Model-View-ViewModel) 实现。 它使用基于属性 (property) 的数据绑定在视图模型 (ViewModel) 与视图 (View) 之间建立关联，并通过视图模型 (ViewModel) 驱动视图 (View) 变化。 
   
 ##   
+
+[![Join the chat at https://gitter.im/flutter-mvvm/community](https://badges.gitter.im/flutter-mvvm/community.svg)](https://gitter.im/flutter-mvvm/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
  
 [Documentation](https://pub.dev/documentation/mvvm/latest/mvvm/mvvm-library.html)  & [Full example](./example/lib/main.dart) 
 
