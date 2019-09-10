@@ -8,7 +8,7 @@ A Flutter MVVM (Model-View-ViewModel) implementation. It uses property-based dat
   
 ##   
  
-[Documentation](https://pub.dev/documentation/mvvm/latest/mvvm/mvvm-library.html)  & [Example](./example/lib/login/main.dart) 
+[Documentation](https://pub.dev/documentation/mvvm/latest/mvvm/mvvm-library.html)  & [Example](./example/lib/main.dart) 
 
 
  
