@@ -31,70 +31,157 @@ abstract class BindableObject {
   /// 获取指定 [propertyKeys] 对应的属性集合
   @protected
   Iterable<BindableProperty<dynamic>> getProperties(
-          Iterable<Object> propertyKeys) =>
-      propertyKeys.map(getProperty);
+          Iterable<Object> propertyKeys,
+          {bool required = false}) =>
+      propertyKeys.map(required ? requiredProperty : getProperty);
+
+  ///
+  /// 获取指定 [propertyKey] 对应的属性, 如不存在 [propertyKey] 对应属性则抛出异常
+  ///
+  /// [propertyKey] 属性键
+  ///
+  @protected
+  BindableProperty<TValue> requiredProperty<TValue>(Object propertyKey) =>
+      getProperty(propertyKey, required: true);
 
   ///
   /// 获取指定 [propertyKey] 对应的属性
+  ///
+  /// [propertyKey] 属性键
+  /// [required] 指定 [propertyKey] 对应属性是否必须存在,
+  ///   其值为 `true` 时, 如 [propertyKey] 对应属性不存在则抛出异常
+  ///   默认值为 `false`
+  ///
   @protected
-  BindableProperty<TValue> getProperty<TValue>(Object propertyKey) =>
-      _properties[propertyKey] as BindableProperty<TValue>;
+  BindableProperty<TValue> getProperty<TValue>(Object propertyKey,
+      {bool required = false}) {
+    var property = _properties[propertyKey] as BindableProperty<TValue>;
+
+    if (required && property == null) {
+      throw FlutterError('''
+
+[Flutter MVVM]
+
+  Property not found. 
+    - propertyKey: $propertyKey  
+''');
+    }
+
+    return property;
+  }
 
   ///
   /// 获取指定 [propertyKey] 对应 [TProperty] 类型属性
+  ///
+  /// [propertyKey] 属性键
+  /// [required] 指定 [propertyKey] 对应属性是否必须存在,
+  ///   且类型必须为 [TProperty],
+  ///   其值为 `true` 时, 如 [propertyKey] 对应属性不存在
+  ///   或其类型不为 [TProperty], 则抛出异常
+  ///   默认值为 `false`
+  ///
   @protected
   BindableProperty<TValue>
       getPropertyOf<TValue, TProperty extends BindableProperty<TValue>>(
-          Object propertyKey) {
-    var property = getProperty<TValue>(propertyKey);
+          Object propertyKey,
+          {bool required = false}) {
+    var property = getProperty<TValue>(propertyKey, required: required);
     if (property is TProperty) return property;
+    if (required) {
+      throw FlutterError('''
+
+[Flutter MVVM]
+
+  Property is not $TProperty
+    - propertyKey: $propertyKey
+    ''');
+    }
     return null;
   }
 
   ///
   /// 获取指定 [propertyKey] 对应的属性值
-  @protected
-  TValue getValue<TValue>(Object propertyKey) =>
-      getProperty<TValue>(propertyKey)?.value;
+  ///
+  /// [propertyKey] 属性键
+  /// [requiredProperty] 指定 [propertyKey] 对应属性是否必须存在,
+  ///   其值为 `true` 时, 如 [propertyKey] 对应属性不存在则抛出异常
+  ///   默认值为 `false`
+  ///
+  TValue getValue<TValue>(Object propertyKey,
+          {bool requiredProperty = false}) =>
+      getProperty<TValue>(propertyKey, required: requiredProperty)?.value;
 
   ///
   /// 设置指定 [propertyKey] 对应的属性值
   ///
+  /// [propertyKey] 属性键
   /// [value] 指定属性值
+  ///
   /// [valueCheck] 指定是否对值进行检查,
   ///   当其值为 `true` 时, 多次设置相同值将不会触发值变更通知
   ///   默认为 `false`
-  @protected
+  ///
+  /// [requiredProperty] 指定 [propertyKey] 对应属性是否必须存在,
+  ///   其值为 `true` 时, 如 [propertyKey] 对应属性不存在则抛出异常
+  ///   默认值为 `false`
+  ///
   void setValue<TValue>(Object propertyKey, TValue value,
-      {bool valueCheck = false}) {
+      {bool valueCheck = false, bool requiredProperty = false}) {
     if (valueCheck) {
       var oldValue = getValue<TValue>(propertyKey);
-      if (oldValue != value) getProperty<TValue>(propertyKey)?.value = value;
+      if (oldValue != value) {
+        getProperty<TValue>(propertyKey, required: requiredProperty)?.value =
+            value;
+      }
     } else {
-      getProperty<TValue>(propertyKey)?.value = value;
+      getProperty<TValue>(propertyKey, required: requiredProperty)?.value =
+          value;
     }
   }
 
   ///
   /// 获取指定 [propertyKey] 对应的属性 [ValueListenable]
+  ///
+  /// [propertyKey] 属性键
+  /// [requiredProperty] 指定 [propertyKey] 对应属性是否必须存在,
+  ///   其值为 `true` 时, 如 [propertyKey] 对应属性不存在则抛出异常
+  ///   默认值为 `false`
+  ///
   @protected
-  ValueListenable<TValue> getValueListenable<TValue>(Object propertyKey) =>
-      getProperty<TValue>(propertyKey)?._valueNotifier;
+  ValueListenable<TValue> getValueListenable<TValue>(Object propertyKey,
+          {bool requiredProperty = false}) =>
+      getProperty<TValue>(propertyKey, required: requiredProperty)
+          ?._valueNotifier;
 
   ///
   /// 获取指定 [propertyKey] 对应 [TProperty] 类型属性的 [ValueListenable]
+  ///
+  /// [propertyKey] 属性键
+  /// [requiredProperty] 指定 [propertyKey] 对应属性是否必须存在,
+  ///   其值为 `true` 时, 如 [propertyKey] 对应属性不存在则抛出异常
+  ///   默认值为 `false`
+  ///
   @protected
-  ValueListenable<TValue>
-      getValueListenableOf<TValue, TProperty extends BindableProperty<TValue>>(
-              Object propertyKey) =>
-          getPropertyOf<TValue, TProperty>(propertyKey)?._valueNotifier;
+  ValueListenable<TValue> getValueListenableOf<TValue,
+              TProperty extends BindableProperty<TValue>>(Object propertyKey,
+          {bool requiredProperty = false}) =>
+      getPropertyOf<TValue, TProperty>(propertyKey, required: requiredProperty)
+          ?._valueNotifier;
 
   ///
   /// 获取指定 [propertyKeys] 对应的属性 [ValueListenable] 集合
+  ///
+  /// [propertyKeys] 属性键集合
+  /// [requiredProperty] 指定 [propertyKeys] 对应属性是否必须存在,
+  ///   其值为 `true` 时, 如 [propertyKeys] 任一对应属性不存在则抛出异常
+  ///   默认值为 `false`
+  ///
   @protected
   Iterable<ValueListenable<TValue>> getValueListenables<TValue>(
-          Iterable<Object> propertyKeys) =>
-      propertyKeys.map(getValueListenable);
+          Iterable<Object> propertyKeys,
+          {bool requiredProperty = false}) =>
+      propertyKeys.map(
+          (k) => getValueListenable(k, requiredProperty: requiredProperty));
 
   /// dispose
   @protected

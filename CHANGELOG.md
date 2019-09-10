@@ -1,3 +1,10 @@
+## 0.1.4+1
+* 增加属性键 `propertyKey` 查找属性 `Property` 未找到时异常
+* 视图上下文 `ViewContext` 中增加任务功能
+* 视图 `View` 增加"流程管线"
+* 代码优化
+* 更新 example
+
 ## 0.1.4
 * 绑定属性 `BindableProperty` 增加 `valueChanged` 属性值变更后回调方法
 * 视图上下文 `ViewContext` 增加 `adapt` 辅助方法, 用于在 `View` 中动态创建适配到 `Widget` 的绑定属性

@@ -39,8 +39,8 @@ mixin ViewContextAdaptorHelperMixin<TViewModel extends ViewModelBase>
       PropertyValueChanged<TValue> valueChanged,
       TValue initial}) {
     assert(builder != null && valueGetter != null && valueSetter != null);
-    var _valueNotifier =
-        CustomValueNotifier<TValue>(valueGetter, valueSetter, initial: initial);
+    var _valueNotifier = CustomValueNotifier<TValue>(valueGetter, valueSetter);
+    if (initial != null) _valueNotifier.value = initial;
     var widget = builder(({TValue value}) =>
         _valueNotifier.value = value ?? valueGetter?.call());
     registryProperty(propertyKey, _valueNotifier, valueChanged: valueChanged);

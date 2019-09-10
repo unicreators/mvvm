@@ -30,10 +30,16 @@ abstract class ViewBase<TViewModel extends ViewModel,
   /// 视图上下文 [ViewContext]
   TViewContext get $ => _context;
 
+  @protected
+  @mustCallSuper
   @override
   Widget build(BuildContext context) {
+    _context?._viewInit(context);
     initView(context);
-    return buildCore(context);
+    var widget = buildCore(context);
+    ready(context);
+    _context?._viewReady(context);
+    return widget;
   }
 
   /// buildCore
@@ -43,4 +49,8 @@ abstract class ViewBase<TViewModel extends ViewModel,
   /// initView
   @protected
   void initView(BuildContext context) {}
+
+  /// readyView
+  @protected
+  void ready(BuildContext context) {}
 }

@@ -19,33 +19,27 @@ class ViewContext<TViewModel extends ViewModelBase>
 
 class _ViewContextBase<TViewModel extends ViewModelBase> {
   final TViewModel _model;
-  final bool nullBuilderToEmptyWidget;
+
+  /// 任务集合
+  ///
+  /// 任务将在 `一切就绪` 后执行
+  ///   `一切就绪` 是指当前实例已被关联到视图 [View],
+  ///   并且视图 [View] 已经就绪
+  ///
+  List<VoidCallback> _tasks;
 
   ///
   /// 视图模型 [ViewModel]
   TViewModel get model => _model;
 
-  _ViewContextBase(this._model, {this.nullBuilderToEmptyWidget = true});
+  _ViewContextBase(this._model);
 
   ValueListenable<TValue> _propertyValueListenable<TValue>(
           Object propertyKey) =>
-      model?.getValueListenable<TValue>(propertyKey);
+      model?.getValueListenable<TValue>(propertyKey, requiredProperty: true);
   Iterable<ValueListenable<TValue>> _propertiesValueListenables<TValue>(
           Iterable<Object> propertyKeys) =>
-      model?.getValueListenables<TValue>(propertyKeys);
-
-  // 获取 [propertyKey] 对应属性的值
-  TValue getValueFor<TValue>(Object propertyKey) =>
-      model.getValue<TValue>(propertyKey);
-
-  /// 设置 [propertyKey] 对应属性的值,
-  /// [value] 指定属性值
-  /// [valueCheck] 指定是否对值进行检查,
-  ///   当其值为 `true` 时, 多次设置相同值将不会触发值变更通知
-  ///   默认为 `false`
-  void setValueFor<TValue>(Object propertyKey, TValue value,
-          {bool valueCheck = false}) =>
-      model.setValue<TValue>(propertyKey, value, valueCheck: valueCheck);
+      model?.getValueListenables<TValue>(propertyKeys, requiredProperty: true);
 
   /// 注册绑定属性
   ///
@@ -93,26 +87,90 @@ class _ViewContextBase<TViewModel extends ViewModelBase> {
   ///
   /// 当值发生变化时, 使用 [selector] 选择器中提供的构建方法构建 [Widget]
   /// [child] 用于向构建方法中传入 [Widget]
+  /// [nullBuilderToEmptyWidget] 当 [selector] 返回 `null` 时,
+  /// 是否将其转换为一个返回空 [Widget] 的构造器, 默认为 `false`
   ///
   @protected
   Widget buildFromSelector<TValue>(ValueListenable<TValue> valueListenable,
           {ValueWidgetBuilder<TValue> Function(TValue) selector,
-          Widget child}) =>
+          Widget child,
+          bool nullBuilderToEmptyWidget = false}) =>
       build<TValue>(valueListenable,
-          builder: _builderSelector(selector), child: child);
+          builder: _builderSelector(selector),
+          child: child,
+          nullBuilderToEmptyWidget: nullBuilderToEmptyWidget);
 
   ///
   /// 绑定到指定 [valueListenable]
   ///
   /// 当值发生变化时, 使用 [builder] 构建 [Widget]
   /// [child] 用于向构建方法中传入 [Widget]
+  /// [nullBuilderToEmptyWidget] 当传入的 [builder] 为 `null` 时,
+  /// 是否将其转换为一个返回空 [Widget] 的构造器, 默认为 `false`
   ///
   @protected
   Widget build<TValue>(ValueListenable<TValue> valueListenable,
-          {ValueWidgetBuilder<TValue> builder, Widget child}) =>
+          {ValueWidgetBuilder<TValue> builder,
+          Widget child,
+          bool nullBuilderToEmptyWidget = false}) =>
       ValueListenableBuilder<TValue>(
           valueListenable: valueListenable,
           builder: builder ??
               (nullBuilderToEmptyWidget ? _emptyWidgetBuilder() : null),
           child: child);
+
+  /// 视图 [View] 将要初始化时执行此方法
+  void _viewInit(BuildContext context) {
+    viewInit(context);
+  }
+
+  /// 视图 [View] 已准备就绪后执行此方法
+  void _viewReady(BuildContext context) {
+    viewReady(context);
+    _execTasks();
+  }
+
+  /// 关联的视图 [View] 初始化前调用此方法
+  @protected
+  void viewInit(BuildContext context) {}
+
+  /// 关联的视图 [View] 准备就绪后调用此方法
+  @protected
+  void viewReady(BuildContext context) {}
+
+  /// 添加任务 [VoidCallback]
+  @protected
+  void addTask(VoidCallback task) {
+    if (task != null) (_tasks ??= [])..add(task);
+  }
+
+  /// 移除任务 [VoidCallback]
+  @protected
+  void removeTask(VoidCallback task) {
+    if (containsTask(task)) _tasks.remove(task);
+  }
+
+  /// 是否存在指定任务 [VoidCallback]
+  @protected
+  bool containsTask(VoidCallback task) {
+    return task == null || _tasks == null || !_tasks.contains(task)
+        ? false
+        : true;
+  }
+
+  /// 执行所有任务
+  void _execTasks() {
+    if (_tasks != null && _tasks.isNotEmpty) {
+      for (var task in _tasks) {
+        task();
+      }
+    }
+  }
+
+  /// dispose
+  @protected
+  @mustCallSuper
+  void dispose() {
+    _tasks = null;
+  }
 }

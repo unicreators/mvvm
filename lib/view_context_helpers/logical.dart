@@ -43,7 +43,7 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
       return (((result is bool) ? result : (result != null))
           ? $true?.call
           : $false?.call) as ValueWidgetBuilder<TValue>;
-    }, child: child);
+    }, child: child, nullBuilderToEmptyWidget: true);
   }
 
   ///
@@ -145,12 +145,14 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
           Widget child,
           TKey Function(TValue) valueToKey}) =>
       (options == null || options.isEmpty)
-          ? build<TValue>(valueListenable, builder: defalut, child: child)
+          ? build<TValue>(valueListenable,
+              builder: defalut, child: child, nullBuilderToEmptyWidget: true)
           : buildFromSelector(valueListenable,
               selector: (TValue value) =>
                   (options[_ensureValue<TValue>(value, valueToKey)] ??
                       defalut?.call) as ValueWidgetBuilder<TValue>,
-              child: child);
+              child: child,
+              nullBuilderToEmptyWidget: true);
 
   ///
   /// 绑定到指定属性, 当 [propertyKey] 对应属性值发生变化时,
