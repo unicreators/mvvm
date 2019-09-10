@@ -1,3 +1,5 @@
+
+[![pub package](https://img.shields.io/pub/v/mvvm.svg)](https://pub.dev/packages/mvvm)  [![Join the chat at https://gitter.im/flutter-mvvm/community](https://badges.gitter.im/flutter-mvvm/community.svg)](https://gitter.im/flutter-mvvm/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
   
 
 A Flutter MVVM (Model-View-ViewModel) implementation. It uses property-based data binding to establish a connection between the ViewModel and the View, and drives the View changes through the ViewModel.
@@ -8,9 +10,6 @@ A Flutter MVVM (Model-View-ViewModel) implementation. It uses property-based dat
   
 ##   
 
-[![Join the chat at https://gitter.im/flutter-mvvm/community](https://badges.gitter.im/flutter-mvvm/community.svg)](https://gitter.im/flutter-mvvm/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
- 
 [Documentation](https://pub.dev/documentation/mvvm/latest/mvvm/mvvm-library.html)  & [Example](./example/lib/main.dart) 
 
 
