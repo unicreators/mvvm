@@ -66,32 +66,32 @@ void main() => runApp(Demo1View());
 
 #### Methods
 
-* [watch](./apis.md#watch)
-* [watchFor](./apis.md#watchfor)
-* [watchAny](./apis.md#watchany)
-* [watchAnyFor](./apis.md#watchanyfor)
-* [$cond](./apis.md#$cond)
-* [$condFor](./apis.md#$condfor)
-* [$if](./apis.md#$if)
-* [$ifFor](./apis.md#$iffor)
-* [$switch](./apis.md#$switch)
-* [$switchFor](./apis.md#$switchfor)
-* [adapt](./apis.md#$adapt)
-* [builder0](./apis.md#builder0)
-* [builder1](./apis.md#builder1)
-* [builder2](./apis.md#builder2)
+* [watch](./APIs.md#watch)
+* [watchFor](./APIs.md#watchfor)
+* [watchAny](./APIs.md#watchany)
+* [watchAnyFor](./APIs.md#watchanyfor)
+* [$cond](./APIs.md#$cond)
+* [$condFor](./APIs.md#$condfor)
+* [$if](./APIs.md#$if)
+* [$ifFor](./APIs.md#$iffor)
+* [$switch](./APIs.md#$switch)
+* [$switchFor](./APIs.md#$switchfor)
+* [adapt](./APIs.md#$adapt)
+* [builder0](./APIs.md#builder0)
+* [builder1](./APIs.md#builder1)
+* [builder2](./APIs.md#builder2)
 
 ### ViewModel
 
 #### Methods
 
-* [registryProperty](./apis.md#registryproperty)
-* [propertyValue](./apis.md#propertyvalue)
-* [propertyAdaptive](./apis.md#propertyadaptive)
-* [propertyAsync](./apis.md#propertyasync)
-* [getValue](./apis.md#getvalue)
-* [setValue](./apis.md#setvalue)
-* [updateValue](./apis.md#updatevalue)
+* [registryProperty](./APIs.md#registryproperty)
+* [propertyValue](./APIs.md#propertyvalue)
+* [propertyAdaptive](./APIs.md#propertyadaptive)
+* [propertyAsync](./APIs.md#propertyasync)
+* [getValue](./APIs.md#getvalue)
+* [setValue](./APIs.md#setvalue)
+* [updateValue](./APIs.md#updatevalue)
 
 
 [Documentation](https://pub.dev/documentation/mvvm/latest/mvvm/mvvm-library.html)
