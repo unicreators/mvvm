@@ -1,3 +1,6 @@
+## 0.1.5+1
+* 更新 README.md
+
 ## 0.1.5
 * 视图上下文 `ViewContext` 增加 `dispose`、`viewInit`、`viewReady` 方法
 * 视图模型 `ViewModel` 增加 `dispose`、`viewInit`、`viewReady` 方法
