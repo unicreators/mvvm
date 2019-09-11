@@ -17,7 +17,8 @@ class ViewContext<TViewModel extends ViewModelBase>
   ViewContext(TViewModel model) : super(model);
 }
 
-class _ViewContextBase<TViewModel extends ViewModelBase> {
+class _ViewContextBase<TViewModel extends ViewModelBase>
+    implements ViewListener {
   final TViewModel _model;
 
   /// 任务集合
@@ -44,12 +45,14 @@ class _ViewContextBase<TViewModel extends ViewModelBase> {
   /// 注册绑定属性
   ///
   /// [propertyKey] 指定属性键
+  ///
   /// [valueNotifier] 指定值变更通知器
+  ///
   /// [valueChanged] 指定属性值变更后的回调方法
   ///
   @protected
   void registryProperty<TValue>(
-      Object propertyKey, ValueNotifier<TValue> valueNotifier,
+      Object propertyKey, BindableValueNotifier<TValue> valueNotifier,
       {PropertyValueChanged<TValue> valueChanged}) {
     model.registryProperty(BindableProperty.create<TValue>(
         propertyKey, valueNotifier,
@@ -71,9 +74,8 @@ class _ViewContextBase<TViewModel extends ViewModelBase> {
           (selector(value) ?? _emptyWidgetBuilder())(context, value, child);
 
   ///
-  /// 绑定到指定 [propertyKey]
+  /// 绑定到指定 [propertyKey] 当值发生变化时, 使用 [builder] 构建 [Widget]
   ///
-  /// 当值发生变化时, 使用 [builder] 构建 [Widget]
   /// [child] 用于向构建方法中传入 [Widget]
   ///
   @protected
@@ -83,10 +85,10 @@ class _ViewContextBase<TViewModel extends ViewModelBase> {
           builder: builder, child: child);
 
   ///
-  /// 绑定到指定 [valueListenable]
+  /// 绑定到指定 [valueListenable] 当值发生变化时, 使用 [selector] 选择器中提供的构建方法构建 [Widget]
   ///
-  /// 当值发生变化时, 使用 [selector] 选择器中提供的构建方法构建 [Widget]
   /// [child] 用于向构建方法中传入 [Widget]
+  ///
   /// [nullBuilderToEmptyWidget] 当 [selector] 返回 `null` 时,
   /// 是否将其转换为一个返回空 [Widget] 的构造器, 默认为 `false`
   ///
@@ -101,10 +103,10 @@ class _ViewContextBase<TViewModel extends ViewModelBase> {
           nullBuilderToEmptyWidget: nullBuilderToEmptyWidget);
 
   ///
-  /// 绑定到指定 [valueListenable]
+  /// 绑定到指定 [valueListenable] 当值发生变化时, 使用 [builder] 构建 [Widget]
   ///
-  /// 当值发生变化时, 使用 [builder] 构建 [Widget]
   /// [child] 用于向构建方法中传入 [Widget]
+  ///
   /// [nullBuilderToEmptyWidget] 当传入的 [builder] 为 `null` 时,
   /// 是否将其转换为一个返回空 [Widget] 的构造器, 默认为 `false`
   ///
@@ -122,21 +124,15 @@ class _ViewContextBase<TViewModel extends ViewModelBase> {
   /// 视图 [View] 将要初始化时执行此方法
   void _viewInit(BuildContext context) {
     viewInit(context);
+    _model?.viewInit(context);
   }
 
   /// 视图 [View] 已准备就绪后执行此方法
   void _viewReady(BuildContext context) {
     viewReady(context);
     _execTasks();
+    _model.viewReady(context);
   }
-
-  /// 关联的视图 [View] 初始化前调用此方法
-  @protected
-  void viewInit(BuildContext context) {}
-
-  /// 关联的视图 [View] 准备就绪后调用此方法
-  @protected
-  void viewReady(BuildContext context) {}
 
   /// 添加任务 [VoidCallback]
   @protected
@@ -167,10 +163,23 @@ class _ViewContextBase<TViewModel extends ViewModelBase> {
     }
   }
 
+  void _dispose() {
+    _tasks = null;
+    model?.dispose();
+    dispose();
+  }
+
+  /// 关联的视图 [View] 初始化前调用此方法
+  @protected
+  @override
+  void viewInit(BuildContext context) {}
+
+  /// 关联的视图 [View] 准备就绪后调用此方法
+  @protected
+  @override
+  void viewReady(BuildContext context) {}
+
   /// dispose
   @protected
-  @mustCallSuper
-  void dispose() {
-    _tasks = null;
-  }
+  void dispose() {}
 }

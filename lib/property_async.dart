@@ -34,7 +34,7 @@ class AsyncViewModelProperty<TValue>
         _onError = onError,
         super(
             key,
-            ValueNotifier(
+            BindableValueNotifier(
                 AsyncSnapshot<TValue>.withData(ConnectionState.none, initial)),
             valueChanged: valueChanged);
 
@@ -109,6 +109,7 @@ mixin AsyncViewModelMixin on ViewModelBase {
   /// 获取指定 [propertyKey] 对应异步请求属性的请求发起方法
   ///
   /// [propertyKey] 对应属性必须为 [AsyncViewModelProperty] 否则返回 `null`
+  /// 
   /// [resetOnBefore] 指定发起请求之前是否重置属性值
   ///   当其值为 `true` 时, 发起请求之前属性值将先被重置为 `AsyncSnapshot<TValue>.nothing()`
   ///

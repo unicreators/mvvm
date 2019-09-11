@@ -10,20 +10,21 @@ typedef PropertyValueChanged<TValue> = void Function(
 /// BindableObject
 ///
 abstract class BindableObject {
-  final _properties = <Object, BindableProperty<dynamic>>{};
+  Map<Object, BindableProperty<dynamic>> _properties;
 
   ///
   /// 获取所有已注册的属性
   @protected
   Iterable<MapEntry<Object, BindableProperty<dynamic>>> get properties =>
-      _properties.entries;
+      _properties?.entries ?? [];
 
   ///
   /// 注册一个属性
   BindableProperty<TValue> registryProperty<TValue>(
       BindableProperty<TValue> property) {
     assert(property != null);
-    _properties[property.key] = property;
+    (_properties ??= <Object, BindableProperty<dynamic>>{})[property.key] =
+        property;
     return property;
   }
 
@@ -33,21 +34,13 @@ abstract class BindableObject {
   Iterable<BindableProperty<dynamic>> getProperties(
           Iterable<Object> propertyKeys,
           {bool required = false}) =>
-      propertyKeys.map(required ? requiredProperty : getProperty);
-
-  ///
-  /// 获取指定 [propertyKey] 对应的属性, 如不存在 [propertyKey] 对应属性则抛出异常
-  ///
-  /// [propertyKey] 属性键
-  ///
-  @protected
-  BindableProperty<TValue> requiredProperty<TValue>(Object propertyKey) =>
-      getProperty(propertyKey, required: true);
+      propertyKeys.map((k) => getProperty<dynamic>(k, required: required));
 
   ///
   /// 获取指定 [propertyKey] 对应的属性
   ///
   /// [propertyKey] 属性键
+  ///
   /// [required] 指定 [propertyKey] 对应属性是否必须存在,
   ///   其值为 `true` 时, 如 [propertyKey] 对应属性不存在则抛出异常
   ///   默认值为 `false`
@@ -55,7 +48,9 @@ abstract class BindableObject {
   @protected
   BindableProperty<TValue> getProperty<TValue>(Object propertyKey,
       {bool required = false}) {
-    var property = _properties[propertyKey] as BindableProperty<TValue>;
+    var property = _properties == null
+        ? null
+        : (_properties[propertyKey] as BindableProperty<TValue>);
 
     if (required && property == null) {
       throw FlutterError('''
@@ -74,6 +69,7 @@ abstract class BindableObject {
   /// 获取指定 [propertyKey] 对应 [TProperty] 类型属性
   ///
   /// [propertyKey] 属性键
+  ///
   /// [required] 指定 [propertyKey] 对应属性是否必须存在,
   ///   且类型必须为 [TProperty],
   ///   其值为 `true` 时, 如 [propertyKey] 对应属性不存在
@@ -94,7 +90,7 @@ abstract class BindableObject {
 
   Property is not $TProperty
     - propertyKey: $propertyKey
-    ''');
+''');
     }
     return null;
   }
@@ -103,6 +99,7 @@ abstract class BindableObject {
   /// 获取指定 [propertyKey] 对应的属性值
   ///
   /// [propertyKey] 属性键
+  ///
   /// [requiredProperty] 指定 [propertyKey] 对应属性是否必须存在,
   ///   其值为 `true` 时, 如 [propertyKey] 对应属性不存在则抛出异常
   ///   默认值为 `false`
@@ -115,6 +112,7 @@ abstract class BindableObject {
   /// 设置指定 [propertyKey] 对应的属性值
   ///
   /// [propertyKey] 属性键
+  ///
   /// [value] 指定属性值
   ///
   /// [valueCheck] 指定是否对值进行检查,
@@ -128,7 +126,8 @@ abstract class BindableObject {
   void setValue<TValue>(Object propertyKey, TValue value,
       {bool valueCheck = false, bool requiredProperty = false}) {
     if (valueCheck) {
-      var oldValue = getValue<TValue>(propertyKey);
+      var oldValue =
+          getValue<TValue>(propertyKey, requiredProperty: requiredProperty);
       if (oldValue != value) {
         getProperty<TValue>(propertyKey, required: requiredProperty)?.value =
             value;
@@ -140,9 +139,46 @@ abstract class BindableObject {
   }
 
   ///
+  /// 发送指定 [propertyKey] 对应的属性值变更通知
+  ///
+  /// [propertyKey] 属性键
+  ///
+  /// [requiredProperty] 指定 [propertyKey] 对应属性是否必须存在,
+  ///   其值为 `true` 时, 如 [propertyKey] 对应属性不存在则抛出异常
+  ///   默认值为 `false`
+  ///
+  void notify(Object propertyKey, {bool requiredProperty = false}) =>
+      getProperty<dynamic>(propertyKey, required: requiredProperty)
+          ?._valueNotifier
+          ?.notify();
+
+  ///
+  /// 更新指定 [propertyKey] 对应的属性值
+  ///
+  /// [propertyKey] 属性键
+  ///
+  /// [updator] 指定值更新处理器
+  ///   当 [updator] 处理器返回 `true` 时将发送值变更通知
+  ///
+  /// [requiredProperty] 指定 [propertyKey] 对应属性是否必须存在,
+  ///   其值为 `true` 时, 如 [propertyKey] 对应属性不存在则抛出异常
+  ///   默认值为 `false`
+  ///
+  void updateValue<TValue>(Object propertyKey, bool Function(TValue) updator,
+      {bool requiredProperty = false}) {
+    var _oldValue =
+        getValue<TValue>(propertyKey, requiredProperty: requiredProperty);
+    var _isNotify = updator(_oldValue);
+    if (_isNotify != null && _isNotify) {
+      notify(propertyKey, requiredProperty: requiredProperty);
+    }
+  }
+
+  ///
   /// 获取指定 [propertyKey] 对应的属性 [ValueListenable]
   ///
   /// [propertyKey] 属性键
+  ///
   /// [requiredProperty] 指定 [propertyKey] 对应属性是否必须存在,
   ///   其值为 `true` 时, 如 [propertyKey] 对应属性不存在则抛出异常
   ///   默认值为 `false`
@@ -157,6 +193,7 @@ abstract class BindableObject {
   /// 获取指定 [propertyKey] 对应 [TProperty] 类型属性的 [ValueListenable]
   ///
   /// [propertyKey] 属性键
+  ///
   /// [requiredProperty] 指定 [propertyKey] 对应属性是否必须存在,
   ///   其值为 `true` 时, 如 [propertyKey] 对应属性不存在则抛出异常
   ///   默认值为 `false`
@@ -172,6 +209,7 @@ abstract class BindableObject {
   /// 获取指定 [propertyKeys] 对应的属性 [ValueListenable] 集合
   ///
   /// [propertyKeys] 属性键集合
+  ///
   /// [requiredProperty] 指定 [propertyKeys] 对应属性是否必须存在,
   ///   其值为 `true` 时, 如 [propertyKeys] 任一对应属性不存在则抛出异常
   ///   默认值为 `false`
@@ -187,17 +225,29 @@ abstract class BindableObject {
   @protected
   @mustCallSuper
   void dispose() {
-    if (!_properties.isNotEmpty) return;
-    for (var prop in _properties.values) {
-      prop.dispose();
+    if (_properties == null) return;
+    if (!_properties.isNotEmpty) {
+      for (var prop in _properties.values) {
+        prop.dispose();
+      }
     }
+    _properties = null;
   }
 }
 
 class _BindableProperty<TValue> extends BindableProperty<TValue> {
-  _BindableProperty(Object key, ValueNotifier<TValue> valueNotifier,
+  _BindableProperty(Object key, BindableValueNotifier<TValue> valueNotifier,
       {PropertyValueChanged<TValue> valueChanged})
       : super(key, valueNotifier, valueChanged: valueChanged);
+}
+
+/// BindableValueNotifier
+class BindableValueNotifier<TValue> extends ValueNotifier<TValue> {
+  /// BindableValueNotifier
+  BindableValueNotifier(TValue value) : super(value);
+
+  /// force notify
+  void notify() => notifyListeners();
 }
 
 /// BindableProperty
@@ -205,13 +255,13 @@ class _BindableProperty<TValue> extends BindableProperty<TValue> {
 abstract class BindableProperty<TValue> {
   /// BindableProperty.create
   static BindableProperty<TValue> create<TValue>(
-          Object key, ValueNotifier<TValue> valueNotifier,
+          Object key, BindableValueNotifier<TValue> valueNotifier,
           {PropertyValueChanged<TValue> valueChanged}) =>
       _BindableProperty(key, valueNotifier, valueChanged: valueChanged);
 
   /// key
   final Object key;
-  final ValueNotifier<TValue> _valueNotifier;
+  final BindableValueNotifier<TValue> _valueNotifier;
   VoidCallback _listener;
 
   /// BindableProperty

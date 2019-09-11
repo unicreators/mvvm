@@ -120,10 +120,10 @@ class Page extends View<PageViewModel> {
   Page() : super(PageViewModel(RemoteService(), name: "tom"));
 
   @override
-  void initView(BuildContext context) {}
+  void init(BuildContext context) {}
 
   @override
-  Widget buildCore(BuildContext context) {
+  Widget build(BuildContext context) {
     return Scaffold(
         body: Container(
             margin: EdgeInsets.only(top: 50, bottom: 30),
@@ -357,10 +357,10 @@ class Page1 extends ViewBase<PageViewModel, PageViewContext<PageViewModel>> {
             PageViewModel(RemoteService(), name: "tom")));
 
   @override
-  void initView(BuildContext context) {}
+  void init(BuildContext context) {}
 
   @override
-  Widget buildCore(BuildContext context) {
+  Widget build(BuildContext context) {
     return Scaffold(
         body: Container(
             margin: EdgeInsets.only(top: 100, bottom: 60),

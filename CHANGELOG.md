@@ -1,3 +1,10 @@
+## 0.1.5
+* 视图上下文 `ViewContext` 增加 `dispose`、`viewInit`、`viewReady` 方法
+* 视图模型 `ViewModel` 增加 `dispose`、`viewInit`、`viewReady` 方法
+* 视图 `View` 增加 `dispose`、`ready` 方法, 原有 `buildCore` 方法更名为 `build`, 原有 `initView` 方法更名为 `init`
+* 代码优化
+* 增加列表示例 `example/lib/example_list.dart`
+
 ## 0.1.4+1
 * 增加属性键 `propertyKey` 查找属性 `Property` 未找到时异常
 * 视图上下文 `ViewContext` 中增加任务功能

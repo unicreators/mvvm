@@ -60,7 +60,7 @@ class LoginView extends View<LoginViewModel> {
   LoginView() : super(LoginViewModel(RemoteService()));
 
   @override
-  Widget buildCore(BuildContext context) {
+  Widget build(BuildContext context) {
     return Scaffold(
         body: Container(
             margin: EdgeInsets.only(top: 100, bottom: 30),

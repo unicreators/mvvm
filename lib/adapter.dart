@@ -5,7 +5,7 @@
 part of './mvvm.dart';
 
 /// CustomValueNotifier
-class CustomValueNotifier<TValue> extends ValueNotifier<TValue> {
+class CustomValueNotifier<TValue> extends BindableValueNotifier<TValue> {
   final ValueGetter<TValue> _valueGetter;
   final ValueSetter<TValue> _valueSetter;
 

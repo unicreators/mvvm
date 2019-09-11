@@ -4,6 +4,17 @@
 
 part of './mvvm.dart';
 
+/// ViewListener
+abstract class ViewListener {
+  /// 关联的视图 [View] 初始化前调用此方法
+  @protected
+  void viewInit(BuildContext context);
+
+  /// 关联的视图 [View] 准备就绪后调用此方法
+  @protected
+  void viewReady(BuildContext context);
+}
+
 /// View
 ///
 abstract class View<TViewModel extends ViewModel>
@@ -16,7 +27,7 @@ abstract class View<TViewModel extends ViewModel>
 
 /// ViewBase
 abstract class ViewBase<TViewModel extends ViewModel,
-    TViewContext extends ViewContext<TViewModel>> extends StatelessWidget {
+    TViewContext extends ViewContext<TViewModel>> extends ViewWidget {
   /// ViewBase
   ViewBase(this._context);
 
@@ -30,27 +41,62 @@ abstract class ViewBase<TViewModel extends ViewModel,
   /// 视图上下文 [ViewContext]
   TViewContext get $ => _context;
 
-  @protected
-  @mustCallSuper
   @override
-  Widget build(BuildContext context) {
-    _context?._viewInit(context);
-    initView(context);
-    var widget = buildCore(context);
-    ready(context);
-    _context?._viewReady(context);
-    return widget;
+  void _buildBefore(BuildContext context) {
+    init(context);
   }
 
-  /// buildCore
-  @protected
-  Widget buildCore(BuildContext context);
+  @override
+  void _buildAfter(BuildContext context) {
+    _context?._viewInit(context);
+    ready(context);
+    _context?._viewReady(context);
+  }
 
-  /// initView
-  @protected
-  void initView(BuildContext context) {}
+  @override
+  void _dispose() {
+    _context?._dispose();
+  }
 
-  /// readyView
+  /// dispose
+  @protected
+  void dispose() {}
+
+  /// init
+  @protected
+  void init(BuildContext context) {}
+
+  /// ready
   @protected
   void ready(BuildContext context) {}
+}
+
+/// ViewWidget
+abstract class ViewWidget extends StatefulWidget {
+  ///
+  @protected
+  Widget build(BuildContext context);
+
+  void _buildBefore(BuildContext context);
+  void _buildAfter(BuildContext context);
+  void _dispose();
+
+  @override
+  State<StatefulWidget> createState() => _ViewWidgetState();
+}
+
+class _ViewWidgetState extends State<ViewWidget> {
+  @override
+  Widget build(BuildContext context) {
+    widget._buildBefore(context);
+    var _ = widget.build(context);
+    widget._buildAfter(context);
+    return _;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    widget._dispose();
+  }
 }
