@@ -1,6 +1,8 @@
 
-[![pub package](https://img.shields.io/pub/v/mvvm.svg)](https://pub.dev/packages/mvvm)  [![Join the chat at https://gitter.im/flutter-mvvm/community](https://badges.gitter.im/flutter-mvvm/community.svg)](https://gitter.im/flutter-mvvm/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-  
+[![pub package](https://img.shields.io/pub/v/mvvm.svg)](https://pub.dev/packages/mvvm)
+[![join chat](https://badges.gitter.im/flutter-mvvm/community.svg)](https://gitter.im/flutter-mvvm/community)
+
+
 
 A Flutter MVVM (Model-View-ViewModel) implementation. It uses property-based data binding to establish a connection between the ViewModel and the View, and drives the View changes through the ViewModel.
   
@@ -64,7 +66,6 @@ void main() => runApp(Demo1View());
 
 ### ViewContext ($.*)
 
-#### Methods
 
 * [watch](./APIs.md#watch)
 * [watchFor](./APIs.md#watchfor)
@@ -83,7 +84,6 @@ void main() => runApp(Demo1View());
 
 ### ViewModel
 
-#### Methods
 
 * [registryProperty](./APIs.md#registryproperty)
 * [propertyValue](./APIs.md#propertyvalue)
