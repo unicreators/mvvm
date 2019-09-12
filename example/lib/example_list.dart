@@ -37,7 +37,9 @@ class ExampleListViewModel extends ViewModel with AsyncViewModelMixin {
 
   void changeFirst() {
     updateValue<AsyncSnapshot<List<User>>>(#items, (_items) {
-      if (_items.hasData && _items.data.length > 0) {
+      if (_items.hasData &&
+          _items.data.length > 0 &&
+          _items.data[0].name != 'test') {
         _items.data[0].name = 'test';
         return true;
       }

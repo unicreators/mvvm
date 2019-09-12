@@ -9,9 +9,6 @@ library mvvm;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-
-part './adapter.dart';
-
 part './bindable.dart';
 part './property_value.dart';
 part './property_adaptive.dart';

@@ -92,6 +92,7 @@ void main() => runApp(Demo1View());
 * [getValue](./APIs.md#getvalue)
 * [setValue](./APIs.md#setvalue)
 * [updateValue](./APIs.md#updatevalue)
+* [notify]](./APIs.md#notify)
 
 
 [Documentation](https://pub.dev/documentation/mvvm/latest/mvvm/mvvm-library.html)

@@ -1,6 +1,6 @@
 name: mvvm
 description: A Flutter MVVM. It uses property-based data binding to establish a connection between the ViewModel and the View, and drives the View changes through the ViewModel.
-version: 0.1.5+1
+version: 0.1.6
 author: yichen <d.unicreators@gmail.com>
 homepage: https://github.com/unicreators/mvvm
 repository: https://github.com/unicreators/mvvm

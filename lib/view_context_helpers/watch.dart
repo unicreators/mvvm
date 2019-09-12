@@ -43,8 +43,7 @@ mixin ViewContextWatchHelperMixin<TViewModel extends ViewModelBase>
   /// ```
   Widget watchFor<TValue>(Object propertyKey,
           {ValueWidgetBuilder<TValue> builder, Widget child}) =>
-      watch(_propertyValueListenable<TValue>(propertyKey),
-          builder: builder, child: child);
+      watch(getProperty<TValue>(propertyKey), builder: builder, child: child);
 
   ///
   /// 绑定到指定 [valueListenables] 集合, 当任一 [valueListenables] 值发生变化时,
@@ -63,7 +62,7 @@ mixin ViewContextWatchHelperMixin<TViewModel extends ViewModelBase>
   /// ```
   Widget watchAny<TValue>(Iterable<ValueListenable<TValue>> valueListenables,
           {ValueWidgetBuilder<Iterable<TValue>> builder, Widget child}) =>
-      build(ValueNotifierJoinAdapter<TValue>(valueListenables),
+      build(MergingValueListenable<TValue>(valueListenables),
           builder: builder, child: child);
 
   ///
@@ -83,6 +82,33 @@ mixin ViewContextWatchHelperMixin<TViewModel extends ViewModelBase>
   /// ```
   Widget watchAnyFor<TValue>(Iterable<Object> prepertyKeys,
           {ValueWidgetBuilder<Iterable<TValue>> builder, Widget child}) =>
-      watchAny(_propertiesValueListenables<TValue>(prepertyKeys),
+      watchAny(getProperties<TValue>(prepertyKeys),
           builder: builder, child: child);
+}
+
+/// MergingValueListenable
+///
+class MergingValueListenable<TValue> extends ValueNotifier<Iterable<TValue>> {
+  final Iterable<ValueListenable<TValue>> _valueListenables;
+  Listenable _mergingValueListenable;
+
+  /// MergingValueListenable
+  MergingValueListenable(this._valueListenables)
+      : assert(_valueListenables != null),
+        super(null) {
+    _valueChange();
+    _mergingValueListenable = Listenable.merge(_valueListenables.toList())
+      ..addListener(_valueChange);
+  }
+
+  Iterable<TValue> _getValues() =>
+      _valueListenables.map<TValue>((vn) => vn?.value);
+
+  void _valueChange() => value = _getValues();
+
+  @override
+  void dispose() {
+    _mergingValueListenable.removeListener(_valueChange);
+    super.dispose();
+  }
 }

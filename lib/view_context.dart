@@ -35,29 +35,22 @@ class _ViewContextBase<TViewModel extends ViewModelBase>
 
   _ViewContextBase(this._model);
 
-  ValueListenable<TValue> _propertyValueListenable<TValue>(
-          Object propertyKey) =>
-      model?.getValueListenable<TValue>(propertyKey, requiredProperty: true);
-  Iterable<ValueListenable<TValue>> _propertiesValueListenables<TValue>(
+  @protected
+  BindableProperty<TValue> getProperty<TValue>(Object propertyKey) =>
+      model?.getProperty<TValue>(propertyKey, required: true);
+
+  @protected
+  Iterable<BindableProperty<TValue>> getProperties<TValue>(
           Iterable<Object> propertyKeys) =>
-      model?.getValueListenables<TValue>(propertyKeys, requiredProperty: true);
+      model?.getProperties<TValue>(propertyKeys, required: true);
 
   /// 注册绑定属性
   ///
-  /// [propertyKey] 指定属性键
-  ///
-  /// [valueNotifier] 指定值变更通知器
-  ///
-  /// [valueChanged] 指定属性值变更后的回调方法
+  /// [property] 指定属性
   ///
   @protected
-  void registryProperty<TValue>(
-      Object propertyKey, BindableValueNotifier<TValue> valueNotifier,
-      {PropertyValueChanged<TValue> valueChanged}) {
-    model.registryProperty(BindableProperty.create<TValue>(
-        propertyKey, valueNotifier,
-        valueChanged: valueChanged));
-  }
+  void registryProperty<TValue>(BindableProperty<TValue> property) =>
+      model?.registryProperty(property);
 
   ///
   /// 生成一个空 [Widget] 构建方法
@@ -81,7 +74,7 @@ class _ViewContextBase<TViewModel extends ViewModelBase>
   @protected
   Widget buildFor<TValue>(Object propertyKey,
           {ValueWidgetBuilder<TValue> builder, Widget child}) =>
-      build<TValue>(_propertyValueListenable(propertyKey),
+      build<TValue>(getProperty<TValue>(propertyKey),
           builder: builder, child: child);
 
   ///
