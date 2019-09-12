@@ -14,6 +14,7 @@ abstract class BindableObject {
 
   ///
   /// 获取所有已注册的属性
+  @visibleForTesting
   @protected
   Iterable<MapEntry<Object, BindableProperty<dynamic>>> get properties =>
       _properties?.entries ?? [];
@@ -31,10 +32,10 @@ abstract class BindableObject {
   ///
   /// 获取指定 [propertyKeys] 对应的属性集合
   @protected
-  Iterable<BindableProperty<dynamic>> getProperties(
+  Iterable<BindableProperty<TValue>> getProperties<TValue>(
           Iterable<Object> propertyKeys,
           {bool required = false}) =>
-      propertyKeys.map((k) => getProperty<dynamic>(k, required: required));
+      propertyKeys.map((k) => getProperty<TValue>(k, required: required));
 
   ///
   /// 获取指定 [propertyKey] 对应的属性
@@ -45,6 +46,7 @@ abstract class BindableObject {
   ///   其值为 `true` 时, 如 [propertyKey] 对应属性不存在则抛出异常
   ///   默认值为 `false`
   ///
+  @visibleForTesting
   @protected
   BindableProperty<TValue> getProperty<TValue>(Object propertyKey,
       {bool required = false}) {
@@ -148,9 +150,7 @@ abstract class BindableObject {
   ///   默认值为 `false`
   ///
   void notify(Object propertyKey, {bool requiredProperty = false}) =>
-      getProperty<dynamic>(propertyKey, required: requiredProperty)
-          ?._valueNotifier
-          ?.notify();
+      getProperty<dynamic>(propertyKey, required: requiredProperty)?.notify();
 
   ///
   /// 更新指定 [propertyKey] 对应的属性值
@@ -174,53 +174,6 @@ abstract class BindableObject {
     }
   }
 
-  ///
-  /// 获取指定 [propertyKey] 对应的属性 [ValueListenable]
-  ///
-  /// [propertyKey] 属性键
-  ///
-  /// [requiredProperty] 指定 [propertyKey] 对应属性是否必须存在,
-  ///   其值为 `true` 时, 如 [propertyKey] 对应属性不存在则抛出异常
-  ///   默认值为 `false`
-  ///
-  @protected
-  ValueListenable<TValue> getValueListenable<TValue>(Object propertyKey,
-          {bool requiredProperty = false}) =>
-      getProperty<TValue>(propertyKey, required: requiredProperty)
-          ?._valueNotifier;
-
-  ///
-  /// 获取指定 [propertyKey] 对应 [TProperty] 类型属性的 [ValueListenable]
-  ///
-  /// [propertyKey] 属性键
-  ///
-  /// [requiredProperty] 指定 [propertyKey] 对应属性是否必须存在,
-  ///   其值为 `true` 时, 如 [propertyKey] 对应属性不存在则抛出异常
-  ///   默认值为 `false`
-  ///
-  @protected
-  ValueListenable<TValue> getValueListenableOf<TValue,
-              TProperty extends BindableProperty<TValue>>(Object propertyKey,
-          {bool requiredProperty = false}) =>
-      getPropertyOf<TValue, TProperty>(propertyKey, required: requiredProperty)
-          ?._valueNotifier;
-
-  ///
-  /// 获取指定 [propertyKeys] 对应的属性 [ValueListenable] 集合
-  ///
-  /// [propertyKeys] 属性键集合
-  ///
-  /// [requiredProperty] 指定 [propertyKeys] 对应属性是否必须存在,
-  ///   其值为 `true` 时, 如 [propertyKeys] 任一对应属性不存在则抛出异常
-  ///   默认值为 `false`
-  ///
-  @protected
-  Iterable<ValueListenable<TValue>> getValueListenables<TValue>(
-          Iterable<Object> propertyKeys,
-          {bool requiredProperty = false}) =>
-      propertyKeys.map(
-          (k) => getValueListenable(k, requiredProperty: requiredProperty));
-
   /// dispose
   @protected
   @mustCallSuper
@@ -236,9 +189,9 @@ abstract class BindableObject {
 }
 
 class _BindableProperty<TValue> extends BindableProperty<TValue> {
-  _BindableProperty(Object key, BindableValueNotifier<TValue> valueNotifier,
-      {PropertyValueChanged<TValue> valueChanged})
-      : super(key, valueNotifier, valueChanged: valueChanged);
+  _BindableProperty(Object key,
+      {PropertyValueChanged<TValue> valueChanged, TValue initial})
+      : super(key, valueChanged: valueChanged, initial: initial);
 }
 
 /// BindableValueNotifier
@@ -252,42 +205,67 @@ class BindableValueNotifier<TValue> extends ValueNotifier<TValue> {
 
 /// BindableProperty
 ///
-abstract class BindableProperty<TValue> {
+abstract class BindableProperty<TValue> extends ValueNotifier<TValue> {
   /// BindableProperty.create
-  static BindableProperty<TValue> create<TValue>(
-          Object key, BindableValueNotifier<TValue> valueNotifier,
-          {PropertyValueChanged<TValue> valueChanged}) =>
-      _BindableProperty(key, valueNotifier, valueChanged: valueChanged);
+  static BindableProperty<TValue> create<TValue>(Object key,
+          {PropertyValueChanged<TValue> valueChanged, TValue initial}) =>
+      _BindableProperty(key, valueChanged: valueChanged, initial: initial);
 
   /// key
   final Object key;
-  final BindableValueNotifier<TValue> _valueNotifier;
   VoidCallback _listener;
 
   /// BindableProperty
-  BindableProperty(this.key, this._valueNotifier,
-      {PropertyValueChanged<TValue> valueChanged})
-      : assert(key != null && _valueNotifier != null) {
+  BindableProperty(this.key,
+      {PropertyValueChanged<TValue> valueChanged, TValue initial})
+      : assert(key != null),
+        super(initial) {
     if (valueChanged != null) {
       var _listener = () => valueChanged(value, key);
-      _valueNotifier.addListener(_listener);
+      addListener(_listener);
     }
   }
 
   /// dispose
   @protected
   @mustCallSuper
+  @override
   void dispose() {
-    if (_listener != null) _valueNotifier.removeListener(_listener);
+    if (_listener != null) removeListener(_listener);
+    super.dispose();
   }
 
-  ///
-  /// 获取值
-  @protected
-  TValue get value => _valueNotifier.value;
+  /// 发送通知
+  void notify() => notifyListeners();
+}
 
-  ///
-  /// 设置值
-  @protected
-  set value(TValue v) => _valueNotifier.value = v;
+/// CustomValueNotifier
+class CustomBindableProperty<TValue> extends BindableProperty<TValue> {
+  final ValueGetter<TValue> _valueGetter;
+  final ValueSetter<TValue> _valueSetter;
+
+  /// CustomValueNotifier
+  CustomBindableProperty(Object key, ValueGetter<TValue> valueGetter,
+      ValueSetter<TValue> valueSetter,
+      {PropertyValueChanged<TValue> valueChanged, TValue initial})
+      : assert(valueGetter != null && valueSetter != null),
+        _valueGetter = valueGetter,
+        _valueSetter = valueSetter,
+        super(key, valueChanged: valueChanged, initial: initial) {
+    if (initial != null) {
+      // no notify
+      _valueSetter(initial);
+    }
+  }
+
+  @override
+  TValue get value => _valueGetter();
+
+  @override
+  set value(TValue v) {
+    if (super.value != v) {
+      if (value != v) _valueSetter(v);
+      super.value = v;
+    }
+  }
 }

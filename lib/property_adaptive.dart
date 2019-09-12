@@ -7,7 +7,9 @@ part of './mvvm.dart';
 /// AdaptiveViewModelProperty
 ///
 class AdaptiveViewModelProperty<TValue, TAdaptee extends Listenable>
-    extends BindableProperty<TValue> {
+    extends CustomBindableProperty<TValue> {
+  final TAdaptee _adaptee;
+
   /// AdaptiveViewModelProperty
   AdaptiveViewModelProperty(
       Object key,
@@ -16,12 +18,24 @@ class AdaptiveViewModelProperty<TValue, TAdaptee extends Listenable>
       void Function(TAdaptee, TValue) setAdapteeValue,
       {PropertyValueChanged<TValue> valueChanged,
       TValue initial})
-      : super(
-            key,
-            ValueNotifierAdapter<TValue, TAdaptee>(
-                adaptee, getAdapteeValue, setAdapteeValue,
-                initial: initial),
-            valueChanged: valueChanged);
+      : assert(adaptee != null &&
+            getAdapteeValue != null &&
+            setAdapteeValue != null),
+        _adaptee = adaptee,
+        super(key, () => getAdapteeValue(adaptee),
+            (v) => setAdapteeValue(adaptee, v),
+            valueChanged: valueChanged, initial: initial) {
+    _adaptee.addListener(_valueChanged);
+  }
+
+  // check value
+  void _valueChanged() => value = value;
+
+  @override
+  void dispose() {
+    _adaptee.removeListener(_valueChanged);
+    super.dispose();
+  }
 }
 
 mixin AdaptiveViewModelMixin on _ViewModelBase {

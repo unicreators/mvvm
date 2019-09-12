@@ -33,6 +33,7 @@
 * [getValue](#getvalue)
 * [setValue](#setvalue)
 * [updateValue](#updatevalue)
+* [notify](#notify)
 
 
 ####   
@@ -472,6 +473,17 @@ class PageView extends View<PageViewModel> {
 
 - `propertyKey` 指定属性键 
 - `updator` 指定值更新处理器, 当 `updator` 处理器返回 `true` 时将发送值变更通知, 否则不发送通知
+- `requiredProperty` 指定 `propertyKey` 对应属性是否必须存在, 其值为 `true` 时, 如 `propertyKey` 对应属性不存在则抛出异常, 默认值为 `false`
+
+
+
+##### notify
+
+**`notify(Object propertyKey, { bool requiredProperty: false }) → void`**
+
+发送指定 `propertyKey` 对应的属性值变更通知
+
+- `propertyKey` 指定属性键
 - `requiredProperty` 指定 `propertyKey` 对应属性是否必须存在, 其值为 `true` 时, 如 `propertyKey` 对应属性不存在则抛出异常, 默认值为 `false`
 
 

@@ -35,7 +35,7 @@ class LoginViewModel extends ViewModel with AsyncViewModelMixin {
 
     propertyAdaptive<String, TextEditingController>(
         #userName, userNameCtrl, (v) => v.text, (a, v) => a.text = v,
-        valueChanged: (v, k) => print("$k: $v"), initial: "");
+        valueChanged: (v, k) => print("$k: $v"));
 
     propertyAsync<User>(
         #login, () => _service.login(userNameCtrl.text, passwordCtrl.text),

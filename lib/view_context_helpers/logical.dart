@@ -69,7 +69,7 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
           ValueWidgetBuilder<TValue> $false,
           Widget child,
           bool Function(TValue) valueHandle}) =>
-      $cond<TValue>(_propertyValueListenable(propertyKey),
+      $cond<TValue>(getProperty<TValue>(propertyKey),
           $true: $true, $false: $false, child: child, valueHandle: valueHandle);
 
   ///
@@ -117,7 +117,7 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
           {ValueWidgetBuilder<TValue> builder,
           Widget child,
           bool Function(TValue) valueHandle}) =>
-      $if(_propertyValueListenable<TValue>(propertyKey),
+      $if(getProperty<TValue>(propertyKey),
           builder: builder, child: child, valueHandle: valueHandle);
 
   ///
@@ -177,7 +177,7 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
           ValueWidgetBuilder<TValue> defalut,
           Widget child,
           TKey Function(TValue) valueToKey}) =>
-      $switch<TKey, TValue>(_propertyValueListenable(propertyKey),
+      $switch<TKey, TValue>(getProperty<TValue>(propertyKey),
           options: options,
           defalut: defalut,
           child: child,

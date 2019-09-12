@@ -80,9 +80,9 @@ class PageViewModel extends ViewModel with AsyncViewModelMixin {
         (_) => setValue<DateTime>(#time, DateTime.now()));
   }
 
+  var _anyValueListenable = ValueNotifier<String>('');
   // valueListenable ref
-  ValueListenable<String> get anyValueListenable =>
-      getValueListenable<String>(#any);
+  ValueListenable<String> get anyValueListenable => _anyValueListenable;
 
   // property ref
   String get name => getValue<String>(#name);
@@ -102,7 +102,7 @@ class PageViewModel extends ViewModel with AsyncViewModelMixin {
       _index = _names.length - 1;
     else
       _index--;
-    setValue(#any, _names[_index]);
+    _anyValueListenable.value = _names[_index];
   }
 
   next() {
@@ -110,7 +110,7 @@ class PageViewModel extends ViewModel with AsyncViewModelMixin {
       _index = 0;
     else
       _index++;
-    setValue(#any, _names[_index]);
+    _anyValueListenable.value = _names[_index];
   }
 }
 
