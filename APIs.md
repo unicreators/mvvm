@@ -33,7 +33,7 @@
 * [getValue](#getvalue)
 * [setValue](#setvalue)
 * [updateValue](#updatevalue)
-* [notify]](#notify)
+* [notify](#notify)
 
 
 ####   
