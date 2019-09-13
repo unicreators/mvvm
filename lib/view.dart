@@ -43,12 +43,12 @@ abstract class ViewBase<TViewModel extends ViewModel,
 
   @override
   void _buildBefore(BuildContext context) {
+    _context?._viewInit(context);
     init(context);
   }
 
   @override
   void _buildAfter(BuildContext context) {
-    _context?._viewInit(context);
     ready(context);
     _context?._viewReady(context);
   }
@@ -73,7 +73,9 @@ abstract class ViewBase<TViewModel extends ViewModel,
 
 /// ViewWidget
 abstract class ViewWidget extends StatefulWidget {
-  ///
+  final _state = _ViewWidgetState();
+
+  /// build
   @protected
   Widget build(BuildContext context);
 
@@ -81,8 +83,12 @@ abstract class ViewWidget extends StatefulWidget {
   void _buildAfter(BuildContext context);
   void _dispose();
 
+  /// setState
+  @protected
+  void setState(VoidCallback fn) => _state._setState(fn);
+
   @override
-  State<StatefulWidget> createState() => _ViewWidgetState();
+  State<StatefulWidget> createState() => _state;
 }
 
 class _ViewWidgetState extends State<ViewWidget> {
@@ -93,6 +99,8 @@ class _ViewWidgetState extends State<ViewWidget> {
     widget._buildAfter(context);
     return _;
   }
+
+  void _setState(VoidCallback fn) => setState(fn);
 
   @override
   void dispose() {

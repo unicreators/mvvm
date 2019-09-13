@@ -66,6 +66,11 @@ void main() => runApp(Demo1View());
 
 ### ViewContext ($.*)
 
+#### Properties
+
+* [model](./APIs.md#viewcontextmodel)
+
+#### Methods
 
 * [watch](./APIs.md#watch)
 * [watchFor](./APIs.md#watchfor)
@@ -82,8 +87,15 @@ void main() => runApp(Demo1View());
 * [builder1](./APIs.md#builder1)
 * [builder2](./APIs.md#builder2)
 
+*override*
+
+* [viewInit](./APIs.md#viewcontextviewinit)
+* [viewReady](./APIs.md#viewcontextviewready)
+* [dispose](./APIs.md#viewcontextdispose)
+
 ### ViewModel
 
+#### Methods
 
 * [registryProperty](./APIs.md#registryproperty)
 * [propertyValue](./APIs.md#propertyvalue)
@@ -93,6 +105,31 @@ void main() => runApp(Demo1View());
 * [setValue](./APIs.md#setvalue)
 * [updateValue](./APIs.md#updatevalue)
 * [notify](./APIs.md#notify)
+
+*override*
+
+* [viewInit](./APIs.md#viewmodelviewinit)
+* [viewReady](./APIs.md#viewmodelviewready)
+* [dispose](./APIs.md#viewmodeldispose)
+
+
+### View
+
+#### Properties
+
+* [$](./APIs.md#viewviewcontext)
+* [$Model](./APIs.md#model)
+
+#### Methods
+
+* [setState](./APIs.md#setstate)
+
+*override*
+
+* [init](./APIs.md#init)
+* [ready](./APIs.md#ready)
+* [dispose](./APIs.md#viewdispose)
+
 
 
 [Documentation](https://pub.dev/documentation/mvvm/latest/mvvm/mvvm-library.html)
