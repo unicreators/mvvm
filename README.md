@@ -1,6 +1,6 @@
 
 [![pub package](https://img.shields.io/pub/v/mvvm.svg)](https://pub.dev/packages/mvvm)
-[![join chat](https://badges.gitter.im/flutter-mvvm/community.svg)](https://gitter.im/flutter-mvvm/community)
+[![join chat](https://badges.gitter.im/unicreators/mvvm.svg)](https://gitter.im/unicreators/mvvm)
 
 
 
