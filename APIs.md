@@ -5,6 +5,10 @@
 
 ### ViewContext ($.*)
 
+#### Properties
+
+* [model](#viewcontextmodel)
+
 #### Methods
 
 * [watch](#watch)
@@ -22,6 +26,12 @@
 * [builder1](#builder1)
 * [builder2](#builder2)
 
+*override*
+
+* [viewInit](#viewcontextviewinit)
+* [viewReady](#viewcontextviewready)
+* [dispose](#viewcontextdispose)
+
 ### ViewModel
 
 #### Methods
@@ -35,9 +45,45 @@
 * [updateValue](#updatevalue)
 * [notify](#notify)
 
+*override*
 
-####   
+* [viewInit](#viewmodelviewinit)
+* [viewReady](#viewmodelviewready)
+* [dispose](#viewmodeldispose)
 
+
+### View
+
+#### Properties
+
+* [$](#viewviewcontext)
+* [$Model](#model)
+
+#### Methods
+
+* [setState](#setstate)
+
+*override*
+
+* [init](#init)
+* [ready](#ready)
+* [dispose](#viewdispose)
+
+<hr/>
+
+### ViewContext 
+
+#### Properties
+
+<a id="viewcontextmodel"></a>
+##### model
+
+**`model → TViewModel`**
+
+视图模型 ([ViewModel](#viewmodel))
+
+
+#### Methods
 
 ##### watch
 **`watch<TValue>(ValueListenable<TValue> valueListenable, { ValueWidgetBuilder<TValue> builder, Widget child }) → Widget`**
@@ -162,6 +208,8 @@ Widget build(BuildContext context) {
 }
 ```
 
+[↑top](#apis)
+
 ##### $cond
 
 **`$cond<TValue>(ValueListenable<TValue> valueListenable, { ValueWidgetBuilder<TValue> $true, ValueWidgetBuilder<TValue> $false, Widget child, bool valueHandle(TValue) }) → Widget`**
@@ -285,7 +333,7 @@ Widget build(BuildContext context) {
 }
 ```
 
-##### $adapt
+##### adapt
 
 **`adapt<TValue>(Object propertyKey, {Widget Function(void Function({TValue value})) builder, ValueGetter<TValue> valueGetter, ValueSetter<TValue> valueSetter, PropertyValueChanged<TValue> valueChanged, TValue initial )) → Widget`**
 
@@ -308,6 +356,33 @@ Widget build(BuildContext context) {
 }
 ```
 
+
+<a id="viewcontextviewinit"></a>
+##### viewInit
+
+**`viewInit(BuildContext context) → void`**
+
+视图将要初始化时调用, 可重写此方法
+
+
+<a id="viewcontextviewready"></a>
+##### viewReady
+
+**`viewReady(BuildContext context) → void`**
+
+视图就绪后调用, 可重写此方法
+
+
+<a id="viewcontextdispose"></a>
+##### dispose
+
+**`dispose() → void`**
+
+销毁时调用, 可重写此方法释放资源
+
+
+[↑top](#apis)
+<hr/>
 
 
 ### ViewModel
@@ -442,6 +517,7 @@ class PageView extends View<PageViewModel> {
 ```
 
 
+
 ##### getValue
 
 **`getValue<TValue>(Object propertyKey, { bool requiredProperty: false }) → TValue`**
@@ -488,6 +564,116 @@ class PageView extends View<PageViewModel> {
 
 
 
+<a id="viewmodelviewinit"></a>
+##### viewInit
+
+**`viewInit(BuildContext context) → void`**
+
+视图将要初始化时调用, 可重写此方法
+
+
+
+<a id="viewmodelviewready"></a>
+##### viewReady
+
+**`viewReady(BuildContext context) → void`**
+
+视图就绪后调用, 可重写此方法
+
+
+
+<a id="viewmodeldispose"></a>
+##### dispose
+
+**`dispose() → void`**
+
+销毁时调用, 可重写此方法释放资源
+
+
+[↑top](#apis)
+<hr/>
+
+### View
+
+#### Properties
+
+<a id="viewviewcontext"></a>
+##### $
+
+**`$ → ViewContext<TViewModel>`**
+
+视图上下文 ([ViewContext](#viewcontext))
+
+
+##### $Model
+
+**`$Model → TViewModel`**
+
+视图模型 ([ViewModel](#viewmodel))
+
+
+
+#### Methods
+
+
+##### setState
+
+**`setState(void Function() fn) → void`**
+
+手动更新状态, 此方法挂接到 `State<ViewWidget>` 对应 `setState`
+
+- `fn` 回调方法
+
+```dart
+// example
+class PageViewModel extends ViewModel {
+    int count;
+}
+
+class PageView extends View<PageViewModel> {
+    PageView(): super(PageViewModel());
+    @override
+    Widget build(BuildContext context) {
+        return Column(children: [
+            Text('${$Model.count}', textDirection: TextDirection.ltr), 
+            RaisedButton(
+                child: Text("+", textDirection: TextDirection.ltr),                 
+                onPressed: () { 
+                  setState(() {
+                    $Model.count++;
+                  }); 
+                }
+            )]);
+    }
+}
+```
+
+
+##### init
+
+**`init(BuildContext context) → void`**
+
+初始化时调用, 可重写此方法
+
+
+##### ready
+
+**`ready(BuildContext context) → void`**
+
+就绪时调用, 可重写此方法
+
+
+
+<a id="viewdispose"></a>
+##### dispose
+
+**`dispose() → void`**
+
+销毁时调用, 可重写此方法释放资源
+
+
+[↑top](#apis)
+<hr/>
 
 [Documentation](https://pub.dev/documentation/mvvm/latest/mvvm/mvvm-library.html)
 
