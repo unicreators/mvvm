@@ -409,9 +409,9 @@ Widget build(BuildContext context) {
 ```dart
 // example
 class PageViewModel extends ViewModel {
-    PageViewModel() {
-        propertyValue<String>(#name, initial: "tom");
-    }
+  PageViewModel() {
+    propertyValue<String>(#name, initial: "tom");
+  }
 }
 ```
 
@@ -431,17 +431,16 @@ class PageViewModel extends ViewModel {
 ```dart
 // example
 class PageViewModel extends ViewModel {
-    final TextEditingController _nameCtrl = TextEditingController();
-    PageViewModel() {
-        propertyAdaptive<String, TextEditingController>(
+  final TextEditingController _nameCtrl = TextEditingController();
+  PageViewModel() {
+    propertyAdaptive<String, TextEditingController>(
             #name, _nameCtrl,
             (v) => v.text,
             (a, v) => a.text = v,
             initial: name);
-    }
-
-    // TextField used
-    TextEditingController get nameCtrl => _nameCtrl;
+  }
+  // TextField used
+  TextEditingController get nameCtrl => _nameCtrl;
 }
 ```
 
@@ -470,49 +469,50 @@ class User {
 }
 
 class RemoteService {
-    Future<User> findUser() async {
-        return Future.delayed(
+  Future<User> findUser() async {
+    return Future.delayed(
         Duration(seconds: 3), () => User("tom_${DateTime.now().second}"));
-    }
+  }
 }
 
 class PageViewModel extends ViewModel with AsyncViewModelMixin {
-    final RemoteService _service;
-    PageViewModel(this._service) {
-        propertyAsync<User>(
-            #findUserAsync,
-            () => _service.findUser(),        
-            handle: (User user) {
-                user.name = "hello, ${user.name}";
-                return user;
-            });
-    }
-
-    // ViewModel used
-    find() => invoke(#findUserAsync);
+  final RemoteService _service;
+  PageViewModel(this._service) {
+    propertyAsync<User>(#findUserAsync, () => _service.findUser(),
+        handle: (User user) {
+      user.name = "hello, ${user.name}";
+      return user;
+    });
+  }
+  // ViewModel used
+  find() => invoke(#findUserAsync);
 }
 
 class PageView extends View<PageViewModel> {
-    PageView(): super(PageViewModel(RemoteService()));
+  PageView() : super(PageViewModel(RemoteService()));
 
-    @override
-    Widget build(BuildContext context) {
-        return Column(children: [
-            $.watchFor(#findUserAsync,
-                builder: $.builder2((AsyncSnapshot<User> snapshot, child) =>
-                            snapshot.connectionState == ConnectionState.waiting && snapshot.hasData 
-                                ? Text("${snapshot.data.name}", textDirection: TextDirection.ltr)
-                                : child),
-                child: Text("empty", textDirection: TextDirection.ltr)), 
-            RaisedButton(
-                child: $.watchFor(#findUserAsync,
-                    builder: $.builder2((AsyncSnapshot<User> snapshot, child) =>
-                        snapshot.connectionState == ConnectionState.waiting
-                            ? CircularProgressIndicator() : child),
-                    child: Text("find", textDirection: TextDirection.ltr)), 
-                // or: onPressed: () { $Model.find(); }
-                onPressed: $Model.link(#findUserAsync))]);
-    }
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [
+      $.watchFor(#findUserAsync,
+          builder: $.builder2((AsyncSnapshot<User> snapshot, child) => snapshot
+                          .connectionState ==
+                      ConnectionState.waiting &&
+                  snapshot.hasData
+              ? Text("${snapshot.data.name}", textDirection: TextDirection.ltr)
+              : child),
+          child: Text("empty", textDirection: TextDirection.ltr)),
+      RaisedButton(
+          child: $.watchFor(#findUserAsync,
+              builder: $.builder2((AsyncSnapshot<User> snapshot, child) =>
+                  snapshot.connectionState == ConnectionState.waiting
+                      ? CircularProgressIndicator()
+                      : child),
+              child: Text("find", textDirection: TextDirection.ltr)),
+          // or: onPressed: () { $Model.find(); }
+          onPressed: $Model.link(#findUserAsync))
+    ]);
+  }
 }
 ```
 
@@ -554,39 +554,39 @@ class PageView extends View<PageViewModel> {
 ```dart
 // example
 class User {
-    String name;
-    int age;
-    User(this.name, this.age);
+  String name;
+  int age;
+  User(this.name, this.age);
 }
 
 class PageViewModel extends ViewModel {
-    PageViewModel() {
-        propertyValue<User>(#user, initial: User('tom', 8));
-    }
-    changeName(String newName) {
-        updateValue<User>(#user, (user) {
-            if(user.name == newName) return false;
-            user.name = newName;
-            return true;
-        });
-    }
+  PageViewModel() {
+    propertyValue<User>(#user, initial: User('tom', 8));
+  }
+  void changeName(String newName) {
+    updateValue<User>(#user, (user) {
+      if (user.name == newName) return false;
+      user.name = newName;
+      return true;
+    });
+  }
 }
 
 class PageView extends View<PageViewModel> {
-    PageView(): super(PageViewModel());
-    @override
-    Widget build(BuildContext context) {
-        return Column(children: [
-            $.watchFor<User>(#user, 
-                builder: $.builder1((user) => Text('${user.name}', 
-                    textDirection: TextDirection.ltr))), 
-            RaisedButton(
-                child: Text("change", textDirection: TextDirection.ltr),                 
-                onPressed: () { 
-                    $Model.changeName('newName1');
-                }
-            )]);
-    }
+  PageView() : super(PageViewModel());
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [
+      $.watchFor<User>(#user,
+          builder: $.builder1((user) =>
+              Text('${user.name}', textDirection: TextDirection.ltr))),
+      RaisedButton(
+          child: Text("change", textDirection: TextDirection.ltr),
+          onPressed: () {
+            $Model.changeName('newName1');
+          })
+    ]);
+  }
 }
 ```
 
@@ -603,39 +603,39 @@ class PageView extends View<PageViewModel> {
 ```dart
 // example
 class User {
-    String name;
-    int age;
-    User(this.name, this.age);
+  String name;
+  int age;
+  User(this.name, this.age);
 }
 
 class PageViewModel extends ViewModel {
-    PageViewModel() {
-        propertyValue<User>(#user, initial: User('tom', 8));
+  PageViewModel() {
+    propertyValue<User>(#user, initial: User('tom', 8));
+  }
+  void changeName(String newName) {
+    var user = getValue<User>(#user);
+    if (user.name != newName) {
+      user.name = newName;
+      notify(#user);
     }
-    changeName(String newName) {
-        var user = getValue<User>(#user);
-        if(user.name != newName) {
-            user.name = newName;
-            notify(#user);
-        }
-    }
+  }
 }
 
 class PageView extends View<PageViewModel> {
-    PageView(): super(PageViewModel());
-    @override
-    Widget build(BuildContext context) {
-        return Column(children: [
-            $.watchFor<User>(#user, 
-                builder: $.builder1((user) => Text('${user.name}', 
-                    textDirection: TextDirection.ltr))), 
-            RaisedButton(
-                child: Text("change", textDirection: TextDirection.ltr),                 
-                onPressed: () { 
-                    $Model.changeName('newName1');
-                }
-            )]);
-    }
+  PageView() : super(PageViewModel());
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [
+      $.watchFor<User>(#user,
+          builder: $.builder1((user) =>
+              Text('${user.name}', textDirection: TextDirection.ltr))),
+      RaisedButton(
+          child: Text("change", textDirection: TextDirection.ltr),
+          onPressed: () {
+            $Model.changeName('newName1');
+          })
+    ]);
+  }
 }
 ```
 
@@ -703,24 +703,24 @@ class PageView extends View<PageViewModel> {
 ```dart
 // example
 class PageViewModel extends ViewModel {
-    int count;
+  int count;
 }
 
 class PageView extends View<PageViewModel> {
-    PageView(): super(PageViewModel());
-    @override
-    Widget build(BuildContext context) {
-        return Column(children: [
-            Text('${$Model.count}', textDirection: TextDirection.ltr), 
-            RaisedButton(
-                child: Text("+", textDirection: TextDirection.ltr),                 
-                onPressed: () { 
-                  setState(() {
-                    $Model.count++;
-                  }); 
-                }
-            )]);
-    }
+  PageView() : super(PageViewModel());
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [
+      Text('${$Model.count}', textDirection: TextDirection.ltr),
+      RaisedButton(
+          child: Text("+", textDirection: TextDirection.ltr),
+          onPressed: () {
+            setState(() {
+              $Model.count++;
+            });
+          })
+    ]);
+  }
 }
 ```
 
