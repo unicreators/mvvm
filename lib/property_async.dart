@@ -77,13 +77,21 @@ mixin AsyncViewModelMixin on ViewModelBase {
   /// 创建一个异步请求 [Future<TValue>] 属性
   ///
   /// [propertyKey] 指定属性键
+  ///
   /// [futureGetter] 用于获取 [Future<TValue>] 的方法
+  ///
   /// [handle] 指定请求成功时对结果进行处理的方法
+  ///
   /// [onStart] 指定请求发起时执行的方法
+  ///
   /// [onEnd] 指定请求结束时执行的方法
+  ///
   /// [onSuccess] 指定请求成功时执行的方法
+  ///
   /// [onError] 指定请求出错时执行的方法
+  ///
   /// [valueChanged] 指定属性值变更后的回调方法
+  ///
   /// [initial] 指定初始值
   ///
   BindableProperty<AsyncSnapshot<TValue>> propertyAsync<TValue>(
@@ -126,6 +134,7 @@ mixin AsyncViewModelMixin on ViewModelBase {
   /// 发起指定 [propertyKey] 对应的异步请求
   ///
   /// [propertyKey] 对应属性必须为 [AsyncViewModelProperty] 否则空操作
+  ///
   /// [resetOnBefore] 指定发起请求之前是否重置属性值
   ///   当其值为 `true` 时, 发起请求之前属性值将先被重置为 `AsyncSnapshot<TValue>.nothing()`
   ///
@@ -136,6 +145,7 @@ mixin AsyncViewModelMixin on ViewModelBase {
 
   ///
   /// 获取指定 [propertyKey] 对应异步请求发起链接
+  ///
   /// [resetOnBefore] 指定发起请求之前是否重置属性值
   ///   当其值为 `true` 时, 发起请求之前属性值将先被重置为 `AsyncSnapshot<TValue>.nothing()`
   ///

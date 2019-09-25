@@ -23,18 +23,17 @@ import 'dart:async';
 
 // ViewModel
 class Demo1ViewModel extends ViewModel {
+  Demo1ViewModel() {
+    propertyValue<String>(#time, initial: "");
+    start();
+  }
 
-    Demo1ViewModel() {
-        propertyValue<String>(#time, initial: "");
-        start();
-    }
-
-    start() {
-        Timer.periodic(const Duration(seconds: 1), (_) {
-            var now = DateTime.now();
-            setValue<String>(#time, "${now.hour}:${now.minute}:${now.second}");
-        });
-    }
+  start() {
+    Timer.periodic(const Duration(seconds: 1), (_) {
+      var now = DateTime.now();
+      setValue<String>(#time, "${now.hour}:${now.minute}:${now.second}");
+    });
+  }
 }
 
 // View
@@ -47,9 +46,9 @@ class Demo1View extends View<Demo1ViewModel> {
         margin: EdgeInsets.symmetric(vertical: 100),
         padding: EdgeInsets.all(40),
         // binding
-        child: $.watchFor<String>(#time, 
-            builder: $.builder1((t) => 
-              Text(t, textDirection: TextDirection.ltr))));
+        child: $.watchFor<String>(#time,
+            builder:
+                $.builder1((t) => Text(t, textDirection: TextDirection.ltr))));
   }
 }
 

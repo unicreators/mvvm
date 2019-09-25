@@ -17,7 +17,7 @@ mixin ViewContextBuilderHelperMixin<TViewModel extends ViewModelBase>
   /// ```dart
   /// // example
   /// @override
-  /// Widget buildCore(BuildContext context) {
+  /// Widget build(BuildContext context) {
   ///   return $.watch<String>($Model.prop1,
   ///     builder: $.builder0(() => Text("hello!")));
   /// }
@@ -33,7 +33,7 @@ mixin ViewContextBuilderHelperMixin<TViewModel extends ViewModelBase>
   /// ```dart
   /// // example
   /// @override
-  /// Widget buildCore(BuildContext context) {
+  /// Widget build(BuildContext context) {
   ///   return $.watch<String>($Model.prop1,
   ///     builder: $.builder1((value) => Text(value)));
   /// }
@@ -50,7 +50,7 @@ mixin ViewContextBuilderHelperMixin<TViewModel extends ViewModelBase>
   /// ```dart
   /// // example
   /// @override
-  /// Widget buildCore(BuildContext context) {
+  /// Widget build(BuildContext context) {
   ///   return $.watch<String>($Model.prop1,
   ///     builder: $.builder2((value, child) =>
   ///                   Column(children:[Text("$value"), child]),

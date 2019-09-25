@@ -551,17 +551,93 @@ class PageView extends View<PageViewModel> {
 - `updator` 指定值更新处理器, 当 `updator` 处理器返回 `true` 时将发送值变更通知, 否则不发送通知
 - `requiredProperty` 指定 `propertyKey` 对应属性是否必须存在, 其值为 `true` 时, 如 `propertyKey` 对应属性不存在则抛出异常, 默认值为 `false`
 
+```dart
+// example
+class User {
+    String name;
+    int age;
+    User(this.name, this.age);
+}
+
+class PageViewModel extends ViewModel {
+    PageViewModel() {
+        propertyValue<User>(#user, initial: User('tom', 8));
+    }
+    changeName(String newName) {
+        updateValue<User>(#user, (user) {
+            if(user.name == newName) return false;
+            user.name = newName;
+            return true;
+        });
+    }
+}
+
+class PageView extends View<PageViewModel> {
+    PageView(): super(PageViewModel());
+    @override
+    Widget build(BuildContext context) {
+        return Column(children: [
+            $.watchFor<User>(#user, 
+                builder: $.builder1((user) => Text('${user.name}', 
+                    textDirection: TextDirection.ltr))), 
+            RaisedButton(
+                child: Text("change", textDirection: TextDirection.ltr),                 
+                onPressed: () { 
+                    $Model.changeName('newName1');
+                }
+            )]);
+    }
+}
+```
 
 
 ##### notify
 
 **`notify(Object propertyKey, { bool requiredProperty: false }) → void`**
 
-发送指定 `propertyKey` 对应的属性值变更通知
+强制发送指定 `propertyKey` 对应的属性值变更通知
 
 - `propertyKey` 指定属性键
 - `requiredProperty` 指定 `propertyKey` 对应属性是否必须存在, 其值为 `true` 时, 如 `propertyKey` 对应属性不存在则抛出异常, 默认值为 `false`
 
+```dart
+// example
+class User {
+    String name;
+    int age;
+    User(this.name, this.age);
+}
+
+class PageViewModel extends ViewModel {
+    PageViewModel() {
+        propertyValue<User>(#user, initial: User('tom', 8));
+    }
+    changeName(String newName) {
+        var user = getValue<User>(#user);
+        if(user.name != newName) {
+            user.name = newName;
+            notify(#user);
+        }
+    }
+}
+
+class PageView extends View<PageViewModel> {
+    PageView(): super(PageViewModel());
+    @override
+    Widget build(BuildContext context) {
+        return Column(children: [
+            $.watchFor<User>(#user, 
+                builder: $.builder1((user) => Text('${user.name}', 
+                    textDirection: TextDirection.ltr))), 
+            RaisedButton(
+                child: Text("change", textDirection: TextDirection.ltr),                 
+                onPressed: () { 
+                    $Model.changeName('newName1');
+                }
+            )]);
+    }
+}
+```
 
 
 <a id="viewmodelviewinit"></a>
