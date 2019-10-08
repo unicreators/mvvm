@@ -20,7 +20,7 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
   /// ```dart
   /// // example
   /// @override
-  /// Widget buildCore(BuildContext context) {
+  /// Widget build(BuildContext context) {
   ///   return $.$cond<int>($Model.prop1,
   ///     $true: $.builder0(() => Text("tom!")),
   ///     $false: $.builder0(() => Text("jerry!")),
@@ -57,7 +57,7 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
   /// ```dart
   /// // example
   /// @override
-  /// Widget buildCore(BuildContext context) {
+  /// Widget build(BuildContext context) {
   ///   return $.$condFor<String>(#account,
   ///     $true: $.builder0(() => Text("tom!")),
   ///     $false: $.builder0(() => Text("jerry!")),
@@ -83,7 +83,7 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
   /// ```dart
   /// // example
   /// @override
-  /// Widget buildCore(BuildContext context) {
+  /// Widget build(BuildContext context) {
   ///   return $.$if<int>($Model.prop1,
   ///     builder: $.builder0(() => Text("tom!")),
   ///     valueHandle: (value) => value == 1);
@@ -107,7 +107,7 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
   /// ```dart
   /// // example
   /// @override
-  /// Widget buildCore(BuildContext context) {
+  /// Widget build(BuildContext context) {
   ///   return $.$ifFor<String>(#account,
   ///     builder: $.builder0(() => Text("tom!")),
   ///     valueHandle: (value) => value == "tom");
@@ -131,7 +131,7 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
   /// ```dart
   /// // example
   /// @override
-  /// Widget buildCore(BuildContext context) {
+  /// Widget build(BuildContext context) {
   ///   return $.$switch<String, int>($Model.prop1,
   ///     options: { "1.": $.builder1((value) => Text("$value")),
   ///                "2.": $.builder0(() => Text("2")) },
@@ -165,7 +165,7 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
   /// ```dart
   /// // example
   /// @override
-  /// Widget buildCore(BuildContext context) {
+  /// Widget build(BuildContext context) {
   ///   return $.$switchFor<String, int>(#account,
   ///     options: { "tom": $.builder1((value) => Text("${value}! cat")),
   ///                "jerry": $.builder0(() => Text("mouse")) },
