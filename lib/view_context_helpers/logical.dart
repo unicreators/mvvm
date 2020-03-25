@@ -147,7 +147,7 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
       (options == null || options.isEmpty)
           ? build<TValue>(valueListenable,
               builder: defalut, child: child, nullBuilderToEmptyWidget: true)
-          : buildFromSelector(valueListenable,
+          : buildFromSelector<TValue>(valueListenable,
               selector: (TValue value) =>
                   (options[_ensureValue<TValue>(value, valueToKey)] ??
                       defalut?.call) as ValueWidgetBuilder<TValue>,
