@@ -57,9 +57,9 @@ class _ViewContextBase<TViewModel extends ViewModelBase>
   ValueWidgetBuilder _emptyWidgetBuilder() =>
       (_, dynamic __, ___) => const SizedBox.shrink();
 
-  dynamic _ensureValue<TValue>(
+  /* dynamic _ensureValue<TValue>(
           TValue fromValue, dynamic Function(TValue) convert) =>
-      convert == null ? fromValue : convert(fromValue);
+      convert == null ? fromValue : convert(fromValue); */
 
   ValueWidgetBuilder<TValue> _builderSelector<TValue>(
           ValueWidgetBuilder<TValue> Function(TValue) selector) =>

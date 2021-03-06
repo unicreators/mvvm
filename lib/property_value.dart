@@ -17,6 +17,8 @@ class ValueViewModelProperty<TValue> extends BindableProperty<TValue> {
       : this._(propertyKey, valueChanged: valueChanged, initial: value);
 }
 
+///
+/// 具备值属性的 [ViewModel]
 mixin ValueViewModelMixin on _ViewModelBase {
   ///
   /// 创建一个值属性
