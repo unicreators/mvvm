@@ -38,12 +38,13 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
     // --------------------------------
     //   bool    (raw_value)
     //   other   (raw_value) != null
-    return buildFromSelector<TValue>(valueListenable, selector: (value) {
-      dynamic result = _ensureValue<TValue>(value, valueHandle);
-      return (((result is bool) ? result : (result != null))
-          ? $true?.call
-          : $false?.call) as ValueWidgetBuilder<TValue>;
-    }, child: child, nullBuilderToEmptyWidget: true);
+    return buildFromSelector<TValue>(valueListenable,
+        selector: (value) =>
+            (valueHandle != null ? valueHandle(value) : value != null)
+                ? $true?.call
+                : $false?.call,
+        child: child,
+        nullBuilderToEmptyWidget: true);
   }
 
   ///
@@ -149,8 +150,8 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
               builder: defalut, child: child, nullBuilderToEmptyWidget: true)
           : buildFromSelector<TValue>(valueListenable,
               selector: (TValue value) =>
-                  (options[_ensureValue<TValue>(value, valueToKey)] ??
-                      defalut?.call) as ValueWidgetBuilder<TValue>,
+                  options[valueToKey != null ? valueToKey(value) : value] ??
+                  defalut?.call,
               child: child,
               nullBuilderToEmptyWidget: true);
 

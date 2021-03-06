@@ -4,6 +4,8 @@
 
 part of './mvvm.dart';
 
+/// 
+/// 属性值改变
 typedef PropertyValueChanged<TValue> = void Function(
     TValue value, Object propertyKey);
 

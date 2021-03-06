@@ -72,6 +72,8 @@ class AsyncViewModelProperty<TValue>
   }
 }
 
+///
+/// 具备异步请求属性的 [ViewModel]
 mixin AsyncViewModelMixin on ViewModelBase {
   ///
   /// 创建一个异步请求 [Future<TValue>] 属性

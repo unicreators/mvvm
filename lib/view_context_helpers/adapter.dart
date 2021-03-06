@@ -4,6 +4,8 @@
 
 part of '../mvvm.dart';
 
+///
+/// 触发器
 typedef AdaptTrigger<TValue> = void Function({TValue value});
 
 /// ViewContextAdaptorHelperMixin

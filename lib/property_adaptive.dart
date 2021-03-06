@@ -38,6 +38,8 @@ class AdaptiveViewModelProperty<TValue, TAdaptee extends Listenable>
   }
 }
 
+///
+/// 具备适配属性的 [ViewModel]
 mixin AdaptiveViewModelMixin on _ViewModelBase {
   ///
   /// 创建一个适配属性

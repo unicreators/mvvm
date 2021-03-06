@@ -7,15 +7,15 @@ homepage:
 environment:
   sdk: ">=2.1.0 <3.0.0"
 
-dependencies:
+dependencies:  
   flutter:
     sdk: flutter
-  mvvm:
-     path: ../
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  mvvm:
+    path: ../
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
