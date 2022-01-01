@@ -1,4 +1,4 @@
-// Copyright (c) 2019 yichen <d.unicreators@gmail.com>. All rights reserved.
+// Copyright (c) 2022 yichen <d.unicreators@gmail.com>. All rights reserved.
 // Use of this source code is governed by a MIT license that can be
 // found in the LICENSE file.
 
@@ -38,17 +38,16 @@ mixin ViewContextAdaptorHelperMixin<TViewModel extends ViewModelBase>
   /// }
   /// ```
   Widget adapt<TValue>(Object propertyKey,
-      {@required Widget Function(AdaptTrigger<TValue> emit) builder,
-      @required ValueGetter<TValue> valueGetter,
-      @required ValueSetter<TValue> valueSetter,
-      PropertyValueChanged<TValue> valueChanged,
-      TValue initial}) {
-    assert(builder != null && valueGetter != null && valueSetter != null);
+      {required Widget Function(AdaptTrigger<TValue> emit) builder,
+      required ValueGetter<TValue> valueGetter,
+      required ValueSetter<TValue> valueSetter,
+      PropertyValueChanged<TValue>? valueChanged,
+      TValue? initial}) {
     var _cbp = CustomBindableProperty<TValue>(
         propertyKey, valueGetter, valueSetter,
         valueChanged: valueChanged, initial: initial);
     var widget =
-        builder(({TValue value}) => _cbp.value = value ?? valueGetter?.call());
+        builder(({TValue? value}) => _cbp.value = value ?? valueGetter.call());
     registryProperty(_cbp);
     return widget;
   }

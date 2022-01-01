@@ -69,7 +69,7 @@ class LoginView extends View<LoginViewModel> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 $.watchFor<DateTime>(#time,
-                    builder: $.builder1((t) => Text($Model.format(t),
+                    builder: $.b1((t) => Text($Model.format(t),
                         style:
                             TextStyle(color: Colors.redAccent, fontSize: 48)))),
                 SizedBox(height: 30),
@@ -93,11 +93,12 @@ class LoginView extends View<LoginViewModel> {
                         ),
                     valueGetter: () => $Model.passwordCtrl.text,
                     valueSetter: (v) => $Model.passwordCtrl.text = v,
-                    valueChanged: (v, k) => print("$k: $v")),
+                    valueChanged: (v, k) => print("$k: $v"),
+                    initial: ''),
                 SizedBox(height: 10),
                 $.$ifFor(#login,
                     valueHandle: (AsyncSnapshot snapshot) => snapshot.hasError,
-                    builder: $.builder1((AsyncSnapshot snapshot) {
+                    builder: $.b1((AsyncSnapshot snapshot) {
                       return Text("${snapshot.error}",
                           style:
                               TextStyle(color: Colors.redAccent, fontSize: 16));
@@ -106,7 +107,7 @@ class LoginView extends View<LoginViewModel> {
                     margin: EdgeInsets.only(top: 80),
                     width: double.infinity,
                     child: $.watchAnyFor<String>(const [#userName, #password],
-                        builder: $.builder2((_, child) => RaisedButton(
+                        builder: $.b2((_, child) => RaisedButton(
                             onPressed: $Model.inputValid
                                 ? $Model.link(#login, resetOnBefore: true)
                                 : null,
@@ -114,17 +115,16 @@ class LoginView extends View<LoginViewModel> {
                             color: Colors.blueAccent,
                             textColor: Colors.white)),
                         child: $.watchFor(#login,
-                            builder: $.builder2(
-                                (AsyncSnapshot snapshot, child) =>
-                                    snapshot.connectionState ==
-                                            ConnectionState.waiting
-                                        ? _buildWaitingWidget()
-                                        : child),
+                            builder: $.b2((AsyncSnapshot snapshot, child) =>
+                                snapshot.connectionState ==
+                                        ConnectionState.waiting
+                                    ? _buildWaitingWidget()
+                                    : child!),
                             child: Text("login")))),
                 SizedBox(height: 20),
                 $.$ifFor<AsyncSnapshot<User>>(#login,
                     valueHandle: (AsyncSnapshot snapshot) => snapshot.hasData,
-                    builder: $.builder1((AsyncSnapshot<User> snapshot) => Text(
+                    builder: $.b1((AsyncSnapshot<User> snapshot) => Text(
                         "${snapshot.data?.displayName}",
                         style:
                             TextStyle(color: Colors.blueAccent, fontSize: 20))))

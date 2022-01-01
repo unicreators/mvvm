@@ -41,7 +41,7 @@ class PageViewModel extends ViewModel with AsyncViewModelMixin {
 
   final TextEditingController nameCtrl = TextEditingController();
 
-  PageViewModel(this.service, {String name}) {
+  PageViewModel(this.service, {required String name}) {
     // define bindable property
     propertyValue<String>(#any, initial: "jerry");
     propertyValue<int>(#age, initial: -1);
@@ -85,10 +85,10 @@ class PageViewModel extends ViewModel with AsyncViewModelMixin {
   ValueListenable<String> get anyValueListenable => _anyValueListenable;
 
   // property ref
-  String get name => getValue<String>(#name);
+  String get name => requireGetValue<String>(#name);
   set name(String value) => setValue<String>(#name, value);
 
-  int get age => getValue<int>(#age);
+  int get age => requireGetValue<int>(#age);
   set age(int value) => setValue<int>(#age, value);
 
   // invoke asyc
@@ -177,7 +177,7 @@ class Page extends View<PageViewModel> {
                                               backgroundColor: Colors.white,
                                               strokeWidth: 2,
                                             ))
-                                        : child),
+                                        : child!),
                             child: Text("remote")),
 
                         //

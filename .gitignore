@@ -13,6 +13,7 @@
 .vscode/
 ios/
 android/
+web/
 pack.sh
 
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2019 yichen <d.unicreators@gmail.com>. All rights reserved.
+// Copyright (c) 2022 yichen <d.unicreators@gmail.com>. All rights reserved.
 // Use of this source code is governed by a MIT license that can be
 // found in the LICENSE file.
 
@@ -8,25 +8,25 @@ part of './mvvm.dart';
 ///
 class AsyncViewModelProperty<TValue>
     extends BindableProperty<AsyncSnapshot<TValue>> {
-  Object _callbackIdentity;
+  Object? _callbackIdentity;
 
   final AsyncValueGetter<TValue> _futureGetter;
-  final TValue Function(TValue) _handle;
+  final TValue Function(TValue)? _handle;
 
-  final void Function() _onStart;
-  final void Function() _onEnd;
-  final void Function(TValue) _onSuccess;
-  final void Function(dynamic) _onError;
+  final void Function()? _onStart;
+  final void Function()? _onEnd;
+  final void Function(TValue)? _onSuccess;
+  final void Function(dynamic)? _onError;
 
   /// AsyncViewModelProperty
   AsyncViewModelProperty(Object key, this._futureGetter,
-      {TValue Function(TValue) handle,
-      void Function() onStart,
-      void Function() onEnd,
-      void Function(TValue) onSuccess,
-      void Function(dynamic) onError,
-      PropertyValueChanged<AsyncSnapshot<TValue>> valueChanged,
-      TValue initial})
+      {TValue Function(TValue)? handle,
+      void Function()? onStart,
+      void Function()? onEnd,
+      void Function(TValue)? onSuccess,
+      void Function(dynamic)? onError,
+      PropertyValueChanged<AsyncSnapshot<TValue>>? valueChanged,
+      TValue? initial})
       : _handle = handle,
         _onStart = onStart,
         _onEnd = onEnd,
@@ -34,23 +34,21 @@ class AsyncViewModelProperty<TValue>
         _onError = onError,
         super(key,
             valueChanged: valueChanged,
-            initial:
-                AsyncSnapshot<TValue>.withData(ConnectionState.none, initial));
+            initial: initial == null
+                ? AsyncSnapshot<TValue>.nothing()
+                : AsyncSnapshot<TValue>.withData(
+                    ConnectionState.none, initial));
 
   ///
   /// 发起请求
   ///
   @protected
-  void invoke({bool resetOnBefore}) {
-    if (_futureGetter == null) return;
-
-    if (resetOnBefore != null && resetOnBefore) {
+  void invoke({bool resetOnBefore = true}) {
+    if (resetOnBefore) {
       value = AsyncSnapshot<TValue>.nothing();
     }
 
     var future = _futureGetter();
-    if (future == null) return;
-
     _onStart?.call();
     final callbackIdentity = Object();
     _callbackIdentity = callbackIdentity;
@@ -58,7 +56,7 @@ class AsyncViewModelProperty<TValue>
       if (_callbackIdentity == callbackIdentity) {
         _onSuccess?.call(data);
         value = AsyncSnapshot<TValue>.withData(
-            ConnectionState.done, _handle == null ? data : _handle(data));
+            ConnectionState.done, _handle == null ? data : _handle!(data));
       }
       _onEnd?.call();
     }, onError: (Object error) {
@@ -98,13 +96,13 @@ mixin AsyncViewModelMixin on ViewModelBase {
   ///
   BindableProperty<AsyncSnapshot<TValue>> propertyAsync<TValue>(
           Object propertyKey, AsyncValueGetter<TValue> futureGetter,
-          {TValue Function(TValue) handle,
-          void Function() onStart,
-          void Function() onEnd,
-          void Function(TValue) onSuccess,
-          void Function(dynamic) onError,
-          PropertyValueChanged<AsyncSnapshot<TValue>> valueChanged,
-          TValue initial}) =>
+          {TValue Function(TValue)? handle,
+          void Function()? onStart,
+          void Function()? onEnd,
+          void Function(TValue)? onSuccess,
+          void Function(dynamic)? onError,
+          PropertyValueChanged<AsyncSnapshot<TValue>>? valueChanged,
+          TValue? initial}) =>
       registryProperty(AsyncViewModelProperty<TValue>(propertyKey, futureGetter,
           handle: handle,
           onStart: onStart,
@@ -124,12 +122,10 @@ mixin AsyncViewModelMixin on ViewModelBase {
   ///
   /// 调用其返回的方法将发起异步请求
   ///
-  void Function() getInvoke(Object propertyKey, {bool resetOnBefore}) {
-    var property = getProperty<dynamic>(propertyKey);
-    if (property is AsyncViewModelProperty) {
-      return () => property.invoke(resetOnBefore: resetOnBefore);
-    }
-    return null;
+  void Function() getInvoke(Object propertyKey, {bool resetOnBefore = true}) {
+    var property = getProperty<dynamic>(propertyKey) as AsyncViewModelProperty?;
+    assert(property != null);
+    return () => property!.invoke(resetOnBefore: resetOnBefore);
   }
 
   ///
@@ -142,8 +138,8 @@ mixin AsyncViewModelMixin on ViewModelBase {
   ///
   /// 调用其返回的方法将发起异步请求
   ///
-  void invoke(Object propertyKey, {bool resetOnBefore}) =>
-      getInvoke(propertyKey, resetOnBefore: resetOnBefore)?.call();
+  void invoke(Object propertyKey, {bool resetOnBefore = true}) =>
+      getInvoke(propertyKey, resetOnBefore: resetOnBefore).call();
 
   ///
   /// 获取指定 [propertyKey] 对应异步请求发起链接
@@ -153,6 +149,6 @@ mixin AsyncViewModelMixin on ViewModelBase {
   ///
   /// 其实质为 [getInvoke] 的快捷操作
   ///
-  void Function() link(Object propertyKey, {bool resetOnBefore}) =>
+  void Function() link(Object propertyKey, {bool resetOnBefore = true}) =>
       getInvoke(propertyKey, resetOnBefore: resetOnBefore);
 }

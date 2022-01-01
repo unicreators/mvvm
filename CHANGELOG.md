@@ -1,3 +1,6 @@
+## 0.2.0
+* Null safety support
+
 ## 0.1.9
 * 优化代码 
 

@@ -48,7 +48,7 @@ class Demo1View extends View<Demo1ViewModel> {
         // binding
         child: $.watchFor<String>(#time,
             builder:
-                $.builder1((t) => Text(t, textDirection: TextDirection.ltr))));
+                $.b1((t) => Text(t, textDirection: TextDirection.ltr))));
   }
 }
 

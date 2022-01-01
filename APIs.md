@@ -25,6 +25,9 @@
 * [builder0](#builder0)
 * [builder1](#builder1)
 * [builder2](#builder2)
+* [b0](#b0)
+* [b1](#b1)
+* [b2](#b2)
 
 *override*
 
@@ -172,6 +175,24 @@ Widget build(BuildContext context) {
 }
 ```
 
+##### b0
+
+**`b0(Widget builder()) → ValueWidgetBuilder`**
+
+生成 `Widget` 构建方法
+
+- 通过 `builder` 指定一个无参的 `Widget` 构建方法
+- `builder0` 别名方法
+
+```dart
+// example
+@override
+Widget build(BuildContext context) {
+  return $.watch<String>($Model.prop1,
+    builder: $.b0(() => Text("hello!")));
+}
+```
+
 
 ##### builder1
 
@@ -190,6 +211,24 @@ Widget build(BuildContext context) {
 }
 ```
 
+##### b1
+
+**`b1<TValue>(Widget builder(TValue)) → ValueWidgetBuilder<TValue>`**
+
+生成 `Widget` 构建方法
+
+- 通过 `builder` 指定一个接收 `TValue` 的 `Widget` 构建方法
+- `builder1` 别名方法
+
+```dart
+// example
+@override
+Widget build(BuildContext context) {
+  return $.watch<String>($Model.prop1,
+    builder: $.b1((value) => Text(value)));
+}
+```
+
 ##### builder2
 
 **`builder2<TValue>(Widget builder(TValue, Widget)) → ValueWidgetBuilder<TValue>`**
@@ -204,6 +243,25 @@ Widget build(BuildContext context) {
 Widget build(BuildContext context) {
   return $.watch<String>($Model.prop1,
     builder: $.builder2((value, child) => Column(children:[Text("$value"), child]),
+    child: Text("child"));
+}
+```
+
+##### b2
+
+**`b2<TValue>(Widget builder(TValue, Widget)) → ValueWidgetBuilder<TValue>`**
+
+生成 `Widget` 构建方法
+
+- 通过 `builder` 指定一个接收 `TValue`, `Widget` 的 `Widget` 构建方法
+- `builder2` 别名方法
+
+```dart
+// example
+@override
+Widget build(BuildContext context) {
+  return $.watch<String>($Model.prop1,
+    builder: $.b2((value, child) => Column(children:[Text("$value"), child]),
     child: Text("child"));
 }
 ```
