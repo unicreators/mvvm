@@ -85,6 +85,9 @@ void main() => runApp(Demo1View());
 * [builder0](./APIs.md#builder0)
 * [builder1](./APIs.md#builder1)
 * [builder2](./APIs.md#builder2)
+* [b0](./APIs.md#b0)
+* [b1](./APIs.md#b1)
+* [b2](./APIs.md#b2)
 
 *override*
 
