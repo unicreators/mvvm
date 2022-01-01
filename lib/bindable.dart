@@ -109,11 +109,11 @@ abstract class BindableObject {
       getProperty<TValue>(propertyKey, required: requiredProperty)?.value;
 
   ///
-  /// 获取指定 [propertyKey] 对应的属性值
+  /// 获取指定 [propertyKey] 对应的属性值, 如 [propertyKey] 对应属性不存在则抛出异常
   ///
   /// [propertyKey] 属性键
   ///
-  TValue requireGetValue<TValue>(Object propertyKey) =>
+  TValue requireValue<TValue>(Object propertyKey) =>
       getProperty<TValue>(propertyKey, required: true)!.value;
 
   ///

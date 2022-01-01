@@ -103,6 +103,7 @@ void main() => runApp(Demo1View());
 * [propertyValue](./APIs.md#propertyvalue)
 * [propertyAdaptive](./APIs.md#propertyadaptive)
 * [propertyAsync](./APIs.md#propertyasync)
+* [requireValue](./APIs.md#requirevalue)
 * [getValue](./APIs.md#getvalue)
 * [setValue](./APIs.md#setvalue)
 * [updateValue](./APIs.md#updatevalue)

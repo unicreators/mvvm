@@ -85,10 +85,10 @@ class PageViewModel extends ViewModel with AsyncViewModelMixin {
   ValueListenable<String> get anyValueListenable => _anyValueListenable;
 
   // property ref
-  String get name => requireGetValue<String>(#name);
+  String get name => requireValue<String>(#name);
   set name(String value) => setValue<String>(#name, value);
 
-  int get age => requireGetValue<int>(#age);
+  int get age => requireValue<int>(#age);
   set age(int value) => setValue<int>(#age, value);
 
   // invoke asyc

@@ -43,6 +43,7 @@
 * [propertyValue](#propertyvalue)
 * [propertyAdaptive](#propertyadaptive)
 * [propertyAsync](#propertyasync)
+* [requireValue](#requirevalue)
 * [getValue](#getvalue)
 * [setValue](#setvalue)
 * [updateValue](#updatevalue)
@@ -89,7 +90,7 @@
 #### Methods
 
 ##### watch
-**`watch<TValue>(ValueListenable<TValue> valueListenable, { ValueWidgetBuilder<TValue> builder, Widget child }) → Widget`**
+**`watch<TValue>(ValueListenable<TValue> valueListenable, { ValueWidgetBuilder<TValue> builder, Widget? child }) → Widget`**
 
 绑定到指定 `valueListenable`, 当 `valueListenable` 值发生变化时, 使用 `builder` 构建 `Widget`
 
@@ -106,7 +107,7 @@ Widget build(BuildContext context) {
 
 ##### watchFor
 
-**`watchFor<TValue>(Object propertyKey, { ValueWidgetBuilder<TValue> builder, Widget child }) → Widget`**
+**`watchFor<TValue>(Object propertyKey, { ValueWidgetBuilder<TValue> builder, Widget? child }) → Widget`**
 
 绑定到指定属性, 当 `propertyKey` 对应属性值发生变化时, 使用 `builder` 构建 `Widget`
 
@@ -123,7 +124,7 @@ Widget build(BuildContext context) {
 
 ##### watchAny
 
-**`watchAny(Iterable<ValueListenable> valueListenable, { ValueWidgetBuilder<Iterable> builder, Widget child }) → Widget`**
+**`watchAny(Iterable<ValueListenable> valueListenable, { ValueWidgetBuilder<Iterable> builder, Widget? child }) → Widget`**
 
 绑定到指定 `valueListenable` 集合, 当任一 `valueListenable` 值发生变化时, 使用 `builder` 构建 `Widget`
 
@@ -141,7 +142,7 @@ Widget build(BuildContext context) {
 
 ##### watchAnyFor
 
-**`watchAnyFor(Iterable<Object> prepertyKeys, { ValueWidgetBuilder<Iterable> builder, Widget child }) → Widget`**
+**`watchAnyFor(Iterable<Object> prepertyKeys, { ValueWidgetBuilder<Iterable> builder, Widget? child }) → Widget`**
 
 绑定到指定属性集合, 当任一 `propertyKeys` 对应属性值发生变化时, 使用 `builder` 构建 `Widget`
 
@@ -231,7 +232,7 @@ Widget build(BuildContext context) {
 
 ##### builder2
 
-**`builder2<TValue>(Widget builder(TValue, Widget)) → ValueWidgetBuilder<TValue>`**
+**`builder2<TValue>(Widget builder(TValue, Widget?)) → ValueWidgetBuilder<TValue>`**
 
 生成 `Widget` 构建方法
 
@@ -249,7 +250,7 @@ Widget build(BuildContext context) {
 
 ##### b2
 
-**`b2<TValue>(Widget builder(TValue, Widget)) → ValueWidgetBuilder<TValue>`**
+**`b2<TValue>(Widget builder(TValue, Widget?)) → ValueWidgetBuilder<TValue>`**
 
 生成 `Widget` 构建方法
 
@@ -270,7 +271,7 @@ Widget build(BuildContext context) {
 
 ##### $cond
 
-**`$cond<TValue>(ValueListenable<TValue> valueListenable, { ValueWidgetBuilder<TValue> $true, ValueWidgetBuilder<TValue> $false, Widget child, bool valueHandle(TValue) }) → Widget`**
+**`$cond<TValue>(ValueListenable<TValue> valueListenable, {ValueWidgetBuilder<TValue>? $true, ValueWidgetBuilder<TValue>? $false, Widget? child, bool valueHandle(TValue)?}) → Widget`**
 
 绑定到指定 `valueListenable`, 当 `valueListenable` 值发生变化时, 若值判定结果为 `true` 则使用 `$true` 构建 `Widget`, 否则使用 `$false` 构建 `Widget`
 
@@ -291,7 +292,7 @@ Widget build(BuildContext context) {
 
 ##### $condFor
 
-**`$condFor<TValue>(Object propertyKey, { ValueWidgetBuilder<TValue> $true, ValueWidgetBuilder<TValue> $false, Widget child, bool valueHandle(TValue) }) → Widget`**
+**`$condFor<TValue>(Object propertyKey, {ValueWidgetBuilder<TValue>? $true, ValueWidgetBuilder<TValue>? $false, Widget? child, bool valueHandle(TValue)?}) → Widget`**
 
 绑定到指定属性, 当 `propertyKey` 对应属性值发生变化时, 若值判定结果为 `true` 则使用 `$true` 构建 `Widget`, 否则使用 `$false` 构建 `Widget`
 
@@ -312,7 +313,7 @@ Widget build(BuildContext context) {
 
 ##### $if
 
-**`$if<TValue>(ValueListenable<TValue> valueListenable, { ValueWidgetBuilder<TValue> builder, Widget child, bool valueHandle(TValue) }) → Widget`**
+**`$if<TValue>(ValueListenable<TValue> valueListenable, {required ValueWidgetBuilder<TValue> builder, Widget? child, bool valueHandle(TValue)?}) → Widget`**
 
 绑定到指定 `valueListenable`, 当值发生变化时, 若值判定结果为 `true` 时使用 `builder` 构建 `Widget` 否则不构建 `Widget`
 
@@ -332,7 +333,7 @@ Widget build(BuildContext context) {
 
 ##### $ifFor
 
-**`$ifFor<TValue>(Object propertyKey, { ValueWidgetBuilder<TValue> builder, Widget child, bool valueHandle(TValue) }) → Widget`**
+**`$ifFor<TValue>(Object propertyKey, {required ValueWidgetBuilder<TValue> builder, Widget? child, bool valueHandle(TValue)?}) → Widget`**
 
 绑定到指定属性, 当 `propertyKey` 对应属性值发生变化时, 若值判定结果为 `true` 时使用 `builder` 构建 `Widget` 否则不构建 `Widget`
 
@@ -352,7 +353,7 @@ Widget build(BuildContext context) {
 
 ##### $switch
 
-**`$switch<TKey, TValue>(ValueListenable<TValue> valueListenable, { Map<TKey, ValueWidgetBuilder<TValue>> options, ValueWidgetBuilder<TValue> defalut, Widget child, TKey valueToKey(TValue) }) → Widget`**
+**`$switch<TKey, TValue>(ValueListenable<TValue> valueListenable, {Map<TKey, ValueWidgetBuilder<TValue>>? options, ValueWidgetBuilder<TValue>? defalut, Widget? child, TKey valueToKey(TValue)?}) → Widget`**
 
 绑定到指定 `valueListenable`, 当 `valueListenable` 值发生变化时, 其值做为 `key` 到 `options` 中查找对应 `Widget` 构建方法, 若未找到则使用 `default` 构建, 如 `default` 为 `null` 则不构建 `Widget`
 
@@ -373,7 +374,7 @@ Widget build(BuildContext context) {
 
 ##### $switchFor
 
-**`$switchFor<TKey, TValue>(Object propertyKey, { Map<TKey, ValueWidgetBuilder<TValue>> options, ValueWidgetBuilder<TValue> defalut, Widget child, TKey valueToKey(TValue) }) → Widget`**
+**`$switchFor<TKey, TValue>(Object propertyKey, {Map<TKey, ValueWidgetBuilder<TValue>>? options, ValueWidgetBuilder<TValue>? defalut, Widget? child, TKey valueToKey(TValue)?}) → Widget`**
 
 绑定到指定属性, 当 `propertyKey` 对应属性值发生变化时, 其值做为 `key` 到 `options` 中查找对应 `Widget` 构建方法, 若未找到则使用 `default` 构建, 如 `default` 为 `null` 则不构建 `Widget`
 
@@ -393,7 +394,7 @@ Widget build(BuildContext context) {
 
 ##### adapt
 
-**`adapt<TValue>(Object propertyKey, {Widget Function(void Function({TValue value})) builder, ValueGetter<TValue> valueGetter, ValueSetter<TValue> valueSetter, PropertyValueChanged<TValue> valueChanged, TValue initial )) → Widget`**
+**`adapt<TValue>(Object propertyKey, {required Widget builder(AdaptTrigger<TValue> emit), required ValueGetter<TValue> valueGetter, required ValueSetter<TValue> valueSetter, PropertyValueChanged<TValue>? valueChanged, TValue? initial}) → Widget`**
 
 创建一个适配属性, 使用 `builder` 构建 `Widget`, 在 `builder` 方法中使用参数回调触发属性值变化通知
  
@@ -456,7 +457,7 @@ Widget build(BuildContext context) {
 
 ##### propertyValue
 
-**`propertyValue<TValue>(Object propertyKey, { PropertyValueChanged<TValue> valueChanged, TValue initial }) → BindableProperty<TValue>`**
+**`propertyValue<TValue>(Object propertyKey, {PropertyValueChanged<TValue>? valueChanged, required TValue initial}) → BindableProperty<TValue>`**
 
 创建一个值属性
 
@@ -475,7 +476,7 @@ class PageViewModel extends ViewModel {
 
 ##### propertyAdaptive
 
-**`propertyAdaptive<TValue, TAdaptee extends Listenable>(Object propertyKey, TAdaptee adaptee, TValue getAdapteeValue(TAdaptee), void setAdapteeValue(TAdaptee, TValue), { PropertyValueChanged<TValue> valueChanged, TValue initial }) → BindableProperty<TValue>`**
+**`propertyAdaptive<TValue, TAdaptee extends Listenable>(Object propertyKey, TAdaptee adaptee, TValue getAdapteeValue(TAdaptee), void setAdapteeValue(TAdaptee, TValue), {PropertyValueChanged<TValue>? valueChanged, TValue? initial}) → BindableProperty<TValue>`**
 
 创建一个适配属性
 
@@ -504,7 +505,7 @@ class PageViewModel extends ViewModel {
 
 ##### propertyAsync
 
-**`propertyAsync<TValue>(Object propertyKey, AsyncValueGetter<TValue> futureGetter, { TValue handle(TValue), PropertyValueChanged<TValue> valueChanged, TValue initial }) → BindableProperty<TValue>`**
+**`propertyAsync<TValue>(Object propertyKey, AsyncValueGetter<TValue> futureGetter, {TValue handle(TValue)?, void onStart()?, void onEnd()?, void onSuccess(TValue)?, void onError(dynamic)?, PropertyValueChanged<AsyncSnapshot<TValue>>? valueChanged, TValue? initial}) → BindableProperty<AsyncSnapshot<TValue>>`**
 
 创建一个异步请求属性
 *要使用此属性的 `ViewModel` 需要 `with` 到 `AsyncViewModelMixin`*
@@ -558,14 +559,14 @@ class PageView extends View<PageViewModel> {
                       ConnectionState.waiting &&
                   snapshot.hasData
               ? Text("${snapshot.data.name}", textDirection: TextDirection.ltr)
-              : child),
+              : child!),
           child: Text("empty", textDirection: TextDirection.ltr)),
       RaisedButton(
           child: $.watchFor(#findUserAsync,
               builder: $.builder2((AsyncSnapshot<User> snapshot, child) =>
                   snapshot.connectionState == ConnectionState.waiting
                       ? CircularProgressIndicator()
-                      : child),
+                      : child!),
               child: Text("find", textDirection: TextDirection.ltr)),
           // or: onPressed: () { $Model.find(); }
           onPressed: $Model.link(#findUserAsync))
@@ -575,10 +576,19 @@ class PageView extends View<PageViewModel> {
 ```
 
 
+##### requireValue
+
+**`requireValue<TValue>(Object propertyKey) → TValue`**
+
+获取指定 `propertyKey` 对应的属性值, 如 `propertyKey` 对应属性不存在则抛出异常
+
+- `propertyKey` 指定属性键 
+
+
 
 ##### getValue
 
-**`getValue<TValue>(Object propertyKey, { bool requiredProperty: false }) → TValue`**
+**`getValue<TValue>(Object propertyKey, { bool requiredProperty: false }) → TValue?`**
 
 获取指定 `propertyKey` 对应的属性值
 
