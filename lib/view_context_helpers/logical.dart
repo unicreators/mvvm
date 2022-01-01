@@ -1,4 +1,4 @@
-// Copyright (c) 2019 yichen <d.unicreators@gmail.com>. All rights reserved.
+// Copyright (c) 2022 yichen <d.unicreators@gmail.com>. All rights reserved.
 // Use of this source code is governed by a MIT license that can be
 // found in the LICENSE file.
 
@@ -28,10 +28,10 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
   /// }
   /// ```
   Widget $cond<TValue>(ValueListenable<TValue> valueListenable,
-      {ValueWidgetBuilder<TValue> $true,
-      ValueWidgetBuilder<TValue> $false,
-      Widget child,
-      bool Function(TValue) valueHandle}) {
+      {ValueWidgetBuilder<TValue>? $true,
+      ValueWidgetBuilder<TValue>? $false,
+      Widget? child,
+      bool Function(TValue)? valueHandle}) {
     assert($true != null || $false != null);
 
     //   type    bool_value
@@ -43,8 +43,7 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
             (valueHandle != null ? valueHandle(value) : value != null)
                 ? $true?.call
                 : $false?.call,
-        child: child,
-        nullBuilderToEmptyWidget: true);
+        child: child);
   }
 
   ///
@@ -66,10 +65,10 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
   /// }
   /// ```
   Widget $condFor<TValue>(Object propertyKey,
-          {ValueWidgetBuilder<TValue> $true,
-          ValueWidgetBuilder<TValue> $false,
-          Widget child,
-          bool Function(TValue) valueHandle}) =>
+          {ValueWidgetBuilder<TValue>? $true,
+          ValueWidgetBuilder<TValue>? $false,
+          Widget? child,
+          bool Function(TValue)? valueHandle}) =>
       $cond<TValue>(getProperty<TValue>(propertyKey),
           $true: $true, $false: $false, child: child, valueHandle: valueHandle);
 
@@ -91,9 +90,9 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
   /// }
   /// ```
   Widget $if<TValue>(ValueListenable<TValue> valueListenable,
-          {ValueWidgetBuilder<TValue> builder,
-          Widget child,
-          bool Function(TValue) valueHandle}) =>
+          {required ValueWidgetBuilder<TValue> builder,
+          Widget? child,
+          bool Function(TValue)? valueHandle}) =>
       $cond(valueListenable,
           $true: builder, child: child, valueHandle: valueHandle);
 
@@ -115,9 +114,9 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
   /// }
   /// ```
   Widget $ifFor<TValue>(Object propertyKey,
-          {ValueWidgetBuilder<TValue> builder,
-          Widget child,
-          bool Function(TValue) valueHandle}) =>
+          {required ValueWidgetBuilder<TValue> builder,
+          Widget? child,
+          bool Function(TValue)? valueHandle}) =>
       $if(getProperty<TValue>(propertyKey),
           builder: builder, child: child, valueHandle: valueHandle);
 
@@ -141,19 +140,17 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
   /// }
   /// ```
   Widget $switch<TKey, TValue>(ValueListenable<TValue> valueListenable,
-          {Map<TKey, ValueWidgetBuilder<TValue>> options,
-          ValueWidgetBuilder<TValue> defalut,
-          Widget child,
-          TKey Function(TValue) valueToKey}) =>
+          {Map<TKey, ValueWidgetBuilder<TValue>>? options,
+          ValueWidgetBuilder<TValue>? defalut,
+          Widget? child,
+          TKey Function(TValue)? valueToKey}) =>
       (options == null || options.isEmpty)
-          ? build<TValue>(valueListenable,
-              builder: defalut, child: child, nullBuilderToEmptyWidget: true)
+          ? build<TValue>(valueListenable, builder: defalut, child: child)
           : buildFromSelector<TValue>(valueListenable,
               selector: (TValue value) =>
                   options[valueToKey != null ? valueToKey(value) : value] ??
                   defalut?.call,
-              child: child,
-              nullBuilderToEmptyWidget: true);
+              child: child);
 
   ///
   /// 绑定到指定属性, 当 [propertyKey] 对应属性值发生变化时,
@@ -174,10 +171,10 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
   /// }
   /// ```
   Widget $switchFor<TKey, TValue>(Object propertyKey,
-          {Map<TKey, ValueWidgetBuilder<TValue>> options,
-          ValueWidgetBuilder<TValue> defalut,
-          Widget child,
-          TKey Function(TValue) valueToKey}) =>
+          {Map<TKey, ValueWidgetBuilder<TValue>>? options,
+          ValueWidgetBuilder<TValue>? defalut,
+          Widget? child,
+          TKey Function(TValue)? valueToKey}) =>
       $switch<TKey, TValue>(getProperty<TValue>(propertyKey),
           options: options,
           defalut: defalut,

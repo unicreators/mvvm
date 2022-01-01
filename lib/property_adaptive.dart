@@ -1,4 +1,4 @@
-// Copyright (c) 2019 yichen <d.unicreators@gmail.com>. All rights reserved.
+// Copyright (c) 2022 yichen <d.unicreators@gmail.com>. All rights reserved.
 // Use of this source code is governed by a MIT license that can be
 // found in the LICENSE file.
 
@@ -16,12 +16,9 @@ class AdaptiveViewModelProperty<TValue, TAdaptee extends Listenable>
       TAdaptee adaptee,
       TValue Function(TAdaptee) getAdapteeValue,
       void Function(TAdaptee, TValue) setAdapteeValue,
-      {PropertyValueChanged<TValue> valueChanged,
-      TValue initial})
-      : assert(adaptee != null &&
-            getAdapteeValue != null &&
-            setAdapteeValue != null),
-        _adaptee = adaptee,
+      {PropertyValueChanged<TValue>? valueChanged,
+      TValue? initial})
+      : _adaptee = adaptee,
         super(key, () => getAdapteeValue(adaptee),
             (v) => setAdapteeValue(adaptee, v),
             valueChanged: valueChanged, initial: initial) {
@@ -49,7 +46,6 @@ mixin AdaptiveViewModelMixin on _ViewModelBase {
   /// [getAdapteeValue] 指定从被适配者获取值的方法
   /// [setAdapteeValue] 指定设置被适配者值的方法
   /// [valueChanged] 指定属性值变更后的回调方法
-  /// [initial] 指定初始值
   ///
   BindableProperty<TValue>
       propertyAdaptive<TValue, TAdaptee extends Listenable>(
@@ -57,8 +53,8 @@ mixin AdaptiveViewModelMixin on _ViewModelBase {
               TAdaptee adaptee,
               TValue Function(TAdaptee) getAdapteeValue,
               void Function(TAdaptee, TValue) setAdapteeValue,
-              {PropertyValueChanged<TValue> valueChanged,
-              TValue initial}) =>
+              {PropertyValueChanged<TValue>? valueChanged,
+              TValue? initial}) =>
           registryProperty(AdaptiveViewModelProperty<TValue, TAdaptee>(
               propertyKey, adaptee, getAdapteeValue, setAdapteeValue,
               valueChanged: valueChanged, initial: initial));

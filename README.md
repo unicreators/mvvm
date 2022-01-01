@@ -48,7 +48,7 @@ class Demo1View extends View<Demo1ViewModel> {
         // binding
         child: $.watchFor<String>(#time,
             builder:
-                $.builder1((t) => Text(t, textDirection: TextDirection.ltr))));
+                $.b1((t) => Text(t, textDirection: TextDirection.ltr))));
   }
 }
 
@@ -85,6 +85,9 @@ void main() => runApp(Demo1View());
 * [builder0](./APIs.md#builder0)
 * [builder1](./APIs.md#builder1)
 * [builder2](./APIs.md#builder2)
+* [b0](./APIs.md#b0)
+* [b1](./APIs.md#b1)
+* [b2](./APIs.md#b2)
 
 *override*
 
@@ -100,6 +103,7 @@ void main() => runApp(Demo1View());
 * [propertyValue](./APIs.md#propertyvalue)
 * [propertyAdaptive](./APIs.md#propertyadaptive)
 * [propertyAsync](./APIs.md#propertyasync)
+* [requireValue](./APIs.md#requirevalue)
 * [getValue](./APIs.md#getvalue)
 * [setValue](./APIs.md#setvalue)
 * [updateValue](./APIs.md#updatevalue)

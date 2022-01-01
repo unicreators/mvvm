@@ -1,4 +1,4 @@
-// Copyright (c) 2019 yichen <d.unicreators@gmail.com>. All rights reserved.
+// Copyright (c) 2022 yichen <d.unicreators@gmail.com>. All rights reserved.
 // Use of this source code is governed by a MIT license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,12 @@ part of './mvvm.dart';
 ///
 class ValueViewModelProperty<TValue> extends BindableProperty<TValue> {
   ValueViewModelProperty._(Object propertyKey,
-      {PropertyValueChanged<TValue> valueChanged, TValue initial})
+      {PropertyValueChanged<TValue>? valueChanged, required TValue initial})
       : super(propertyKey, valueChanged: valueChanged, initial: initial);
 
   /// ValueViewModelProperty
   ValueViewModelProperty(Object propertyKey,
-      {PropertyValueChanged<TValue> valueChanged, TValue value})
+      {PropertyValueChanged<TValue>? valueChanged, required TValue value})
       : this._(propertyKey, valueChanged: valueChanged, initial: value);
 }
 
@@ -30,7 +30,8 @@ mixin ValueViewModelMixin on _ViewModelBase {
   /// [initial] 指定初始值
   ///
   BindableProperty<TValue> propertyValue<TValue>(Object propertyKey,
-          {PropertyValueChanged<TValue> valueChanged, TValue initial}) =>
+          {PropertyValueChanged<TValue>? valueChanged,
+          required TValue initial}) =>
       registryProperty(ValueViewModelProperty<TValue>(propertyKey,
           valueChanged: valueChanged, value: initial));
 }

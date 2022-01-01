@@ -1,74 +1,75 @@
+## 0.2.1
+* Null safety support
+
+## 0.2.0
+* Null safety support
+
 ## 0.1.9
-* 优化代码 
+* Optimized code
 
 ## 0.1.8
-* 修复(Flutter v1.12.13+hotfix.8)编译错误 
+* Fix (Flutter v1.12.13+hotfix.8) error
 
 ## 0.1.7
-* 完善代码注释文档
-* 完善 APIs.md
+* Update documentation
+* Update APIs.md
 
 ## 0.1.6+1
-* 完善 APIs.md
+* Update APIs.md
 
 ## 0.1.6
-* 代码优化
-* 增加测试代码
+* Optimized code
 
 ## 0.1.5+1
-* 更新 README.md
+* Update README.md
 
 ## 0.1.5
-* 视图上下文 `ViewContext` 增加 `dispose`、`viewInit`、`viewReady` 方法
-* 视图模型 `ViewModel` 增加 `dispose`、`viewInit`、`viewReady` 方法
-* 视图 `View` 增加 `dispose`、`ready` 方法, 原有 `buildCore` 方法更名为 `build`, 原有 `initView` 方法更名为 `init`
-* 代码优化
-* 增加列表示例 `example/lib/example_list.dart`
+* View context `ViewContext` adds `dispose`, `viewInit`, `viewReady` methods
+* View model `ViewModel` adds `dispose`, `viewInit`, `viewReady` methods
+* View `View` adds `dispose` and `ready` methods, the original `buildCore` method is renamed to `build`, and the original `initView` method is renamed to `init`
 
 ## 0.1.4+1
-* 增加属性键 `propertyKey` 查找属性 `Property` 未找到时异常
-* 视图上下文 `ViewContext` 中增加任务功能
-* 视图 `View` 增加"流程管线"
-* 代码优化
-* 更新 example
+* Add property key `propertyKey` to find the property `Property` is not found exception
+* Added task in view context `ViewContext`
+* View `View` adds "process pipeline"
+* Update example
 
 ## 0.1.4
-* 绑定属性 `BindableProperty` 增加 `valueChanged` 属性值变更后回调方法
-* 视图上下文 `ViewContext` 增加 `adapt` 辅助方法, 用于在 `View` 中动态创建适配到 `Widget` 的绑定属性
-* 视图上下文 `ViewContext` 增加 `getValueFor`、`setValueFor` 辅助方法, 用于在 `View` 中手动获取或设置绑定属性值
-* 代码优化、完善文件头信息
-* 更新 example、README.md
+* The binding property `BindableProperty` adds a callback method after the `valueChanged` property value is changed
+* View context `ViewContext` adds `adapt` method, which is used to dynamically create binding properties adapted to `Widget` in `View`
+* View context `ViewContext` adds `getValueFor` and `setValueFor` methods, which are used to manually obtain or set bound property values ​​in `View`
+* Update example, README.md
 
 ## 0.1.3+4
-* 增加 `AsyncViewModelProperty` 类 `resetOnBefore` 参数功能
+* Add `resetOnBefore` parameter of `AsyncViewModelProperty` class
 
 ## 0.1.3+3
-* 代码优化
+* Optimized code
 
 ## 0.1.3+2
-* 代码优化
-* 更新 example
+* Code optimization
+* Update example
 
 ## 0.1.3+1
-* 代码优化
+* Optimized code
 
 ## 0.1.3
-* 完善代码注释文档
-* 增加 `analysis_options.yaml`
-* `ViewModel` 中 `property(..)` 方法重命名为 `propertyValue(..)`, `propertyAdaptive` 方法去除 `TAdapteeValue` 泛型参数
-* `ValueNotifierAdapter` 中 `TAdaptee` 泛型参数约束调整
-* 更新 example
-* 更新 README.md
+* Update documentation
+* Add `analysis_options.yaml`
+* The `property(..)` method in `ViewModel` is renamed to `propertyValue(..)`, the `propertyAdaptive` method removes the `TAdapteeValue` generic parameter
+* `TAdaptee` generic parameter constraint adjustment in `ValueNotifierAdapter`
+* Update example
+* Update README.md
 
 ## 0.1.2+1
-* 增加代码注释文档
+* Add documentation
 
 ## 0.1.2
-* 拆分视图上下文 `ViewContext` 功能 
-* 更新示例程序
+* Split view context `ViewContext`
+* Update sample code
 
 ## 0.1.1
-* 项目信息变更
+* Project information changes
 
-## 0.1.0 
-* 初始项目
+## 0.1.0
+* Initial project

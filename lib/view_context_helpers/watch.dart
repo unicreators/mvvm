@@ -1,4 +1,4 @@
-// Copyright (c) 2019 yichen <d.unicreators@gmail.com>. All rights reserved.
+// Copyright (c) 2022 yichen <d.unicreators@gmail.com>. All rights reserved.
 // Use of this source code is governed by a MIT license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ mixin ViewContextWatchHelperMixin<TViewModel extends ViewModelBase>
   /// }
   /// ```
   Widget watch<TValue>(ValueListenable<TValue> valueListenable,
-          {ValueWidgetBuilder<TValue> builder, Widget child}) =>
+          {required ValueWidgetBuilder<TValue> builder, Widget? child}) =>
       build(valueListenable, builder: builder, child: child);
 
   ///
@@ -42,7 +42,7 @@ mixin ViewContextWatchHelperMixin<TViewModel extends ViewModelBase>
   /// }
   /// ```
   Widget watchFor<TValue>(Object propertyKey,
-          {ValueWidgetBuilder<TValue> builder, Widget child}) =>
+          {required ValueWidgetBuilder<TValue> builder, Widget? child}) =>
       watch(getProperty<TValue>(propertyKey), builder: builder, child: child);
 
   ///
@@ -61,8 +61,9 @@ mixin ViewContextWatchHelperMixin<TViewModel extends ViewModelBase>
   ///     builder: $.builder1((values) => Text(values[0])));
   /// }
   /// ```
-  Widget watchAny<TValue>(Iterable<ValueListenable<TValue>> valueListenables,
-          {ValueWidgetBuilder<Iterable<TValue>> builder, Widget child}) =>
+  Widget watchAny<TValue>(Iterable<ValueListenable<TValue>?> valueListenables,
+          {required ValueWidgetBuilder<Iterable<TValue>> builder,
+          Widget? child}) =>
       build(MergingValueListenable<TValue>(valueListenables),
           builder: builder, child: child);
 
@@ -83,7 +84,8 @@ mixin ViewContextWatchHelperMixin<TViewModel extends ViewModelBase>
   /// }
   /// ```
   Widget watchAnyFor<TValue>(Iterable<Object> prepertyKeys,
-          {ValueWidgetBuilder<Iterable<TValue>> builder, Widget child}) =>
+          {required ValueWidgetBuilder<Iterable<TValue>> builder,
+          Widget? child}) =>
       watchAny(getProperties<TValue>(prepertyKeys),
           builder: builder, child: child);
 }
@@ -91,26 +93,28 @@ mixin ViewContextWatchHelperMixin<TViewModel extends ViewModelBase>
 /// MergingValueListenable
 ///
 class MergingValueListenable<TValue> extends ValueNotifier<Iterable<TValue>> {
-  final Iterable<ValueListenable<TValue>> _valueListenables;
-  Listenable _mergingValueListenable;
+  Iterable<ValueListenable<TValue>>? _valueListenables;
+  Listenable? _mergingValueListenable;
 
   /// MergingValueListenable
-  MergingValueListenable(this._valueListenables)
-      : assert(_valueListenables != null),
-        super(null) {
+  MergingValueListenable(Iterable<ValueListenable<TValue>?> _valueListenables)
+      : super([]) {
+    this._valueListenables = _valueListenables
+        .where((l) => l != null)
+        .cast<ValueListenable<TValue>>();
     _valueChange();
-    _mergingValueListenable = Listenable.merge(_valueListenables.toList())
+    _mergingValueListenable = Listenable.merge(this._valueListenables!.toList())
       ..addListener(_valueChange);
   }
 
   Iterable<TValue> _getValues() =>
-      _valueListenables.map<TValue>((vn) => vn?.value);
+      _valueListenables!.map<TValue>((vn) => vn.value);
 
   void _valueChange() => value = _getValues();
 
   @override
   void dispose() {
-    _mergingValueListenable.removeListener(_valueChange);
+    _mergingValueListenable!.removeListener(_valueChange);
     super.dispose();
   }
 }
