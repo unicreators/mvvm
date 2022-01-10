@@ -2,7 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:mvvm/mvvm.dart';
 import 'dart:async';
 
-void main() => runApp(MaterialApp(home: LoginView()));
+void main() => runApp(MaterialApp(
+      home: LoginView(),
+      theme: ThemeData(
+          textTheme: TextTheme(
+              button: TextStyle(color: Colors.redAccent, fontSize: 48),
+              headline1: TextStyle(color: Colors.redAccent, fontSize: 48)),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
+                  fixedSize: const Size(double.infinity, 50),
+                  textStyle: const TextStyle(
+                    fontSize: 20,
+                  )))),
+    ));
 
 class User {
   String name;
@@ -28,36 +40,35 @@ class LoginViewModel extends ViewModel with AsyncViewModelMixin {
   final TextEditingController userNameCtrl = TextEditingController();
   final TextEditingController passwordCtrl = TextEditingController();
 
+  final time = DateTime.now().toBindableProperty();
+  late AdaptiveBindableProperty<String, TextEditingController> userName;
+  late AsyncBindableProperty<User> login;
+
   LoginViewModel(this._service) {
-    propertyValue<DateTime>(#time, initial: DateTime.now());
-    // timer
-    start();
+    userName = AdaptiveBindableProperty<String, TextEditingController>(
+      userNameCtrl,
+      (tec) => tec.text,
+      (tec, v) => tec.text = v,
+    );
 
-    propertyAdaptive<String, TextEditingController>(
-        #userName, userNameCtrl, (v) => v.text, (a, v) => a.text = v,
-        valueChanged: (v, k) => print("$k: $v"));
+    login = AsyncBindableProperty<User>(
+        () => _service.login(userNameCtrl.text, passwordCtrl.text));
 
-    propertyAsync<User>(
-        #login, () => _service.login(userNameCtrl.text, passwordCtrl.text),
-        valueChanged: (v, k) => print("$k: $v"));
+    Timer.periodic(
+        const Duration(seconds: 1), (_) => time.value = DateTime.now());
   }
 
   bool get inputValid =>
       userNameCtrl.text.length > 2 && passwordCtrl.text.length > 2;
-
-  final _pad = (int v) => "$v".padLeft(2, "0");
-  String format(DateTime dt) =>
-      "${_pad(dt.hour)}:${_pad(dt.minute)}:${_pad(dt.second)}";
-
-  start() {
-    Timer.periodic(const Duration(seconds: 1),
-        (_) => setValue<DateTime>(#time, DateTime.now()));
-  }
 }
 
 // View
 class LoginView extends View<LoginViewModel> {
   LoginView() : super(LoginViewModel(RemoteService()));
+
+  final _pad = (int v) => "$v".padLeft(2, "0");
+  String format(DateTime dt) =>
+      "${_pad(dt.hour)}:${_pad(dt.minute)}:${_pad(dt.second)}";
 
   @override
   Widget build(BuildContext context) {
@@ -68,53 +79,57 @@ class LoginView extends View<LoginViewModel> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                $.watchFor<DateTime>(#time,
-                    builder: $.b1((t) => Text($Model.format(t),
-                        style:
-                            TextStyle(color: Colors.redAccent, fontSize: 48)))),
+                $.watch<DateTime>($model.time,
+                    builder: (context, t, _) => Text(format(t),
+                        style: Theme.of(context).textTheme.headline1)),
+                $.watchAnyForMap<String>({
+                  #propertyKey1: MapBehavior(initialValue: '20'),
+                  #password: MapBehavior(initialValue: 'passowrd')
+                },
+                    builder: (context, t, _) => Text(
+                        "${t[#propertyKey1]} + ${t[#password]}",
+                        style: Theme.of(context).textTheme.headline1)),
                 SizedBox(height: 30),
                 TextField(
-                  controller: $Model.userNameCtrl,
-                  decoration: InputDecoration(
-                    border: UnderlineInputBorder(),
-                    labelText: 'UserName',
-                  ),
+                  controller: $model.userName.adaptee,
+                  decoration: InputDecoration(labelText: 'UserName'),
                 ),
                 SizedBox(height: 10),
-                $.adapt<String>(#password,
-                    builder: (emit) => TextField(
-                          onChanged: (v) => emit(),
+                TextField(
+                  obscureText: true,
+                  controller: $.wrapTo<String, TextEditingController>(
+                      #propertyKey1, TextEditingController(),
+                      valueGetter: (target) => target.text,
+                      valueSetter: (target, value) => target.text = value),
+                  decoration: InputDecoration(labelText: 'Password'),
+                ),
+                $.adaptTo<String>(#password,
+                    builder: (notify) => TextField(
+                          onChanged: (v) => notify(),
                           obscureText: true,
-                          controller: $Model.passwordCtrl,
-                          decoration: InputDecoration(
-                            border: UnderlineInputBorder(),
-                            labelText: 'Password',
-                          ),
+                          controller: $model.passwordCtrl,
+                          decoration: InputDecoration(labelText: 'Password'),
                         ),
-                    valueGetter: () => $Model.passwordCtrl.text,
-                    valueSetter: (v) => $Model.passwordCtrl.text = v,
-                    valueChanged: (v, k) => print("$k: $v"),
+                    valueGetter: () => $model.passwordCtrl.text,
+                    valueSetter: (v) => $model.passwordCtrl.text = v,
+                    valueChanged: (v) => print("$v"),
                     initial: ''),
                 SizedBox(height: 10),
-                $.$ifFor(#login,
+                $.$if($model.login,
                     valueHandle: (AsyncSnapshot snapshot) => snapshot.hasError,
-                    builder: $.b1((AsyncSnapshot snapshot) {
-                      return Text("${snapshot.error}",
-                          style:
-                              TextStyle(color: Colors.redAccent, fontSize: 16));
-                    })),
+                    builder: $.b1((AsyncSnapshot snapshot) => Text(
+                        "${snapshot.error}",
+                        style: TextStyle(color: Colors.redAccent)))),
                 Container(
                     margin: EdgeInsets.only(top: 80),
                     width: double.infinity,
-                    child: $.watchAnyFor<String>(const [#userName, #password],
-                        builder: $.b2((_, child) => RaisedButton(
-                            onPressed: $Model.inputValid
-                                ? $Model.link(#login, resetOnBefore: true)
-                                : null,
-                            child: child,
-                            color: Colors.blueAccent,
-                            textColor: Colors.white)),
-                        child: $.watchFor(#login,
+                    child: $.watchAny<String>(
+                        [model.userName, $model.property(#password)],
+                        builder: $.b2((_, child) => ElevatedButton(
+                            onPressed:
+                                $model.inputValid ? $model.login.invoke : null,
+                            child: child)),
+                        child: $.watch($model.login,
                             builder: $.b2((AsyncSnapshot snapshot, child) =>
                                 snapshot.connectionState ==
                                         ConnectionState.waiting
@@ -122,12 +137,11 @@ class LoginView extends View<LoginViewModel> {
                                     : child!),
                             child: Text("login")))),
                 SizedBox(height: 20),
-                $.$ifFor<AsyncSnapshot<User>>(#login,
+                $.$if<AsyncSnapshot<User>>($model.login,
                     valueHandle: (AsyncSnapshot snapshot) => snapshot.hasData,
                     builder: $.b1((AsyncSnapshot<User> snapshot) => Text(
                         "${snapshot.data?.displayName}",
-                        style:
-                            TextStyle(color: Colors.blueAccent, fontSize: 20))))
+                        style: TextStyle(color: Colors.blueAccent))))
               ],
             )));
   }

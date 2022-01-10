@@ -2,19 +2,15 @@
 // Use of this source code is governed by a MIT license that can be
 // found in the LICENSE file.
 
-part of './mvvm.dart';
+part of '../mvvm.dart';
 
-/// ValueViewModelProperty
+/// ValueBindableProperty
 ///
-class ValueViewModelProperty<TValue> extends BindableProperty<TValue> {
-  ValueViewModelProperty._(Object propertyKey,
-      {PropertyValueChanged<TValue>? valueChanged, required TValue initial})
-      : super(propertyKey, valueChanged: valueChanged, initial: initial);
-
+class ValueBindableProperty<TValue> extends BindableProperty<TValue> {
   /// ValueViewModelProperty
-  ValueViewModelProperty(Object propertyKey,
-      {PropertyValueChanged<TValue>? valueChanged, required TValue value})
-      : this._(propertyKey, valueChanged: valueChanged, initial: value);
+  ValueBindableProperty(
+      {PropertyValueChanged<TValue>? valueChanged, required TValue initial})
+      : super(valueChanged: valueChanged, initial: initial);
 }
 
 ///
@@ -32,6 +28,8 @@ mixin ValueViewModelMixin on _ViewModelBase {
   BindableProperty<TValue> propertyValue<TValue>(Object propertyKey,
           {PropertyValueChanged<TValue>? valueChanged,
           required TValue initial}) =>
-      registryProperty(ValueViewModelProperty<TValue>(propertyKey,
-          valueChanged: valueChanged, value: initial));
+      registryProperty(
+          propertyKey,
+          ValueBindableProperty<TValue>(
+              valueChanged: valueChanged, initial: initial));
 }

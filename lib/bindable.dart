@@ -6,8 +6,7 @@ part of './mvvm.dart';
 
 ///
 /// 属性值改变
-typedef PropertyValueChanged<TValue> = void Function(
-    TValue value, Object propertyKey);
+typedef PropertyValueChanged<TValue> = void Function(TValue value);
 
 /// BindableObject
 ///
@@ -24,8 +23,8 @@ abstract class BindableObject {
   ///
   /// 注册一个属性
   BindableProperty<TValue> registryProperty<TValue>(
-      BindableProperty<TValue> property) {
-    (_properties ??= <Object, BindableProperty<dynamic>>{})[property.key] =
+      Object propertyKey, BindableProperty<TValue> property) {
+    (_properties ??= <Object, BindableProperty<dynamic>>{})[propertyKey] =
         property;
     return property;
   }
@@ -53,16 +52,34 @@ abstract class BindableObject {
       {bool required = false}) {
     var property = _properties?[propertyKey] as BindableProperty<TValue>?;
     if (required && property == null) {
-      throw FlutterError('''
+      throwNotfoundPropertyError(propertyKey);
+    }
+    return property;
+  }
+
+  ///
+  void throwNotfoundPropertyError(Object propertyKey) {
+    throw FlutterError('''
 
 [Flutter MVVM]
 
   Property not found. 
     - propertyKey: $propertyKey  
 ''');
-    }
+  }
 
-    return property;
+  ///
+  /// 获取指定 [propertyKey] 对应的属性
+  ///
+  /// - 如对应属性不存在则抛出异常
+  ///
+  /// [propertyKey] 属性键
+  ///
+  ///
+  @visibleForTesting
+  @protected
+  BindableProperty<TValue> property<TValue>(Object propertyKey) {
+    return getProperty(propertyKey, required: true)!;
   }
 
   ///
@@ -76,11 +93,9 @@ abstract class BindableObject {
   ///   或其类型不为 [TProperty], 则抛出异常
   ///   默认值为 `false`
   ///
-  @protected
-  BindableProperty<TValue>?
-      getPropertyOf<TValue, TProperty extends BindableProperty<TValue>>(
-          Object propertyKey,
-          {bool required = false}) {
+  TProperty? getPropertyOf<TValue, TProperty extends BindableProperty<TValue>>(
+      Object propertyKey,
+      {bool required = false}) {
     var property = getProperty<TValue>(propertyKey, required: required);
     if (property is TProperty) return property;
     if (required) {
@@ -96,6 +111,19 @@ abstract class BindableObject {
   }
 
   ///
+  /// 获取指定 [propertyKey] 对应 [TProperty] 类型属性
+  ///
+  /// - 如 [propertyKey] 对应属性不存在或类型不为 [TProperty] 则抛出异常
+  ///
+  /// [propertyKey] 属性键
+  ///
+  ///
+  TProperty propertyOf<TValue, TProperty extends BindableProperty<TValue>>(
+      Object propertyKey) {
+    return getPropertyOf<TValue, TProperty>(propertyKey, required: true)!;
+  }
+
+  ///
   /// 获取指定 [propertyKey] 对应的属性值
   ///
   /// [propertyKey] 属性键
@@ -104,12 +132,17 @@ abstract class BindableObject {
   ///   其值为 `true` 时, 如 [propertyKey] 对应属性不存在则抛出异常
   ///   默认值为 `false`
   ///
+  /// [defaultValue] 当属性不存在或值为 `null` 时，则使用此值
+  ///
   TValue? getValue<TValue>(Object propertyKey,
-          {bool requiredProperty = false}) =>
-      getProperty<TValue>(propertyKey, required: requiredProperty)?.value;
+          {bool requiredProperty = false, TValue? defaultValue}) =>
+      getProperty<TValue>(propertyKey, required: requiredProperty)?.value ??
+      defaultValue;
 
   ///
-  /// 获取指定 [propertyKey] 对应的属性值, 如 [propertyKey] 对应属性不存在则抛出异常
+  /// 获取指定 [propertyKey] 对应的属性值
+  ///
+  /// - 如 [propertyKey] 对应属性不存在则抛出异常
   ///
   /// [propertyKey] 属性键
   ///
@@ -164,19 +197,38 @@ abstract class BindableObject {
   /// [propertyKey] 属性键
   ///
   /// [updator] 指定值更新处理器
-  ///   当 [updator] 处理器返回 `true` 时将发送值变更通知
+  ///   当 [updator] 处理器返回 `null` 时将不回写属性值
   ///
   /// [requiredProperty] 指定 [propertyKey] 对应属性是否必须存在,
   ///   其值为 `true` 时, 如 [propertyKey] 对应属性不存在则抛出异常
   ///   默认值为 `false`
   ///
-  void updateValue<TValue>(Object propertyKey, bool? Function(TValue?) updator,
+  void updateValue<TValue>(
+      Object propertyKey, TValue? Function(TValue?) updator,
       {bool requiredProperty = false}) {
     var _oldValue =
-        getValue<TValue>(propertyKey, requiredProperty: requiredProperty);
-    var _isNotify = updator(_oldValue);
-    if (_isNotify != null && _isNotify) {
-      notify(propertyKey, requiredProperty: requiredProperty);
+            getValue<TValue>(propertyKey, requiredProperty: requiredProperty),
+        _newValue = updator(_oldValue);
+    if (_newValue != null) {
+      setValue(propertyKey, _newValue, requiredProperty: requiredProperty);
+    }
+  }
+
+  ///
+  /// 更新指定 [propertyKey] 对应的属性值
+  ///
+  /// [propertyKey] 属性键
+  ///
+  /// [updator] 指定值更新处理器
+  ///   当 [updator] 处理器返回 `null` 时将不回写属性值
+  ///
+  ///
+  void updateRequireValue<TValue>(
+      Object propertyKey, TValue? Function(TValue) updator) {
+    var _oldValue = requireValue<TValue>(propertyKey),
+        _newValue = updator(_oldValue);
+    if (_newValue != null) {
+      setValue(propertyKey, _newValue);
     }
   }
 
@@ -194,40 +246,17 @@ abstract class BindableObject {
   }
 }
 
-class _BindableProperty<TValue> extends BindableProperty<TValue> {
-  _BindableProperty(Object key,
-      {PropertyValueChanged<TValue>? valueChanged, required TValue initial})
-      : super(key, valueChanged: valueChanged, initial: initial);
-}
-
-/// BindableValueNotifier
-class BindableValueNotifier<TValue> extends ValueNotifier<TValue> {
-  /// BindableValueNotifier
-  BindableValueNotifier(TValue value) : super(value);
-
-  /// force notify
-  void notify() => notifyListeners();
-}
-
 /// BindableProperty
 ///
 abstract class BindableProperty<TValue> extends ValueNotifier<TValue> {
-  /// BindableProperty.create
-  static BindableProperty<TValue> create<TValue>(Object key,
-          {PropertyValueChanged<TValue>? valueChanged,
-          required TValue initial}) =>
-      _BindableProperty(key, valueChanged: valueChanged, initial: initial);
-
-  /// key
-  final Object key;
   VoidCallback? _listener;
 
   /// BindableProperty
-  BindableProperty(this.key,
+  BindableProperty(
       {PropertyValueChanged<TValue>? valueChanged, required TValue initial})
       : super(initial) {
     if (valueChanged != null) {
-      _listener = () => valueChanged(value, key);
+      _listener = () => valueChanged(value);
       addListener(_listener!);
     }
   }
@@ -251,13 +280,12 @@ class CustomBindableProperty<TValue> extends BindableProperty<TValue> {
   final ValueSetter<TValue> _valueSetter;
 
   /// CustomValueNotifier
-  CustomBindableProperty(Object key, ValueGetter<TValue> valueGetter,
-      ValueSetter<TValue> valueSetter,
+  CustomBindableProperty(
+      ValueGetter<TValue> valueGetter, ValueSetter<TValue> valueSetter,
       {PropertyValueChanged<TValue>? valueChanged, TValue? initial})
       : _valueGetter = valueGetter,
         _valueSetter = valueSetter,
-        super(key,
-            valueChanged: valueChanged, initial: initial ?? valueGetter()) {
+        super(valueChanged: valueChanged, initial: initial ?? valueGetter()) {
     if (initial != null) {
       // no notify
       _valueSetter(initial);

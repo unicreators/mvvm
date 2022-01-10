@@ -2,27 +2,26 @@
 // Use of this source code is governed by a MIT license that can be
 // found in the LICENSE file.
 
-part of './mvvm.dart';
+part of '../mvvm.dart';
 
-/// AdaptiveViewModelProperty
+/// AdaptiveBindableProperty
 ///
-class AdaptiveViewModelProperty<TValue, TAdaptee extends Listenable>
+class AdaptiveBindableProperty<TValue, TAdaptee extends Listenable>
     extends CustomBindableProperty<TValue> {
-  final TAdaptee _adaptee;
+  /// adaptee
+  final TAdaptee adaptee;
 
   /// AdaptiveViewModelProperty
-  AdaptiveViewModelProperty(
-      Object key,
-      TAdaptee adaptee,
+  AdaptiveBindableProperty(
+      this.adaptee,
       TValue Function(TAdaptee) getAdapteeValue,
       void Function(TAdaptee, TValue) setAdapteeValue,
       {PropertyValueChanged<TValue>? valueChanged,
       TValue? initial})
-      : _adaptee = adaptee,
-        super(key, () => getAdapteeValue(adaptee),
-            (v) => setAdapteeValue(adaptee, v),
+      : super(
+            () => getAdapteeValue(adaptee), (v) => setAdapteeValue(adaptee, v),
             valueChanged: valueChanged, initial: initial) {
-    _adaptee.addListener(_valueChanged);
+    adaptee.addListener(_valueChanged);
   }
 
   // check value
@@ -30,7 +29,7 @@ class AdaptiveViewModelProperty<TValue, TAdaptee extends Listenable>
 
   @override
   void dispose() {
-    _adaptee.removeListener(_valueChanged);
+    adaptee.removeListener(_valueChanged);
     super.dispose();
   }
 }
@@ -55,7 +54,9 @@ mixin AdaptiveViewModelMixin on _ViewModelBase {
               void Function(TAdaptee, TValue) setAdapteeValue,
               {PropertyValueChanged<TValue>? valueChanged,
               TValue? initial}) =>
-          registryProperty(AdaptiveViewModelProperty<TValue, TAdaptee>(
-              propertyKey, adaptee, getAdapteeValue, setAdapteeValue,
-              valueChanged: valueChanged, initial: initial));
+          registryProperty(
+              propertyKey,
+              AdaptiveBindableProperty<TValue, TAdaptee>(
+                  adaptee, getAdapteeValue, setAdapteeValue,
+                  valueChanged: valueChanged, initial: initial));
 }

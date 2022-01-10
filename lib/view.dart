@@ -33,7 +33,11 @@ abstract class ViewBase<TViewModel extends ViewModel,
 
   ///
   /// 视图模型 [ViewModel]
-  TViewModel get $Model => _context.model;
+  TViewModel get model => _context.model;
+
+  ///
+  /// 视图模型 [ViewModel]
+  TViewModel get $model => _context.model;
 
   ///
   /// 视图上下文 [ViewContext]
