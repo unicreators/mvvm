@@ -1,6 +1,5 @@
 
 [![pub package](https://img.shields.io/pub/v/mvvm.svg)](https://pub.dev/packages/mvvm)
-[![join chat](https://badges.gitter.im/unicreators/mvvm.svg)](https://gitter.im/unicreators/mvvm)
 
 
 
@@ -12,7 +11,7 @@ A Flutter MVVM (Model-View-ViewModel) implementation. It uses property-based dat
   
 ##   
 
-[Documentation](https://pub.dev/documentation/mvvm/latest/mvvm/mvvm-library.html)  & [Example](./example/lib/main.dart) 
+[Documentation](https://pub.dev/documentation/mvvm/latest/mvvm/mvvm-library.html)  & [Example](./example/lib/example_login.dart) 
 
 
  
@@ -24,15 +23,13 @@ import 'dart:async';
 // ViewModel
 class Demo1ViewModel extends ViewModel {
   Demo1ViewModel() {
-    propertyValue<String>(#time, initial: "");
+    registryProperty(#time, BindableProperty.$value(initial: DateTime.now()));
     start();
   }
 
   start() {
-    Timer.periodic(const Duration(seconds: 1), (_) {
-      var now = DateTime.now();
-      setValue<String>(#time, "${now.hour}:${now.minute}:${now.second}");
-    });
+    Timer.periodic(const Duration(seconds: 1),
+        (_) => setValue<DateTime>(#time, DateTime.now()));
   }
 }
 
@@ -40,15 +37,15 @@ class Demo1ViewModel extends ViewModel {
 class Demo1View extends View<Demo1ViewModel> {
   Demo1View() : super(Demo1ViewModel());
 
+  format(DateTime dt) => "${dt.hour}:${dt.minute}:${dt.second}";
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-        margin: EdgeInsets.symmetric(vertical: 100),
-        padding: EdgeInsets.all(40),
+    return Center(
         // binding
-        child: $.watchFor<String>(#time,
-            builder:
-                $.b1((t) => Text(t, textDirection: TextDirection.ltr))));
+        child: $.watchFor<DateTime>(#time,
+            builder: (context, time, child) =>
+                Text(format(time), textDirection: TextDirection.ltr)));
   }
 }
 
@@ -63,75 +60,88 @@ void main() => runApp(Demo1View());
 
 ## APIs
 
+### BindableProperty
+
+* []
+
 ### ViewContext ($.*)
 
 #### Properties
 
-* [model](./APIs.md#viewcontextmodel)
+* [model](https://pub.dev/documentation/mvvm/latest/mvvm/ViewContextWatchHelperMixin/model.html)
 
 #### Methods
 
-* [watch](./APIs.md#watch)
-* [watchFor](./APIs.md#watchfor)
-* [watchAny](./APIs.md#watchany)
-* [watchAnyFor](./APIs.md#watchanyfor)
-* [$cond](./APIs.md#cond)
-* [$condFor](./APIs.md#condfor)
-* [$if](./APIs.md#if)
-* [$ifFor](./APIs.md#iffor)
-* [$switch](./APIs.md#switch)
-* [$switchFor](./APIs.md#switchfor)
-* [adapt](./APIs.md#adapt)
-* [builder0](./APIs.md#builder0)
-* [builder1](./APIs.md#builder1)
-* [builder2](./APIs.md#builder2)
-* [b0](./APIs.md#b0)
-* [b1](./APIs.md#b1)
-* [b2](./APIs.md#b2)
+* [watch](https://pub.dev/documentation/mvvm/latest/mvvm/ViewContextWatchHelperMixin/watch.html)
+* [watchFor](https://pub.dev/documentation/mvvm/latest/mvvm/ViewContextWatchHelperMixin/watchFor.html)
+* [watchAny](https://pub.dev/documentation/mvvm/latest/mvvm/ViewContextWatchHelperMixin/watchAny.html)
+* [watchAnyFor](https://pub.dev/documentation/mvvm/latest/mvvm/ViewContextWatchHelperMixin/watchAnyFor.html)
+* [watchAnyForMap](https://pub.dev/documentation/mvvm/latest/mvvm/ViewContextWatchHelperMixin/watchAnyForMap.html)
+* [merge](https://pub.dev/documentation/mvvm/latest/mvvm/ViewContextWatchHelperMixin/merge.html)
+* [mergeMap](https://pub.dev/documentation/mvvm/latest/mvvm/ViewContextWatchHelperMixin/mergeMap.html)
+* [$cond](https://pub.dev/documentation/mvvm/latest/mvvm/ViewContextLogicalHelperMixin/$cond.html)
+* [$condFor](https://pub.dev/documentation/mvvm/latest/mvvm/ViewContextLogicalHelperMixin/$condFor.html)
+* [$if](https://pub.dev/documentation/mvvm/latest/mvvm/ViewContextLogicalHelperMixin/$if.html)
+* [$ifFor](https://pub.dev/documentation/mvvm/latest/mvvm/ViewContextLogicalHelperMixin/$ifFor.html)
+* [$switch](https://pub.dev/documentation/mvvm/latest/mvvm/ViewContextLogicalHelperMixin/$switch.html)
+* [$switchFor](https://pub.dev/documentation/mvvm/latest/mvvm/ViewContextLogicalHelperMixin/$switchFor.html)
+* [builder0](https://pub.dev/documentation/mvvm/latest/mvvm/ViewContextBuilderHelperMixin/builder0.html)
+* [builder1](https://pub.dev/documentation/mvvm/latest/mvvm/ViewContextBuilderHelperMixin/builder1.html)
+* [builder2](https://pub.dev/documentation/mvvm/latest/mvvm/ViewContextBuilderHelperMixin/builder2.html)
+* [b0](https://pub.dev/documentation/mvvm/latest/mvvm/ViewContextBuilderHelperMixin/b0.html)
+* [b1](https://pub.dev/documentation/mvvm/latest/mvvm/ViewContextBuilderHelperMixin/b1.html)
+* [b2](https://pub.dev/documentation/mvvm/latest/mvvm/ViewContextBuilderHelperMixin/b2.html)
 
 *override*
 
-* [viewInit](./APIs.md#viewcontextviewinit)
-* [viewReady](./APIs.md#viewcontextviewready)
-* [dispose](./APIs.md#viewcontextdispose)
+* [viewInit](https://pub.dev/documentation/mvvm/latest/mvvm/ViewContextWatchHelperMixin/viewInit.html)
+* [viewReady](https://pub.dev/documentation/mvvm/latest/mvvm/ViewContextWatchHelperMixin/viewReady.html)
+* [dispose](https://pub.dev/documentation/mvvm/latest/mvvm/ViewContextWatchHelperMixin/dispose.html)
 
 ### ViewModel
 
 #### Methods
 
-* [registryProperty](./APIs.md#registryproperty)
-* [propertyValue](./APIs.md#propertyvalue)
-* [propertyAdaptive](./APIs.md#propertyadaptive)
-* [propertyAsync](./APIs.md#propertyasync)
+* [registryProperty](https://pub.dev/documentation/mvvm/latest/mvvm/BindableObject/registryProperty.html)
+* [getProperty](https://pub.dev/documentation/mvvm/latest/mvvm/BindableObject/getProperty.html)
+* [requireProperty](https://pub.dev/documentation/mvvm/latest/mvvm/BindableObject/requireProperty.html)
+* [getPropertyOf](https://pub.dev/documentation/mvvm/latest/mvvm/BindableObject/getPropertyOf.html)
+* [requirePropertyOf](https://pub.dev/documentation/mvvm/latest/mvvm/BindableObject/requirePropertyOf.html)
+* [getProperties](https://pub.dev/documentation/mvvm/latest/mvvm/BindableObject/getProperties.html)
+* [propertyValue](https://pub.dev/documentation/mvvm/latest/mvvm/ValueViewModelMixin/propertyValue.html)
+* [propertyAdaptive](https://pub.dev/documentation/mvvm/latest/mvvm/AdaptiveViewModelMixin/propertyAdaptive.html)
+* [propertyAsync](https://pub.dev/documentation/mvvm/latest/mvvm/AsyncViewModelMixin/propertyAsync.html)
 * [requireValue](./APIs.md#requirevalue)
-* [getValue](./APIs.md#getvalue)
-* [setValue](./APIs.md#setvalue)
-* [updateValue](./APIs.md#updatevalue)
-* [notify](./APIs.md#notify)
+* [getValue](https://pub.dev/documentation/mvvm/latest/mvvm/BindableObject/getValue.html)
+* [setValue](https://pub.dev/documentation/mvvm/latest/mvvm/BindableObject/setValue.html)
+* [setValues](https://pub.dev/documentation/mvvm/latest/mvvm/BindableObject/setValues.html)
+* [updateValue](https://pub.dev/documentation/mvvm/latest/mvvm/BindableObject/updateValue.html)
+* [notify](https://pub.dev/documentation/mvvm/latest/mvvm/BindableObject/notify.html)
 
 *override*
 
-* [viewInit](./APIs.md#viewmodelviewinit)
-* [viewReady](./APIs.md#viewmodelviewready)
-* [dispose](./APIs.md#viewmodeldispose)
+* [viewInit](https://pub.dev/documentation/mvvm/latest/mvvm/ValueViewModelMixin/viewInit.html)
+* [viewReady](https://pub.dev/documentation/mvvm/latest/mvvm/ValueViewModelMixin/viewReady.html)
+* [dispose](https://pub.dev/documentation/mvvm/latest/mvvm/BindableObject/dispose.html)
 
 
 ### View
 
 #### Properties
 
-* [$](./APIs.md#viewviewcontext)
-* [$Model](./APIs.md#model)
+* [$](https://pub.dev/documentation/mvvm/latest/mvvm/ViewBase/$.html)
+* [model](https://pub.dev/documentation/mvvm/latest/mvvm/ViewBase/model.html)
+* [$model](https://pub.dev/documentation/mvvm/latest/mvvm/ViewBase/$model.html)
 
 #### Methods
 
-* [setState](./APIs.md#setstate)
+* [setState](https://pub.dev/documentation/mvvm/latest/mvvm/ViewWidget/setState.html)
 
 *override*
 
-* [init](./APIs.md#init)
-* [ready](./APIs.md#ready)
-* [dispose](./APIs.md#viewdispose)
+* [init](https://pub.dev/documentation/mvvm/latest/mvvm/ViewBase/init.html)
+* [ready](https://pub.dev/documentation/mvvm/latest/mvvm/ViewBase/ready.html)
+* [dispose](https://pub.dev/documentation/mvvm/latest/mvvm/ViewBase/dispose.html)
 
 
 

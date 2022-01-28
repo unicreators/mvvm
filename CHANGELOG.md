@@ -1,13 +1,9 @@
 ## 0.3.0
-* 增加在视图 `View` 中创建属性功能，见 `$.adaptTo`、`$.wrapTo` 方法
-* 增加 `前置属性` 功能，用于解决在视图 `View` 中`属性创建`位置后于`属性使用`问题
-* 增加 `$.merge`、`$.mergeMap`方法，用于将多个 `ValueListenable` 合并成一个
-* 增加 `$.watchAnyForMap` 方法，用于监视多个 `ValueListenable` 变化并将值合并为键值集合
-* 移除了 `BindableProperty` 中 `Key` 属性
-* 代码优化
-
-## 0.2.1
-* Null safety support
+* Add `pre-property` to implement pre-use of non-existing key `BindableProperty` in view `View`
+* Added `$.merge`, `$.mergeMap` methods for merging multiple `ValueListenable` into one
+* Added `$.watchAnyForMap` method for monitoring multiple `ValueListenable` changes and merging values into a key-value collection
+* Removed `Key` property in `BindableProperty`
+* Optimized code
 
 ## 0.2.0
 * Null safety support

@@ -48,22 +48,17 @@ class PageViewModel extends ViewModel with AsyncViewModelMixin {
     propertyValue<DateTime>(#time, initial: DateTime.now());
 
     // define adaptive property
-    propertyAdaptive<String, TextEditingController>(
-        #name,
-        nameCtrl,
-
+    propertyAdaptive<String, TextEditingController>(#name, nameCtrl,
         // convert
-        (v) => v.text,
-        (a, v) => a.text = v,
+        valueGetter: (v) => v.text,
+        valueSetter: (a, v) => a.text = v,
         initial: name);
 
     // define Future property
     propertyAsync<User>(
         #getUser,
-
         // async method
         () => service.findUser(this.name),
-
         // on success
         onSuccess: (user) => age = user.age);
 
@@ -71,9 +66,8 @@ class PageViewModel extends ViewModel with AsyncViewModelMixin {
     start();
   }
 
-  final _pad = (int v) => "$v".padLeft(2, "0");
-  String format(DateTime dt) =>
-      "${_pad(dt.hour)}:${_pad(dt.minute)}:${_pad(dt.second)}";
+  pad(int v) => "$v".padLeft(2, "0");
+  format(DateTime dt) => "${pad(dt.hour)}:${pad(dt.minute)}:${pad(dt.second)}";
 
   start() {
     Timer.periodic(const Duration(seconds: 1),
@@ -126,17 +120,16 @@ class Page extends View<PageViewModel> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Container(
-            margin: EdgeInsets.only(top: 50, bottom: 30),
             padding: EdgeInsets.all(20),
             child: Column(
               children: [
                 $.watchFor<DateTime>(#time,
-                    builder: $.builder1((t) => Text($Model.format(t),
+                    builder: $.builder1((t) => Text($model.format(t),
                         style:
                             TextStyle(color: Colors.redAccent, fontSize: 48)))),
                 SizedBox(height: 10),
                 TextField(
-                  controller: $Model.nameCtrl,
+                  controller: $model.nameCtrl,
                   decoration: InputDecoration(
                     border: UnderlineInputBorder(),
                     labelText: 'Name',
@@ -148,11 +141,9 @@ class Page extends View<PageViewModel> {
                   children: [
                     Text("\$.watchFor(name):",
                         style: TextStyle(color: Colors.grey)),
-
                     //
                     // $.watchFor
                     $.watchFor(#name,
-
                         //
                         // $.builder*
                         builder: $.builder1((value) => Text("$value"))),
@@ -161,9 +152,8 @@ class Page extends View<PageViewModel> {
                 Container(
                     margin: EdgeInsets.only(top: 10),
                     width: double.infinity,
-                    child: RaisedButton(
+                    child: ElevatedButton(
                         child: $.watchFor(#getUser,
-
                             //
                             // $.builder*
                             builder: $.builder2(
@@ -179,37 +169,35 @@ class Page extends View<PageViewModel> {
                                             ))
                                         : child!),
                             child: Text("remote")),
-
                         //
-                        // $Model.link
-                        onPressed: $Model.link(#getUser))),
-
-                Expanded(child: SizedBox.shrink()),
+                        // $model.link
+                        onPressed: $model.link(#getUser))),
+                SizedBox(height: 20),
                 Text("age", style: TextStyle(color: Colors.grey, fontSize: 22)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    RaisedButton(
+                    ElevatedButton(
                         child: Text("-"),
                         onPressed: () {
                           //
-                          // $Model.prop
-                          $Model.age--;
+                          // $model.prop
+                          $model.age--;
                         }),
                     $.watchFor(#age,
                         builder: $.builder1((value) => Text("$value",
                             style: TextStyle(
                                 color: Colors.blueAccent, fontSize: 26)))),
-                    RaisedButton(
+                    ElevatedButton(
                         child: Text("+"),
                         onPressed: () {
                           //
-                          // $Model.prop
-                          $Model.age++;
+                          // $model.prop
+                          $model.age++;
                         })
                   ],
                 ),
-                SizedBox(height: 40),
+                SizedBox(height: 20),
 
                 //
                 // binding for (propertyKey)
@@ -257,7 +245,7 @@ class Page extends View<PageViewModel> {
                           },
                           defalut: $.builder0(() => Text("case default")))
                     ]),
-                SizedBox(height: 40),
+                SizedBox(height: 20),
 
                 //
                 // binding (valueListenable)
@@ -265,15 +253,15 @@ class Page extends View<PageViewModel> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    RaisedButton(child: Text("<"), onPressed: $Model.prev),
+                    ElevatedButton(child: Text("<"), onPressed: $model.prev),
 
                     //
                     // $.watch
-                    $.watch($Model.anyValueListenable,
+                    $.watch($model.anyValueListenable,
                         builder: $.builder1((value) => Text("$value",
                             style: TextStyle(
                                 color: Colors.blueAccent, fontSize: 26)))),
-                    RaisedButton(child: Text(">"), onPressed: $Model.next)
+                    ElevatedButton(child: Text(">"), onPressed: $model.next)
                   ],
                 ),
                 SizedBox(height: 40),
@@ -285,7 +273,7 @@ class Page extends View<PageViewModel> {
 
                     //
                     // $.$cond
-                    $.$cond($Model.anyValueListenable,
+                    $.$cond($model.anyValueListenable,
                         valueHandle: (v) => v == "jerry",
                         $true: $.builder0(() => Text("mouse")),
                         $false: $.builder0(() => Text("other"))),
@@ -300,7 +288,7 @@ class Page extends View<PageViewModel> {
 
                       //
                       // $.$if
-                      $.$if($Model.anyValueListenable,
+                      $.$if($model.anyValueListenable,
                           valueHandle: (v) => v == "lily",
                           builder: $.builder0(() => Text("lily")))
                     ]),
@@ -313,7 +301,7 @@ class Page extends View<PageViewModel> {
 
                       //
                       // $.switch
-                      $.$switch($Model.anyValueListenable,
+                      $.$switch($model.anyValueListenable,
                           options: {
                             "tom": $.builder1(
                                 (value) => Text("case $value: bad $value!")),

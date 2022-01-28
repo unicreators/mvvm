@@ -21,7 +21,7 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
   /// // example
   /// @override
   /// Widget build(BuildContext context) {
-  ///   return $.$cond<int>($Model.prop1,
+  ///   return $.$cond<int>(model.prop1,
   ///     $true: $.builder0(() => Text("tom!")),
   ///     $false: $.builder0(() => Text("jerry!")),
   ///     valueHandle: (value) => value == 1);
@@ -89,7 +89,7 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
   /// // example
   /// @override
   /// Widget build(BuildContext context) {
-  ///   return $.$if<int>($Model.prop1,
+  ///   return $.$if<int>(model.prop1,
   ///     builder: $.builder0(() => Text("tom!")),
   ///     valueHandle: (value) => value == 1);
   /// }
@@ -138,7 +138,7 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
   /// // example
   /// @override
   /// Widget build(BuildContext context) {
-  ///   return $.$switch<String, int>($Model.prop1,
+  ///   return $.$switch<String, int>(model.prop1,
   ///     options: { "1.": $.builder1((value) => Text("$value")),
   ///                "2.": $.builder0(() => Text("2")) },
   ///     default: $.builder0(() => Text("default")),

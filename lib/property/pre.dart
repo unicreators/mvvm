@@ -4,10 +4,17 @@
 
 part of '../mvvm.dart';
 
-/// PreBindableProperty
+///
+/// 前置绑定属性
 ///
 class PreBindableProperty<TValue> extends ValueBindableProperty<TValue> {
-  /// PreBindableProperty
+  ///
+  /// 前置绑定属性
+  ///
+  /// [valueChanged] 指定属性值变更后的回调方法
+  ///
+  /// [initialValue] 指定初始值
+  ///
   PreBindableProperty(
       {PropertyValueChanged<TValue>? valueChanged,
       required TValue initialValue})

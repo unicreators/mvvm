@@ -20,14 +20,15 @@ abstract class ViewListener {
 abstract class View<TViewModel extends ViewModel>
     extends ViewBase<TViewModel, ViewContext<TViewModel>> {
   /// View
-  View(TViewModel model) : super(ViewContext<TViewModel>(model));
+  View(TViewModel model, {Key? key})
+      : super(ViewContext<TViewModel>(model), key: key);
 }
 
 /// ViewBase
 abstract class ViewBase<TViewModel extends ViewModel,
     TViewContext extends ViewContext<TViewModel>> extends ViewWidget {
   /// ViewBase
-  ViewBase(this._context);
+  ViewBase(this._context, {Key? key}) : super(key: key);
 
   final TViewContext _context;
 
@@ -76,6 +77,9 @@ abstract class ViewBase<TViewModel extends ViewModel,
 /// ViewWidget
 abstract class ViewWidget extends StatefulWidget {
   final _state = _ViewWidgetState();
+
+  /// ViewWidget
+  ViewWidget({Key? key}) : super(key: key);
 
   /// build
   @protected

@@ -4,10 +4,17 @@
 
 part of '../mvvm.dart';
 
-/// ValueBindableProperty
+///
+/// 值绑定属性
 ///
 class ValueBindableProperty<TValue> extends BindableProperty<TValue> {
-  /// ValueViewModelProperty
+  ///
+  /// 创建一个值绑定属性
+  ///
+  /// [valueChanged] 指定属性值变更后的回调方法
+  ///
+  /// [initial] 指定初始值
+  ///
   ValueBindableProperty(
       {PropertyValueChanged<TValue>? valueChanged, required TValue initial})
       : super(valueChanged: valueChanged, initial: initial);
@@ -17,7 +24,7 @@ class ValueBindableProperty<TValue> extends BindableProperty<TValue> {
 /// 具备值属性的 [ViewModel]
 mixin ValueViewModelMixin on _ViewModelBase {
   ///
-  /// 创建一个值属性
+  /// 创建一个值绑定属性
   ///
   /// [propertyKey] 指定属性键
   ///

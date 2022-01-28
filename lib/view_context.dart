@@ -11,8 +11,7 @@ class ViewContext<TViewModel extends ViewModelBase>
     with
         ViewContextWatchHelperMixin,
         ViewContextLogicalHelperMixin,
-        ViewContextBuilderHelperMixin,
-        ViewContextAdaptorHelperMixin {
+        ViewContextBuilderHelperMixin {
   /// ViewContext
   ViewContext(TViewModel model) : super(model);
 }
@@ -40,8 +39,8 @@ class _ViewContextBase<TViewModel extends ViewModelBase>
 
   @protected
   BindableProperty<TValue>? getProperty<TValue>(Object propertyKey,
-          {bool? required}) =>
-      model.getProperty<TValue>(propertyKey, required: required ?? false);
+          {bool required = false}) =>
+      model.getProperty<TValue>(propertyKey, required: required);
 
   @protected
   BindableProperty<TValue>?
@@ -49,7 +48,7 @@ class _ViewContextBase<TViewModel extends ViewModelBase>
               Object propertyKey,
               {bool? required}) =>
           model.getPropertyOf<TValue, TProperty>(propertyKey,
-              required: required ?? false);
+              requiredProperty: required ?? false);
 
   @protected
   BindableProperty<TValue> requireProperty<TValue>(Object propertyKey) =>
@@ -58,13 +57,11 @@ class _ViewContextBase<TViewModel extends ViewModelBase>
   @protected
   BindableProperty<TValue> ensureProperty<TValue>(Object propertyKey,
       {TValue? initialValue}) {
-    var property = getProperty<TValue>(propertyKey);
-    if (property == null) {
-      if (initialValue != null) {
-        property = PreBindableProperty(initialValue: initialValue);
-        registryProperty(propertyKey, property);
-      } else
-        model.throwNotfoundPropertyError(propertyKey);
+    var property =
+        getProperty<TValue>(propertyKey, required: initialValue == null);
+    if (property == null && initialValue != null) {
+      property = PreBindableProperty(initialValue: initialValue);
+      registryProperty(propertyKey, property);
     }
     return property!;
   }
@@ -111,7 +108,6 @@ class _ViewContextBase<TViewModel extends ViewModelBase>
   /// 绑定到指定 [valueListenable] 当值发生变化时, 使用 [builder] 构建 [Widget]
   ///
   /// [child] 用于向构建方法中传入 [Widget]
-  ///
   ///
   @protected
   Widget build<TValue>(ValueListenable<TValue> valueListenable,

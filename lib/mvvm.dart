@@ -9,7 +9,11 @@ library mvvm;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+
+part './errors.dart';
 part './bindable.dart';
+
+part './property/custom.dart';
 part './property/pre.dart';
 part './property/value.dart';
 part './property/adaptive.dart';
@@ -22,6 +26,3 @@ part './view_context.dart';
 part './helper/watch.dart';
 part './helper/logical.dart';
 part './helper/builder.dart';
-part './helper/adapter.dart';
-
-part './extension.dart';

@@ -11,7 +11,7 @@ abstract class ViewModel extends ViewModelBase {}
 /// ViewModelBase
 ///
 abstract class ViewModelBase extends _ViewModelBase
-    with ValueViewModelMixin, AdaptiveViewModelMixin {}
+    with ValueViewModelMixin, AdaptiveViewModelMixin, AsyncViewModelMixin {}
 
 abstract class _ViewModelBase extends BindableObject with ViewListener {
   /// 关联的视图 [View] 初始化前调用此方法

@@ -19,7 +19,7 @@ mixin ViewContextWatchHelperMixin<TViewModel extends ViewModelBase>
   /// // example
   /// @override
   /// Widget build(BuildContext context) {
-  ///   return $.watch<String>($Model.prop1,
+  ///   return $.watch<String>(model.prop1,
   ///     builder: $.builder1((value) => Text(value)));
   /// }
   /// ```
@@ -60,7 +60,7 @@ mixin ViewContextWatchHelperMixin<TViewModel extends ViewModelBase>
   /// // example
   /// @override
   /// Widget build(BuildContext context) {
-  ///   return $.watchAny([$Model.prop1, $Model.prop2],
+  ///   return $.watchAny([model.prop1, model.prop2],
   ///     builder: $.builder1((values) => Text(values[0])));
   /// }
   /// ```
@@ -122,20 +122,24 @@ mixin ViewContextWatchHelperMixin<TViewModel extends ViewModelBase>
           child: child);
 
   ///
-  /// merge
+  /// 将多个 [ValueListenable] 合并成一个新的 [ValueListenable],
+  /// 新的 [ValueListenable] 值 `value` 为多个 [ValueListenable] 的值集合
+  ///
+  /// [listenables] 指定将要合并的 [ValueListenable] 集合
   ///
   ValueListenable<Iterable<TValue>> merge<TValue>(
-      Iterable<ValueListenable<TValue>> listenables) {
-    return ArrayValueListenable<TValue>(listenables);
-  }
+          Iterable<ValueListenable<TValue>> listenables) =>
+      ArrayValueListenable<TValue>(listenables);
 
   ///
-  /// mergeMap
+  /// 将多个指定键的 [ValueListenable] 合并成一个新的 [ValueListenable],
+  /// 新的 [ValueListenable] 值 `value` 为多个 [ValueListenable] 的键值集合
+  ///
+  /// [map] 指定将要合并的具有键的 [ValueListenable] 集合
   ///
   ValueListenable<Map<Object, TValue>> mergeMap<TValue>(
-      Map<Object, ValueListenable<TValue>> map) {
-    return MapValueListenable<TValue>(map);
-  }
+          Map<Object, ValueListenable<TValue>> map) =>
+      MapValueListenable<TValue>(map);
 }
 
 ///
