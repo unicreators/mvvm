@@ -60,10 +60,6 @@ void main() => runApp(Demo1View());
 
 ## APIs
 
-### BindableProperty
-
-* []
-
 ### ViewContext ($.*)
 
 #### Properties
