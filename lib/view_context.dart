@@ -11,14 +11,16 @@ class ViewContext<TViewModel extends ViewModelBase>
     with
         ViewContextWatchHelperMixin,
         ViewContextLogicalHelperMixin,
-        ViewContextBuilderHelperMixin,
-        ViewContextAdaptorHelperMixin {
+        ViewContextBuilderHelperMixin {
   /// ViewContext
   ViewContext(TViewModel model) : super(model);
 }
 
 class _ViewContextBase<TViewModel extends ViewModelBase>
     implements ViewListener {
+  static final ValueWidgetBuilder _emptyWidgetBuilder =
+      (_, dynamic __, ___) => const SizedBox.shrink();
+
   final TViewModel _model;
 
   /// 任务集合
@@ -36,35 +38,58 @@ class _ViewContextBase<TViewModel extends ViewModelBase>
   _ViewContextBase(this._model);
 
   @protected
-  BindableProperty<TValue> getProperty<TValue>(Object propertyKey) =>
-      model.getProperty<TValue>(propertyKey, required: true)!;
+  BindableProperty<TValue>? getProperty<TValue>(Object propertyKey,
+          {bool required = false}) =>
+      model.getProperty<TValue>(propertyKey, required: required);
+
+  @protected
+  BindableProperty<TValue>?
+      getPropertyOf<TValue, TProperty extends BindableProperty<TValue>>(
+              Object propertyKey,
+              {bool? required}) =>
+          model.getPropertyOf<TValue, TProperty>(propertyKey,
+              requiredProperty: required ?? false);
+
+  @protected
+  BindableProperty<TValue> requireProperty<TValue>(Object propertyKey) =>
+      getProperty<TValue>(propertyKey, required: true)!;
+
+  @protected
+  BindableProperty<TValue> ensureProperty<TValue>(Object propertyKey,
+      {TValue? initialValue}) {
+    var property =
+        getProperty<TValue>(propertyKey, required: initialValue == null);
+    if (property == null && initialValue != null) {
+      property = PreBindableProperty(initialValue: initialValue);
+      registryProperty(propertyKey, property);
+    }
+    return property!;
+  }
 
   @protected
   Iterable<BindableProperty<TValue>?> getProperties<TValue>(
+          Iterable<Object> propertyKeys,
+          {bool? required}) =>
+      model.getProperties<TValue>(propertyKeys, required: required ?? false);
+
+  @protected
+  Iterable<BindableProperty<TValue>> requireProperties<TValue>(
           Iterable<Object> propertyKeys) =>
-      model.getProperties<TValue>(propertyKeys, required: true);
+      getProperties<TValue>(propertyKeys, required: true).cast();
 
   /// 注册绑定属性
   ///
   /// [property] 指定属性
   ///
   @protected
-  void registryProperty<TValue>(BindableProperty<TValue> property) =>
-      model.registryProperty(property);
-
-  ///
-  /// 生成一个空 [Widget] 构建方法
-  ValueWidgetBuilder _emptyWidgetBuilder() =>
-      (_, dynamic __, ___) => const SizedBox.shrink();
-
-  /* dynamic _ensureValue<TValue>(
-          TValue fromValue, dynamic Function(TValue) convert) =>
-      convert == null ? fromValue : convert(fromValue); */
+  void registryProperty<TValue>(
+          Object key, BindableProperty<TValue> property) =>
+      model.registryProperty(key, property);
 
   ValueWidgetBuilder<TValue> _builderSelector<TValue>(
           ValueWidgetBuilder<TValue>? Function(TValue) selector) =>
       (context, value, child) =>
-          (selector(value) ?? _emptyWidgetBuilder())(context, value, child);
+          (selector(value) ?? _emptyWidgetBuilder)(context, value, child);
 
   ///
   /// 绑定到指定 [valueListenable] 当值发生变化时, 使用 [selector] 选择器中提供的构建方法构建 [Widget]
@@ -80,28 +105,16 @@ class _ViewContextBase<TViewModel extends ViewModelBase>
           builder: _builderSelector(selector), child: child);
 
   ///
-  /// 绑定到指定 [propertyKey] 当值发生变化时, 使用 [builder] 构建 [Widget]
-  ///
-  /// [child] 用于向构建方法中传入 [Widget]
-  ///
-  @protected
-  Widget buildFor<TValue>(Object propertyKey,
-          {ValueWidgetBuilder<TValue>? builder, Widget? child}) =>
-      build<TValue>(getProperty<TValue>(propertyKey),
-          builder: builder, child: child);
-
-  ///
   /// 绑定到指定 [valueListenable] 当值发生变化时, 使用 [builder] 构建 [Widget]
   ///
   /// [child] 用于向构建方法中传入 [Widget]
-  ///
   ///
   @protected
   Widget build<TValue>(ValueListenable<TValue> valueListenable,
           {ValueWidgetBuilder<TValue>? builder, Widget? child}) =>
       ValueListenableBuilder<TValue>(
           valueListenable: valueListenable,
-          builder: builder ?? _emptyWidgetBuilder(),
+          builder: builder ?? _emptyWidgetBuilder,
           child: child);
 
   /// 视图 [View] 将要初始化时执行此方法

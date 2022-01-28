@@ -21,7 +21,7 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
   /// // example
   /// @override
   /// Widget build(BuildContext context) {
-  ///   return $.$cond<int>($Model.prop1,
+  ///   return $.$cond<int>(model.prop1,
   ///     $true: $.builder0(() => Text("tom!")),
   ///     $false: $.builder0(() => Text("jerry!")),
   ///     valueHandle: (value) => value == 1);
@@ -68,9 +68,14 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
           {ValueWidgetBuilder<TValue>? $true,
           ValueWidgetBuilder<TValue>? $false,
           Widget? child,
-          bool Function(TValue)? valueHandle}) =>
-      $cond<TValue>(getProperty<TValue>(propertyKey),
-          $true: $true, $false: $false, child: child, valueHandle: valueHandle);
+          bool Function(TValue)? valueHandle,
+          TValue? initialValue}) =>
+      $cond<TValue>(
+          ensureProperty<TValue>(propertyKey, initialValue: initialValue),
+          $true: $true,
+          $false: $false,
+          child: child,
+          valueHandle: valueHandle);
 
   ///
   /// 绑定到指定 [valueListenable], 当 [valueListenable] 值发生变化时,
@@ -84,7 +89,7 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
   /// // example
   /// @override
   /// Widget build(BuildContext context) {
-  ///   return $.$if<int>($Model.prop1,
+  ///   return $.$if<int>(model.prop1,
   ///     builder: $.builder0(() => Text("tom!")),
   ///     valueHandle: (value) => value == 1);
   /// }
@@ -116,8 +121,9 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
   Widget $ifFor<TValue>(Object propertyKey,
           {required ValueWidgetBuilder<TValue> builder,
           Widget? child,
-          bool Function(TValue)? valueHandle}) =>
-      $if(getProperty<TValue>(propertyKey),
+          bool Function(TValue)? valueHandle,
+          TValue? initialValue}) =>
+      $if(ensureProperty<TValue>(propertyKey, initialValue: initialValue),
           builder: builder, child: child, valueHandle: valueHandle);
 
   ///
@@ -132,7 +138,7 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
   /// // example
   /// @override
   /// Widget build(BuildContext context) {
-  ///   return $.$switch<String, int>($Model.prop1,
+  ///   return $.$switch<String, int>(model.prop1,
   ///     options: { "1.": $.builder1((value) => Text("$value")),
   ///                "2.": $.builder0(() => Text("2")) },
   ///     default: $.builder0(() => Text("default")),
@@ -174,8 +180,10 @@ mixin ViewContextLogicalHelperMixin<TViewModel extends ViewModelBase>
           {Map<TKey, ValueWidgetBuilder<TValue>>? options,
           ValueWidgetBuilder<TValue>? defalut,
           Widget? child,
-          TKey Function(TValue)? valueToKey}) =>
-      $switch<TKey, TValue>(getProperty<TValue>(propertyKey),
+          TKey Function(TValue)? valueToKey,
+          TValue? initialValue}) =>
+      $switch<TKey, TValue>(
+          ensureProperty<TValue>(propertyKey, initialValue: initialValue),
           options: options,
           defalut: defalut,
           child: child,

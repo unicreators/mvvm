@@ -9,16 +9,20 @@ library mvvm;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+
+part './errors.dart';
 part './bindable.dart';
-part './property_value.dart';
-part './property_adaptive.dart';
-part './property_async.dart';
+
+part './property/custom.dart';
+part './property/pre.dart';
+part './property/value.dart';
+part './property/adaptive.dart';
+part './property/async.dart';
 
 part './view_model.dart';
 part './view.dart';
 
 part './view_context.dart';
-part './view_context_helpers/watch.dart';
-part './view_context_helpers/logical.dart';
-part './view_context_helpers/builder.dart';
-part './view_context_helpers/adapter.dart';
+part './helper/watch.dart';
+part './helper/logical.dart';
+part './helper/builder.dart';

@@ -18,7 +18,7 @@ mixin ViewContextBuilderHelperMixin<TViewModel extends ViewModelBase>
   /// // example
   /// @override
   /// Widget build(BuildContext context) {
-  ///   return $.watch<String>($Model.prop1,
+  ///   return $.watch<String>(model.prop1,
   ///     builder: $.builder0(() => Text("hello!")));
   /// }
   /// ```
@@ -34,7 +34,7 @@ mixin ViewContextBuilderHelperMixin<TViewModel extends ViewModelBase>
   /// // example
   /// @override
   /// Widget build(BuildContext context) {
-  ///   return $.watch<String>($Model.prop1,
+  ///   return $.watch<String>(model.prop1,
   ///     builder: $.b0(() => Text("hello!")));
   /// }
   /// ```
@@ -49,7 +49,7 @@ mixin ViewContextBuilderHelperMixin<TViewModel extends ViewModelBase>
   /// // example
   /// @override
   /// Widget build(BuildContext context) {
-  ///   return $.watch<String>($Model.prop1,
+  ///   return $.watch<String>(model.prop1,
   ///     builder: $.builder1((value) => Text(value)));
   /// }
   /// ```
@@ -66,7 +66,7 @@ mixin ViewContextBuilderHelperMixin<TViewModel extends ViewModelBase>
   /// // example
   /// @override
   /// Widget build(BuildContext context) {
-  ///   return $.watch<String>($Model.prop1,
+  ///   return $.watch<String>(model.prop1,
   ///     builder: $.b1((value) => Text(value)));
   /// }
   /// ```
@@ -82,7 +82,7 @@ mixin ViewContextBuilderHelperMixin<TViewModel extends ViewModelBase>
   /// // example
   /// @override
   /// Widget build(BuildContext context) {
-  ///   return $.watch<String>($Model.prop1,
+  ///   return $.watch<String>(model.prop1,
   ///     builder: $.builder2((value, child) =>
   ///                   Column(children:[Text("$value"), child]),
   ///     child: Text("child"));
@@ -101,7 +101,7 @@ mixin ViewContextBuilderHelperMixin<TViewModel extends ViewModelBase>
   /// // example
   /// @override
   /// Widget build(BuildContext context) {
-  ///   return $.watch<String>($Model.prop1,
+  ///   return $.watch<String>(model.prop1,
   ///     builder: $.b2((value, child) =>
   ///                   Column(children:[Text("$value"), child]),
   ///     child: Text("child"));

@@ -1,5 +1,9 @@
-## 0.2.1
-* Null safety support
+## 0.3.0
+* Add `pre-property` to implement pre-use of non-existing key `BindableProperty` in view `View`
+* Added `$.merge`, `$.mergeMap` methods for merging multiple `ValueListenable` into one
+* Added `$.watchAnyForMap` method for monitoring multiple `ValueListenable` changes and merging values into a key-value collection
+* Removed `Key` property in `BindableProperty`
+* Optimized code
 
 ## 0.2.0
 * Null safety support
