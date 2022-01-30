@@ -50,6 +50,7 @@ void main() => runApp(Demo1View());
 ```
 
 [![Watch the video](https://i1.hdslb.com/bfs/archive/6ac49f7c0e6ef2f4cbef1b09ecb3f033eb7f9e39.jpg@600w_375h)](https://www.bilibili.com/video/BV18r4y1Y7dP)
+
 [:arrow_forward: https://www.bilibili.com/video/BV18r4y1Y7dP](https://www.bilibili.com/video/BV18r4y1Y7dP)
 
 
