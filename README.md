@@ -8,9 +8,8 @@ A Flutter MVVM (Model-View-ViewModel) implementation. It uses property-based dat
   
 
 一个 Flutter 的 MVVM(Model-View-ViewModel) 实现。 它使用基于属性 (property) 的数据绑定在视图模型 (ViewModel) 与视图 (View) 之间建立关联，并通过视图模型 (ViewModel) 驱动视图 (View) 变化。 
-  
-##   
- 
+
+
 ```dart
 import 'package:flutter/widgets.dart';
 import 'package:mvvm/mvvm.dart';
@@ -51,9 +50,8 @@ void main() => runApp(Demo1View());
 ```
 
 [![Watch the video](https://i1.hdslb.com/bfs/archive/6ac49f7c0e6ef2f4cbef1b09ecb3f033eb7f9e39.jpg@600w_375h)](https://www.bilibili.com/video/BV18r4y1Y7dP)
-[https://www.bilibili.com/video/BV18r4y1Y7dP](https://www.bilibili.com/video/BV18r4y1Y7dP)
+[:arrow_forward: https://www.bilibili.com/video/BV18r4y1Y7dP](https://www.bilibili.com/video/BV18r4y1Y7dP)
 
-## 
 
 ## Example
 
