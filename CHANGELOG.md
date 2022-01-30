@@ -1,3 +1,6 @@
+## 0.3.1
+* Update README.md
+
 ## 0.3.0
 * Add `pre-property` to implement pre-use of non-existing key `BindableProperty` in view `View`
 * Added `$.merge`, `$.mergeMap` methods for merging multiple `ValueListenable` into one

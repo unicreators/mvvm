@@ -1,3 +1,6 @@
+## 0.3.1
+* 更新 README.md
+
 ## 0.3.0
 * 增加 `前置属性`，实现在视图 `View` 中预先使用不存在的键 `BindableProperty`
 * 增加 `$.merge`、`$.mergeMap`方法，用于将多个 `ValueListenable` 合并成一个

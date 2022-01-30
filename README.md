@@ -8,13 +8,8 @@ A Flutter MVVM (Model-View-ViewModel) implementation. It uses property-based dat
   
 
 一个 Flutter 的 MVVM(Model-View-ViewModel) 实现。 它使用基于属性 (property) 的数据绑定在视图模型 (ViewModel) 与视图 (View) 之间建立关联，并通过视图模型 (ViewModel) 驱动视图 (View) 变化。 
-  
-##   
-
-[Documentation](https://pub.dev/documentation/mvvm/latest/mvvm/mvvm-library.html)  & [Example](./example/lib/example_login.dart) 
 
 
- 
 ```dart
 import 'package:flutter/widgets.dart';
 import 'package:mvvm/mvvm.dart';
@@ -54,8 +49,18 @@ void main() => runApp(Demo1View());
 
 ```
 
+[![Watch the video](https://i1.hdslb.com/bfs/archive/6ac49f7c0e6ef2f4cbef1b09ecb3f033eb7f9e39.jpg@600w_375h)](https://www.bilibili.com/video/BV18r4y1Y7dP)
 
-![mvvm](./img.png)
+[:arrow_forward: https://www.bilibili.com/video/BV18r4y1Y7dP](https://www.bilibili.com/video/BV18r4y1Y7dP)
+
+
+## Example
+
+- [Timer](https://github.com/unicreators/mvvm_examples)
+- [Login](./example/lib/example_login.dart) 
+- [Bindable](./example/lib/example_bind.dart) 
+
+ 
 
 
 ## APIs
@@ -107,7 +112,7 @@ void main() => runApp(Demo1View());
 * [propertyValue](https://pub.dev/documentation/mvvm/latest/mvvm/ValueViewModelMixin/propertyValue.html)
 * [propertyAdaptive](https://pub.dev/documentation/mvvm/latest/mvvm/AdaptiveViewModelMixin/propertyAdaptive.html)
 * [propertyAsync](https://pub.dev/documentation/mvvm/latest/mvvm/AsyncViewModelMixin/propertyAsync.html)
-* [requireValue](./APIs.md#requirevalue)
+* [requireValue](https://pub.dev/documentation/mvvm/latest/mvvm/BindableObject/requireValue.html)
 * [getValue](https://pub.dev/documentation/mvvm/latest/mvvm/BindableObject/getValue.html)
 * [setValue](https://pub.dev/documentation/mvvm/latest/mvvm/BindableObject/setValue.html)
 * [setValues](https://pub.dev/documentation/mvvm/latest/mvvm/BindableObject/setValues.html)
