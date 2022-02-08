@@ -21,10 +21,11 @@ class ValueBindableProperty<TValue> extends BindableProperty<TValue> {
 }
 
 ///
-/// 具备值属性的 [ViewModel]
-mixin ValueViewModelMixin on _ViewModelBase {
+/// 值绑定属性
+///
+mixin ValueBindablePropertyMixin on BindableObject {
   ///
-  /// 创建一个值绑定属性
+  /// 创建并注册值绑定属性
   ///
   /// [propertyKey] 指定属性键
   ///
@@ -35,7 +36,7 @@ mixin ValueViewModelMixin on _ViewModelBase {
   BindableProperty<TValue> propertyValue<TValue>(Object propertyKey,
           {PropertyValueChanged<TValue>? valueChanged,
           required TValue initial}) =>
-      registryProperty(
+      registerProperty(
           propertyKey,
           ValueBindableProperty<TValue>(
               valueChanged: valueChanged, initial: initial));

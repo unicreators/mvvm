@@ -49,11 +49,11 @@ class AdaptiveBindableProperty<TValue, TAdaptee extends Listenable>
 }
 
 ///
-/// 具备适配属性的 [ViewModel]
+/// 适配绑定属性
 ///
-mixin AdaptiveViewModelMixin on _ViewModelBase {
+mixin AdaptiveBindablePropertyMixin on BindableObject {
   ///
-  /// 创建一个适配属性
+  /// 创建并注册适配绑定属性
   ///
   /// [propertyKey] 指定属性键
   ///
@@ -74,7 +74,7 @@ mixin AdaptiveViewModelMixin on _ViewModelBase {
               required void Function(TAdaptee, TValue) valueSetter,
               PropertyValueChanged<TValue>? valueChanged,
               TValue? initial}) =>
-          registryProperty(
+          registerProperty(
               propertyKey,
               AdaptiveBindableProperty<TValue, TAdaptee>(adaptee,
                   valueGetter: valueGetter,

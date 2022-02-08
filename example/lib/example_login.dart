@@ -37,7 +37,7 @@ class RemoteService {
 }
 
 // ViewModel
-class LoginViewModel extends ViewModel with AsyncViewModelMixin {
+class LoginViewModel extends ViewModel {
   final RemoteService _service;
 
   final $time = BindableProperty.$value(initial: DateTime.now());
@@ -65,17 +65,20 @@ class LoginViewModel extends ViewModel with AsyncViewModelMixin {
 
 // View
 class LoginView extends View<LoginViewModel> {
-  LoginView() : super(LoginViewModel(RemoteService()));
+  LoginView() : super();
+
+  @override
+  LoginViewModel createViewModel() => LoginViewModel(RemoteService());
 
   pad(int v) => "$v".padLeft(2, "0");
   format(DateTime dt) => "${pad(dt.hour)}:${pad(dt.minute)}:${pad(dt.second)}";
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, LoginViewModel model) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        $.watch<DateTime>(model.$time,
+        $watch<DateTime>(model.$time,
             builder: (context, time, child) => Text(format(time),
                 style: Theme.of(context).textTheme.headline1)),
         SizedBox(height: 10),
@@ -93,20 +96,20 @@ class LoginView extends View<LoginViewModel> {
         Expanded(
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          $.$if(model.$login,
+          $if(model.$login,
               valueHandle: (AsyncSnapshot snapshot) => snapshot.hasError,
               builder: (context, AsyncSnapshot snapshot, child) => Text(
                   "${snapshot.error}",
                   style: TextStyle(color: Colors.redAccent))),
           SizedBox(height: 10),
-          $.watchAny<String>(
+          $any<String>(
             [model.$userName, model.$password],
             builder: (context, _, child) => SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                     onPressed: model.inputValid ? model.$login.invoke : null,
                     child: child)),
-            child: $.watch(model.$login,
+            child: $watch(model.$login,
                 builder: (context, AsyncSnapshot snapshot, child) =>
                     snapshot.connectionState == ConnectionState.waiting
                         ? _buildWaitingWidget()
@@ -114,7 +117,7 @@ class LoginView extends View<LoginViewModel> {
                 child: Text("login")),
           ),
           SizedBox(height: 10),
-          $.$if<AsyncSnapshot<User>>(model.$login,
+          $if<AsyncSnapshot<User>>(model.$login,
               valueHandle: (AsyncSnapshot snapshot) => snapshot.hasData,
               builder: (context, AsyncSnapshot<User> snapshot, child) => Text(
                   "${snapshot.data?.displayName}",

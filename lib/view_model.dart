@@ -6,27 +6,76 @@ part of './mvvm.dart';
 
 /// ViewModel
 ///
-abstract class ViewModel extends ViewModelBase {}
+abstract class ViewModel extends ViewModelBase
+    with
+        BindableObjectMixin,
+        BindableObjectValueMixin,
+        ValueWidgetBuilderMixin,
+        BindableObjectWidgetBuilderMixin,
+        ValueBindablePropertyMixin,
+        AdaptiveBindablePropertyMixin,
+        AsyncBindablePropertyMixin {}
 
 /// ViewModelBase
 ///
-abstract class ViewModelBase extends _ViewModelBase
-    with ValueViewModelMixin, AdaptiveViewModelMixin, AsyncViewModelMixin {}
+abstract class ViewModelBase implements BindableObject {
+  Map<Object, BindableProperty<dynamic>>? _properties;
 
-abstract class _ViewModelBase extends BindableObject with ViewListener {
-  /// 关联的视图 [View] 初始化前调用此方法
+  ///
+  /// 获取所有已注册的属性
+  @visibleForTesting
   @protected
+  Iterable<MapEntry<Object, BindableProperty<dynamic>>> get properties =>
+      _properties?.entries ?? [];
+
+  ///
+  /// 注册一个绑定属性
+  ///
+  /// [propertyKey] 指定属性键
+  ///
+  /// [property] 指定绑定属性
+  ///
   @override
-  void viewInit(BuildContext context) {}
+  BindableProperty<TValue> registerProperty<TValue>(
+      Object propertyKey, BindableProperty<TValue> property) {
+    (_properties ??= <Object, BindableProperty<dynamic>>{})[propertyKey] =
+        property;
+    return property;
+  }
 
-  /// 关联的视图 [View] 准备就绪后调用此方法
-  @protected
+  ///
+  /// 获取指定 [propertyKey] 对应的属性
+  ///
+  /// [propertyKey] 属性键
+  ///
+  /// [required] 指定 [propertyKey] 对应属性是否必须存在,
+  ///   其值为 `true` 时, 如 [propertyKey] 对应属性不存在则抛出异常
+  ///   默认值为 `false`
+  ///
   @override
-  void viewReady(BuildContext context) {}
+  BindableProperty<TValue>? getProperty<TValue>(Object propertyKey,
+      {bool required = false}) {
+    var property = _properties?[propertyKey] as BindableProperty<TValue>?;
+    if (required && property == null)
+      throw NotfoundPropertyException(propertyKey);
+    return property;
+  }
 
-  /* @protected
-  void attachView(BuildContext context, ViewWidget view) {}
-
+  ///
   @protected
-  void detachView(BuildContext context, ViewWidget view) {} */
+  @mustCallSuper
+  void init() {}
+
+  /// dispose
+  @protected
+  @mustCallSuper
+  void dispose() {
+    if (_properties == null) return;
+    if (!_properties!.isNotEmpty) {
+      for (var prop in _properties!.values) {
+        prop.dispose();
+      }
+    }
+    _properties = null;
+  }
 }

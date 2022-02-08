@@ -4,113 +4,190 @@
 
 part of './mvvm.dart';
 
-/// ViewListener
-abstract class ViewListener {
-  /// 关联的视图 [View] 初始化前调用此方法
-  @protected
-  void viewInit(BuildContext context);
-
-  /// 关联的视图 [View] 准备就绪后调用此方法
-  @protected
-  void viewReady(BuildContext context);
-}
-
 /// View
 ///
-abstract class View<TViewModel extends ViewModel>
-    extends ViewBase<TViewModel, ViewContext<TViewModel>> {
+abstract class View<TViewModel extends ViewModel> extends ViewWidget<TViewModel>
+    with ValueWidgetBuilderMixin {
   /// View
-  View(TViewModel model, {Key? key})
-      : super(ViewContext<TViewModel>(model), key: key);
-}
-
-/// ViewBase
-abstract class ViewBase<TViewModel extends ViewModel,
-    TViewContext extends ViewContext<TViewModel>> extends ViewWidget {
-  /// ViewBase
-  ViewBase(this._context, {Key? key}) : super(key: key);
-
-  final TViewContext _context;
-
-  ///
-  /// 视图模型 [ViewModel]
-  TViewModel get model => _context.model;
-
-  ///
-  /// 视图模型 [ViewModel]
-  TViewModel get $model => _context.model;
-
-  ///
-  /// 视图上下文 [ViewContext]
-  TViewContext get $ => _context;
-
-  @override
-  void _buildBefore(BuildContext context) {
-    _context._viewInit(context);
-    init(context);
-  }
-
-  @override
-  void _buildAfter(BuildContext context) {
-    ready(context);
-    _context._viewReady(context);
-  }
-
-  @override
-  void _dispose() {
-    _context._dispose();
-  }
-
-  /// dispose
-  @protected
-  void dispose() {}
-
-  /// init
-  @protected
-  void init(BuildContext context) {}
-
-  /// ready
-  @protected
-  void ready(BuildContext context) {}
+  const View({Key? key}) : super(key: key);
 }
 
 /// ViewWidget
-abstract class ViewWidget extends StatefulWidget {
-  final _state = _ViewWidgetState();
-
+///
+abstract class ViewWidget<TViewModel extends ViewModel> extends StatefulWidget {
   /// ViewWidget
-  ViewWidget({Key? key}) : super(key: key);
+  ///
+  const ViewWidget({Key? key}) : super(key: key);
 
-  /// build
   @protected
-  Widget build(BuildContext context);
-
-  void _buildBefore(BuildContext context);
-  void _buildAfter(BuildContext context);
-  void _dispose();
-
-  /// setState
-  @protected
-  void setState(VoidCallback fn) => _state._setState(fn);
+  @override
+  @nonVirtual
+  State<ViewWidget> createState() =>
+      _ViewWidgetState<TViewModel>(createViewModel());
 
   @override
-  State<StatefulWidget> createState() => _state;
+  @nonVirtual
+  StatefulElement createElement() => ViewElement<TViewModel>(this);
+
+  ///
+  @protected
+  @factory
+  TViewModel createViewModel();
+
+  ///
+  @protected
+  Widget build(ViewBuildContext<TViewModel> context, TViewModel model);
+
+  ///
+  @protected
+  @mustCallSuper
+  void didChangeDependencies(TViewModel model) {}
+
+  ///
+  @protected
+  @mustCallSuper
+  void activate(TViewModel model) {}
+
+  ///
+  @protected
+  @mustCallSuper
+  void deactivate(TViewModel model) {}
+
+  ///
+  @protected
+  @mustCallSuper
+  void didUpdateWidget(
+      covariant ViewWidget<TViewModel> oldWidget, TViewModel model) {}
 }
 
-class _ViewWidgetState extends State<ViewWidget> {
+/// ViewBuildContext
+///
+abstract class ViewBuildContext<TViewModel extends ViewModel>
+    implements
+        BuildContext,
+        BindableObject,
+        BindableObjectMixin,
+        BindableObjectValueMixin,
+        BindableObjectWidgetBuilderMixin {
+  /// setState
+  ///
+  void setState(VoidCallback fn);
+
+  /// ViewModel
+  ///
+  TViewModel get model;
+}
+
+/// ViewElementBase
+///
+class ViewElement<TViewModel extends ViewModel>
+    extends ViewElementBase<TViewModel>
+    with
+        BindableObjectMixin,
+        BindableObjectMixin,
+        BindableObjectValueMixin,
+        BindableObjectWidgetBuilderMixin,
+        ValueWidgetBuilderMixin {
+  /// ViewElement
+  ViewElement(ViewWidget<TViewModel> widget) : super(widget);
+}
+
+/// ViewElementBase
+///
+abstract class ViewElementBase<TViewModel extends ViewModel>
+    extends StatefulElement implements ViewBuildContext<TViewModel> {
+  /// ViewElementBase
+  ///
+  ViewElementBase(ViewWidget widget) : super(widget);
+
+  @protected
   @override
-  Widget build(BuildContext context) {
-    widget._buildBefore(context);
-    var _ = widget.build(context);
-    widget._buildAfter(context);
-    return _;
+  _ViewWidgetState<TViewModel> get state =>
+      super.state as _ViewWidgetState<TViewModel>;
+
+  /// ViewModel
+  ///
+  @override
+  TViewModel get model => state.model;
+
+  /// setState
+  ///
+  @override
+  void setState(VoidCallback fn) => state._setState(fn);
+
+  ///
+  /// 获取指定 [propertyKey] 对应的属性
+  ///
+  /// [propertyKey] 属性键
+  ///
+  /// [required] 指定 [propertyKey] 对应属性是否必须存在,
+  ///   其值为 `true` 时, 如 [propertyKey] 对应属性不存在则抛出异常
+  ///   默认值为 `false`
+  ///
+  @override
+  BindableProperty<TValue>? getProperty<TValue>(Object propertyKey,
+          {bool required = false}) =>
+      model.getProperty<TValue>(propertyKey, required: required);
+
+  ///
+  /// 注册一个绑定属性
+  ///
+  /// [propertyKey] 指定属性键
+  ///
+  /// [property] 指定绑定属性
+  ///
+  @override
+  BindableProperty<TValue> registerProperty<TValue>(
+          Object propertyKey, BindableProperty<TValue> property) =>
+      model.registerProperty(propertyKey, property);
+}
+
+class _ViewWidgetState<TViewModel extends ViewModel>
+    extends State<ViewWidget<TViewModel>> {
+  final TViewModel _model;
+  _ViewWidgetState(TViewModel model) : _model = model;
+
+  TViewModel get model => _model;
+
+  @override
+  Widget build(BuildContext context) =>
+      widget.build(context as ViewBuildContext<TViewModel>, model);
+
+  @override
+  void deactivate() {
+    widget.deactivate(model);
+    super.deactivate();
+  }
+
+  @override
+  void activate() {
+    widget.activate(model);
+    super.activate();
+  }
+
+  @override
+  void didChangeDependencies() {
+    widget.didChangeDependencies(model);
+    super.didChangeDependencies();
+  }
+
+  @override
+  void didUpdateWidget(covariant ViewWidget<TViewModel> oldWidget) {
+    widget.didUpdateWidget(oldWidget, model);
+    super.didUpdateWidget(oldWidget);
   }
 
   void _setState(VoidCallback fn) => setState(fn);
 
   @override
+  void initState() {
+    model.init();
+    super.initState();
+  }
+
+  @override
   void dispose() {
+    model.dispose();
     super.dispose();
-    widget._dispose();
   }
 }

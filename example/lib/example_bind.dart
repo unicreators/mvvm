@@ -36,7 +36,7 @@ class RemoteService {
 
 // ViewModel
 //
-class PageViewModel extends ViewModel with AsyncViewModelMixin {
+class PageViewModel extends ViewModel {
   final RemoteService service;
 
   final TextEditingController nameCtrl = TextEditingController();
@@ -111,25 +111,25 @@ class PageViewModel extends ViewModel with AsyncViewModelMixin {
 // View
 //
 class Page extends View<PageViewModel> {
-  Page() : super(PageViewModel(RemoteService(), name: "tom"));
+  @override
+  PageViewModel createViewModel() =>
+      PageViewModel(RemoteService(), name: "tom");
 
   @override
-  void init(BuildContext context) {}
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, PageViewModel model) {
     return Scaffold(
         body: Container(
             padding: EdgeInsets.all(20),
             child: Column(
               children: [
-                $.watchFor<DateTime>(#time,
-                    builder: $.builder1((t) => Text($model.format(t),
+                model.$watchFor<DateTime>(#time,
+                    builder: (context, value, child) => Text(
+                        model.format(value),
                         style:
-                            TextStyle(color: Colors.redAccent, fontSize: 48)))),
+                            TextStyle(color: Colors.redAccent, fontSize: 48))),
                 SizedBox(height: 10),
                 TextField(
-                  controller: $model.nameCtrl,
+                  controller: model.nameCtrl,
                   decoration: InputDecoration(
                     border: UnderlineInputBorder(),
                     labelText: 'Name',
@@ -139,39 +139,32 @@ class Page extends View<PageViewModel> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("\$.watchFor(name):",
+                    Text("model.\$watchFor(name):",
                         style: TextStyle(color: Colors.grey)),
                     //
-                    // $.watchFor
-                    $.watchFor(#name,
-                        //
-                        // $.builder*
-                        builder: $.builder1((value) => Text("$value"))),
+                    // model.$watchFor
+                    model.$watchFor(#name,
+                        builder: (context, value, child) => Text("$value")),
                   ],
                 ),
                 Container(
                     margin: EdgeInsets.only(top: 10),
                     width: double.infinity,
                     child: ElevatedButton(
-                        child: $.watchFor(#getUser,
-                            //
-                            // $.builder*
-                            builder: $.builder2(
-                                (AsyncSnapshot snapshot, child) =>
-                                    snapshot.connectionState ==
-                                            ConnectionState.waiting
-                                        ? SizedBox(
-                                            width: 20,
-                                            height: 20,
-                                            child: CircularProgressIndicator(
-                                              backgroundColor: Colors.white,
-                                              strokeWidth: 2,
-                                            ))
-                                        : child!),
+                        child: model.$watchFor(#getUser,
+                            builder: (context, AsyncSnapshot snapshot, child) =>
+                                snapshot.connectionState ==
+                                        ConnectionState.waiting
+                                    ? SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          backgroundColor: Colors.white,
+                                          strokeWidth: 2,
+                                        ))
+                                    : child!,
                             child: Text("remote")),
-                        //
-                        // $model.link
-                        onPressed: $model.link(#getUser))),
+                        onPressed: model.link(#getUser))),
                 SizedBox(height: 20),
                 Text("age", style: TextStyle(color: Colors.grey, fontSize: 22)),
                 Row(
@@ -180,20 +173,16 @@ class Page extends View<PageViewModel> {
                     ElevatedButton(
                         child: Text("-"),
                         onPressed: () {
-                          //
-                          // $model.prop
-                          $model.age--;
+                          model.age--;
                         }),
-                    $.watchFor(#age,
-                        builder: $.builder1((value) => Text("$value",
+                    model.$watchFor(#age,
+                        builder: (context, value, child) => Text("$value",
                             style: TextStyle(
-                                color: Colors.blueAccent, fontSize: 26)))),
+                                color: Colors.blueAccent, fontSize: 26))),
                     ElevatedButton(
                         child: Text("+"),
                         onPressed: () {
-                          //
-                          // $model.prop
-                          $model.age++;
+                          model.age++;
                         })
                   ],
                 ),
@@ -205,157 +194,91 @@ class Page extends View<PageViewModel> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("\$.\$condFor(age):",
+                    Text("model.\$condFor(age):",
                         style: TextStyle(color: Colors.grey)),
-
-                    //
-                    // $.$condFor
-                    $.$condFor<int>(#age,
+                    model.$condFor<int>(#age,
                         valueHandle: (v) => v < 3,
-                        $true: $.builder0(() => Text("(age < 3) == true")),
-                        $false: $.builder0(() => Text("(age < 3) == false"))),
+                        $true: (context, value, child) =>
+                            Text("(age < 3) == true"),
+                        $false: (context, value, child) =>
+                            Text("(age < 3) == false")),
                   ],
                 ),
                 Divider(),
                 Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("\$.\$ifFor(age):",
+                      Text("model.\$ifFor(age):",
                           style: TextStyle(color: Colors.grey)),
-
-                      //
-                      // $.$ifFor
-                      $.$ifFor<int>(#age,
+                      model.$ifFor<int>(#age,
                           valueHandle: (v) => v < 3,
-                          builder: $.builder0(() => Text("age < 3")))
+                          builder: (context, value, child) => Text("age < 3"))
                     ]),
                 Divider(),
                 Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("\$.\$switchFor(age):",
+                      Text("model.\$switchFor(age):",
                           style: TextStyle(color: Colors.grey)),
-
-                      //
-                      // $.$switchFor
-                      $.$switchFor(#age,
+                      model.$switchFor(#age,
                           options: {
-                            1: $.builder0(() => Text("case 1")),
-                            3: $.builder0(() => Text("case 3"))
+                            1: (context, value, child) => Text("case 1"),
+                            3: (context, value, child) => Text("case 3")
                           },
-                          defalut: $.builder0(() => Text("case default")))
+                          defalut: (context, value, child) =>
+                              Text("case default"))
                     ]),
                 SizedBox(height: 20),
-
-                //
-                // binding (valueListenable)
-                //
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    ElevatedButton(child: Text("<"), onPressed: $model.prev),
-
-                    //
-                    // $.watch
-                    $.watch($model.anyValueListenable,
-                        builder: $.builder1((value) => Text("$value",
+                    ElevatedButton(child: Text("<"), onPressed: model.prev),
+                    $watch(model.anyValueListenable,
+                        builder: (context, value, child) => Text("$value",
                             style: TextStyle(
-                                color: Colors.blueAccent, fontSize: 26)))),
-                    ElevatedButton(child: Text(">"), onPressed: $model.next)
+                                color: Colors.blueAccent, fontSize: 26))),
+                    ElevatedButton(child: Text(">"), onPressed: model.next)
                   ],
                 ),
                 SizedBox(height: 40),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("\$.\$cond(valueListenable):",
+                    Text("\$cond(valueListenable):",
                         style: TextStyle(color: Colors.grey)),
-
-                    //
-                    // $.$cond
-                    $.$cond($model.anyValueListenable,
+                    $cond(model.anyValueListenable,
                         valueHandle: (v) => v == "jerry",
-                        $true: $.builder0(() => Text("mouse")),
-                        $false: $.builder0(() => Text("other"))),
+                        $true: (context, value, child) => Text("mouse"),
+                        $false: (context, value, child) => Text("other")),
                   ],
                 ),
                 Divider(),
                 Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("\$.\$if(valueListenable):",
+                      Text("\$if(valueListenable):",
                           style: TextStyle(color: Colors.grey)),
-
-                      //
-                      // $.$if
-                      $.$if($model.anyValueListenable,
+                      $if(model.anyValueListenable,
                           valueHandle: (v) => v == "lily",
-                          builder: $.builder0(() => Text("lily")))
+                          builder: (context, value, child) => Text("lily"))
                     ]),
                 Divider(),
                 Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("\$.\$switch(valueListenable):",
+                      Text("\$switch(valueListenable):",
                           style: TextStyle(color: Colors.grey)),
-
-                      //
-                      // $.switch
-                      $.$switch($model.anyValueListenable,
+                      $switch(model.anyValueListenable,
                           options: {
-                            "tom": $.builder1(
-                                (value) => Text("case $value: bad $value!")),
-                            "jerry": $.builder1(
-                                (value) => Text("case $value: hello mouse.."))
+                            "tom": (context, value, child) =>
+                                Text("case $value: bad $value!"),
+                            "jerry": (context, value, child) =>
+                                Text("case $value: hello mouse..")
                           },
-                          defalut: $.builder1(
-                              (value) => Text("case default: $value")))
+                          defalut: (context, value, child) =>
+                              Text("case default: $value"))
                     ]),
               ],
             )));
-  }
-}
-
-// Custom ViewContext
-//
-class PageViewContext<TViewModel extends ViewModelBase>
-    extends ViewContext<TViewModel> {
-  PageViewContext(TViewModel viewModel) : super(viewModel);
-
-  // custom
-  //
-  Widget hello() {
-    // use super.*
-    //
-    return Text("hello!");
-  }
-
-  //
-  // more..
-  //
-}
-
-// View
-//
-class Page1 extends ViewBase<PageViewModel, PageViewContext<PageViewModel>> {
-  //
-  // inject PageViewContext
-  Page1()
-      : super(PageViewContext<PageViewModel>(
-            PageViewModel(RemoteService(), name: "tom")));
-
-  @override
-  void init(BuildContext context) {}
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        body: Container(
-            margin: EdgeInsets.only(top: 100, bottom: 60),
-            padding: EdgeInsets.all(20),
-
-            //
-            // use custom method..
-            child: $.hello()));
   }
 }
