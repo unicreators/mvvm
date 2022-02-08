@@ -1,5 +1,9 @@
-## 0.3.1
-* 更新 README.md
+## 0.4.0
+* 代码重构
+* 增加 `ViewBuildContext` 类，它在 `BuildContext` 基础上扩展了构建 `Widget` 的功能
+* 视图 `View` 中增加 `createViewModel` 方法
+* 视图 `View` 中 `build` 方法变更为 `build(ViewBuildContext, TViewModel model)`
+
 
 ## 0.3.0
 * 增加 `前置属性`，实现在视图 `View` 中预先使用不存在的键 `BindableProperty`

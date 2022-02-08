@@ -91,10 +91,11 @@ class AsyncBindableProperty<TValue>
 }
 
 ///
-/// 具备异步请求属性的 [ViewModel]
-mixin AsyncViewModelMixin on _ViewModelBase {
+/// 异步请求绑定属性
+///
+mixin AsyncBindablePropertyMixin on BindableObjectMixin {
   ///
-  /// 创建一个异步请求 [Future<TValue>] 属性
+  /// 创建并注册异步请求 [Future<TValue>] 绑定属性
   ///
   /// [propertyKey] 指定属性键
   ///
@@ -123,7 +124,7 @@ mixin AsyncViewModelMixin on _ViewModelBase {
           void Function(dynamic)? onError,
           PropertyValueChanged<AsyncSnapshot<TValue>>? valueChanged,
           TValue? initial}) =>
-      registryProperty(
+      registerProperty(
           propertyKey,
           AsyncBindableProperty<TValue>(futureGetter,
               handle: handle,

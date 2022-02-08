@@ -7,22 +7,27 @@
 
 library mvvm;
 
+import 'dart:async';
+import 'dart:collection';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 part './errors.dart';
-part './bindable.dart';
-
-part './property/custom.dart';
-part './property/pre.dart';
-part './property/value.dart';
-part './property/adaptive.dart';
-part './property/async.dart';
+part './extension.dart';
+part './bindable/property.dart';
+part './bindable/object.dart';
+part './bindable/custom.dart';
+part './bindable/pre.dart';
+part './bindable/value.dart';
+part './bindable/periodic.dart';
+part './bindable/adaptive.dart';
+part './bindable/async.dart';
+part './bindable/merge.dart';
+part './builder.dart';
 
 part './view_model.dart';
 part './view.dart';
 
-part './view_context.dart';
-part './helper/watch.dart';
-part './helper/logical.dart';
-part './helper/builder.dart';
+/// identity
+TValue identity<TValue>(TValue value) => value;

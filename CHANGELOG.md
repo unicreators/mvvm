@@ -1,5 +1,8 @@
-## 0.3.1
-* Update README.md
+## 0.4.0
+* Refactoring
+* Added `ViewBuildContext` class, which extends the function of building `Widget` based on `BuildContext`
+* Add `createViewModel` method to view `View`
+* `build` method in view `View` changed to `build(ViewBuildContext, TViewModel model)`
 
 ## 0.3.0
 * Add `pre-property` to implement pre-use of non-existing key `BindableProperty` in view `View`
