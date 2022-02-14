@@ -72,11 +72,78 @@ void main() => runApp(MaterialApp(
 
 ## Examples
 
-- [:arrow_forward: https://www.bilibili.com/medialist/play/19955860?business=space_series&business_id=2029174](https://www.bilibili.com/medialist/play/19955860?business=space_series&business_id=2029174)
+- [https://www.bilibili.com/medialist/play/19955860?business=space_series&business_id=2029174 :arrow_forward:](https://www.bilibili.com/medialist/play/19955860?business=space_series&business_id=2029174)
 - [https://github.com/unicreators/mvvm_examples](https://github.com/unicreators/mvvm_examples)
 
 
 ## APIs
+
+### BindableProperty
+
+- $value
+- $adaptive
+- $async
+- $custom
+- $periodic
+- $tick
+- $merge
+- $mergeMap
+- $pipe
+- $filter
+
+
+### WidgetBuilder
+
+- $watch
+- $watchFor
+- $any
+- $anyFor
+- $anyMap
+- $anyMapFor
+- $cond
+- $condFor
+- $if
+- $ifFor
+- $switch
+- $switchFor
+- $select
+- $build
+
+
+### ViewModel
+
+- registerProperty
+- getProperty
+- requireProperty
+- getPropertyOf
+- requirePropertyOf
+- getProperties
+- requireProperties
+- getValue
+- requireValue
+- setValue
+- setValues
+- updateValue
+- notify
+
+
+### View
+
+- createViewModel
+- build
+- didChangeDependencies
+- activate
+- deactivate
+- didUpdateWidget
+
+
+### ViewBuildContext
+
+- setState
+- model
+
+
+##
 
 [Documentation](https://pub.dev/documentation/mvvm/latest/mvvm/mvvm-library.html)
 
