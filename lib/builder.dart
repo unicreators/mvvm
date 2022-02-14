@@ -11,7 +11,7 @@ mixin ValueWidgetBuilderMixin {
       (_, dynamic __, ___) => const SizedBox.shrink();
 
   ///
-  /// 绑定到指定 [valueListenable] 当值发生变化时, 使用 [selector] 选择器中提供的构建方法构建 [Widget]
+  /// 绑定到指定 [ValueListenable] 当值发生变化时, 使用 [selector] 选择器中提供的构建方法构建 [Widget]
   ///
   /// [child] 用于向构建方法中传入 [Widget]
   ///
@@ -26,7 +26,7 @@ mixin ValueWidgetBuilderMixin {
   ///
   /// 构建 [Widget]
   ///
-  /// 当指定 [valueListenable] 值发生变更时, 使用 [builder] 构建 [Widget]
+  /// 当指定 [ValueListenable] 值发生变更时, 使用 [builder] 构建 [Widget]
   ///
   /// [child] 用于向构建方法中传入 [Widget]
   ///
@@ -37,34 +37,47 @@ mixin ValueWidgetBuilderMixin {
           valueListenable: valueListenable, builder: builder, child: child);
 
   ///
+  /// 构建 [Widget]
+  ///
+  /// 当指定 [ValueListenable] 值发生变更时, 使用 [builder] 构建 [Widget]
+  ///
+  /// [child] 用于向构建方法中传入 [Widget]
+  ///
+  @protected
+  Widget $buildOn<TValue>(ValueListenable<TValue> valueListenable,
+          {required ValueWidgetBuilder<TValue> builder,
+          required bool Function(TValue value) on,
+          Widget? child}) =>
+      ValueListenableConditionalBuilder(
+          valueListenable: valueListenable,
+          builder: builder,
+          on: on,
+          child: child);
+
+  ///
   /// 构建多个 [Widget]
   ///
-  /// 当指定 [valueListenables] 中 [ValueListenable] 值发生变化时,
+  /// 当指定 [elements] 中 [ValueListenable] 值发生变化时,
   /// 使用 [builder] 构建 [Widget]
   ///
   /// [childBuilder] 用于构建向 [builder] 中传入的 [Widget]
   ///
   @protected
-  List<Widget> $multi<TValue>(
-          Iterable<ValueListenable<TValue>> valueListenables,
-          {required Widget Function(
-                  BuildContext context,
-                  TValue value,
-                  Widget? child,
-                  int index,
-                  ValueListenable<TValue> valueListenable)
+  List<Widget> $multi<TValue>(Iterable<ValueListenable<TValue>> elements,
+          {required Widget Function(BuildContext context, TValue value,
+                  Widget? child, int index, ValueListenable<TValue> element)
               builder,
           Widget? Function(int index)? childBuilder}) =>
-      List.generate(valueListenables.length, (index) {
-        var valueListenable = valueListenables.elementAt(index);
-        return $build<TValue>(valueListenables.elementAt(index),
+      List.generate(elements.length, (index) {
+        var element = elements.elementAt(index);
+        return $build<TValue>(element,
             builder: (context, value, child) =>
-                builder(context, value, child, index, valueListenable),
-            child: childBuilder == null ? null : childBuilder(index));
+                builder(context, value, child, index, element),
+            child: childBuilder?.call(index));
       });
 
   ///
-  /// 绑定到指定 [valueListenable], 当 [valueListenable] 值发生变化时,
+  /// 绑定到指定 [ValueListenable], 当 [valueListenable] 值发生变化时,
   /// 使用 [builder] 构建 [Widget]
   ///
   /// [child] 用于向构建方法中传入 [Widget]
@@ -83,7 +96,7 @@ mixin ValueWidgetBuilderMixin {
       $build(valueListenable, builder: builder, child: child);
 
   ///
-  /// 绑定到指定 [valueListenables] 集合, 当 [valueListenables] 中
+  /// 绑定到指定 [ValueListenable] 集合, 当 [valueListenables] 中
   /// 任一 [ValueListenable] 值发生变化时, 使用 [builder] 构建 [Widget]
   ///
   /// [builder] 方法中 `TValue` 将被包装为 [Iterable<TValue>]
@@ -107,7 +120,7 @@ mixin ValueWidgetBuilderMixin {
           builder: builder, child: child);
 
   ///
-  /// 绑定到指定 [map] 键集合, 当 [map] 中任一 [ValueListenable] 值发生变化时,
+  /// 绑定到指定 [Map] 键集合, 当 [map] 中任一 [ValueListenable] 值发生变化时,
   /// 使用 [builder] 构建 [Widget]
   ///
   /// [builder] 方法中 `TValue` 将被包装为 [Map<Object, TValue>]
@@ -167,7 +180,7 @@ mixin ValueWidgetBuilderMixin {
   }
 
   ///
-  /// 绑定到指定 [valueListenable], 当 [valueListenable] 值发生变化时,
+  /// 绑定到指定 [ValueListenable], 当 [valueListenable] 值发生变化时,
   /// 若值判定结果为 `true` 则使用 [builder] 构建 [Widget], 否则不构建 [Widget]
   ///
   ///   当值类型不为 [bool] 时, 非 `null` 即被判定为 `true`, 否则为 `false`
@@ -192,7 +205,7 @@ mixin ValueWidgetBuilderMixin {
           $true: builder, child: child, valueHandle: valueHandle);
 
   ///
-  /// 绑定到指定 [valueListenable], 当 [valueListenable] 值发生变化时,
+  /// 绑定到指定 [ValueListenable], 当 [valueListenable] 值发生变化时,
   /// 其值做为 `key` 到 [options] 中查找对应 [Widget] 构建方法,
   /// 若未找到则使用 [default] 构建, 如 [default] 为 `null` 则不构建 [Widget]
   ///
@@ -411,4 +424,10 @@ class MapBehavior<TValue> {
   /// 创建映射行为
   ///
   MapBehavior({this.toKey, this.initialValue});
+
+  ///
+  /// 创建映射行为
+  ///
+  factory MapBehavior.toKey({required Object toKey}) =>
+      MapBehavior(toKey: toKey);
 }

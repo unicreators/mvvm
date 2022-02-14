@@ -23,62 +23,25 @@ class AdaptiveBindableProperty<TValue, TAdaptee extends Listenable>
   ///
   /// [valueChanged] 指定属性值变更后的回调方法
   ///
-  /// [initial] 指定初始值
   ///
   AdaptiveBindableProperty(this.adaptee,
       {required TValue Function(TAdaptee) valueGetter,
-      required void Function(TAdaptee, TValue) valueSetter,
-      PropertyValueChanged<TValue>? valueChanged,
-      TValue? initial})
+      void Function(TAdaptee, TValue)? valueSetter,
+      PropertyValueChanged<TValue>? valueChanged})
       : super(
             valueGetter: () => valueGetter(adaptee),
-            valueSetter: (v) => valueSetter(adaptee, v),
-            valueChanged: valueChanged,
-            initial: initial) {
+            valueSetter:
+                valueSetter == null ? null : (v) => valueSetter(adaptee, v),
+            valueChanged: valueChanged) {
     adaptee.addListener(_valueChanged);
   }
 
   // check value
-  void _valueChanged() => value = value;
+  void _valueChanged() => notifyListeners();
 
   @override
   void dispose() {
     adaptee.removeListener(_valueChanged);
     super.dispose();
   }
-}
-
-///
-/// 适配绑定属性
-///
-mixin AdaptiveBindablePropertyMixin on BindableObject {
-  ///
-  /// 创建并注册适配绑定属性
-  ///
-  /// [propertyKey] 指定属性键
-  ///
-  /// [adaptee] 被适配者实例，适配者必须继承自 [Listenable]
-  ///
-  /// [valueGetter] 指定从被适配者获取值的方法
-  ///
-  /// [valueSetter] 指定设置被适配者值的方法
-  ///
-  /// [valueChanged] 指定属性值变更后的回调方法
-  ///
-  /// [initial] 指定初始值
-  ///
-  BindableProperty<TValue>
-      propertyAdaptive<TValue, TAdaptee extends Listenable>(
-              Object propertyKey, TAdaptee adaptee,
-              {required TValue Function(TAdaptee) valueGetter,
-              required void Function(TAdaptee, TValue) valueSetter,
-              PropertyValueChanged<TValue>? valueChanged,
-              TValue? initial}) =>
-          registerProperty(
-              propertyKey,
-              AdaptiveBindableProperty<TValue, TAdaptee>(adaptee,
-                  valueGetter: valueGetter,
-                  valueSetter: valueSetter,
-                  valueChanged: valueChanged,
-                  initial: initial));
 }

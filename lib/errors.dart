@@ -4,7 +4,7 @@
 
 part of './mvvm.dart';
 
-///
+/// PropertyException
 abstract class PropertyException implements Exception {
   ///
   final Object propertyKey;

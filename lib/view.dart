@@ -12,6 +12,7 @@ abstract class View<TViewModel extends ViewModel> extends ViewWidget<TViewModel>
   const View({Key? key}) : super(key: key);
 }
 
+///
 /// ViewWidget
 ///
 abstract class ViewWidget<TViewModel extends ViewModel> extends StatefulWidget {
@@ -78,7 +79,7 @@ abstract class ViewBuildContext<TViewModel extends ViewModel>
   TViewModel get model;
 }
 
-/// ViewElementBase
+/// ViewElement
 ///
 class ViewElement<TViewModel extends ViewModel>
     extends ViewElementBase<TViewModel>
@@ -189,5 +190,71 @@ class _ViewWidgetState<TViewModel extends ViewModel>
   void dispose() {
     model.dispose();
     super.dispose();
+  }
+}
+
+/// ValueListenableConditionalBuilder
+///
+class ValueListenableConditionalBuilder<T> extends ValueListenableBuilder<T> {
+  ///
+  final bool Function(T value) on;
+
+  /// ValueListenableConditionalBuilder
+  ///
+  const ValueListenableConditionalBuilder({
+    Key? key,
+    required ValueListenable<T> valueListenable,
+    required ValueWidgetBuilder<T> builder,
+    required this.on,
+    Widget? child,
+  }) : super(
+            key: key,
+            valueListenable: valueListenable,
+            builder: builder,
+            child: child);
+
+  @override
+  State<StatefulWidget> createState() =>
+      _ValueListenableConditionalBuilderState<T>();
+}
+
+class _ValueListenableConditionalBuilderState<T>
+    extends State<ValueListenableConditionalBuilder<T>> {
+  late T value;
+
+  @override
+  void initState() {
+    super.initState();
+    value = widget.valueListenable.value;
+    widget.valueListenable.addListener(_valueChanged);
+  }
+
+  @override
+  void didUpdateWidget(ValueListenableConditionalBuilder<T> oldWidget) {
+    if (oldWidget.valueListenable != widget.valueListenable) {
+      oldWidget.valueListenable.removeListener(_valueChanged);
+      value = widget.valueListenable.value;
+      widget.valueListenable.addListener(_valueChanged);
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void dispose() {
+    widget.valueListenable.removeListener(_valueChanged);
+    super.dispose();
+  }
+
+  void _valueChanged() {
+    var value = widget.valueListenable.value;
+    if (widget.on(value))
+      setState(() {
+        this.value = value;
+      });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.builder(context, value, widget.child);
   }
 }

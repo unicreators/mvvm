@@ -8,9 +8,36 @@ part of '../mvvm.dart';
 /// 属性值改变
 typedef PropertyValueChanged<TValue> = void Function(TValue value);
 
-/// BindableProperty
+/// BindablePropertyBase
 ///
-abstract class BindableProperty<TValue> extends ValueNotifier<TValue> {
+abstract class BindablePropertyBase<TValue> extends ChangeNotifier
+    implements ValueListenable<TValue> {
+  VoidCallback? _listener;
+
+  /// BindablePropertyBase
+  BindablePropertyBase({PropertyValueChanged<TValue>? valueChanged}) {
+    if (valueChanged != null) {
+      _listener = () => valueChanged(value);
+      addListener(_listener!);
+    }
+  }
+
+  /// 发送通知
+  void notify() => notifyListeners();
+
+  /// dispose
+  @protected
+  @mustCallSuper
+  @override
+  void dispose() {
+    if (_listener != null) removeListener(_listener!);
+    super.dispose();
+  }
+}
+
+/// 绑定属性
+///
+abstract class BindableProperty<TValue> extends BindablePropertyBase<TValue> {
   ///
   /// 创建值绑定属性
   ///
@@ -34,8 +61,6 @@ abstract class BindableProperty<TValue> extends ValueNotifier<TValue> {
   ///
   /// [valueChanged] 指定属性值变更后的回调方法
   ///
-  /// [initial] 指定初始值
-  ///
   static AdaptiveBindableProperty<TValue, TAdaptee>
       $adaptive<TValue, TAdaptee extends Listenable>(TAdaptee adaptee,
               {required TValue Function(TAdaptee) valueGetter,
@@ -45,8 +70,7 @@ abstract class BindableProperty<TValue> extends ValueNotifier<TValue> {
           AdaptiveBindableProperty(adaptee,
               valueGetter: valueGetter,
               valueSetter: valueSetter,
-              valueChanged: valueChanged,
-              initial: initial);
+              valueChanged: valueChanged);
 
   ///
   /// 创建具备处理异步请求的绑定属性
@@ -94,18 +118,14 @@ abstract class BindableProperty<TValue> extends ValueNotifier<TValue> {
   ///
   /// [valueChanged] 指定属性值变更后的回调方法
   ///
-  /// [initial] 指定初始值
-  ///
   static CustomBindableProperty<TValue> $custom<TValue>(
           {required ValueGetter<TValue> valueGetter,
           required ValueSetter<TValue> valueSetter,
-          PropertyValueChanged<TValue>? valueChanged,
-          TValue? initial}) =>
+          PropertyValueChanged<TValue>? valueChanged}) =>
       CustomBindableProperty(
           valueGetter: valueGetter,
           valueSetter: valueSetter,
-          valueChanged: valueChanged,
-          initial: initial);
+          valueChanged: valueChanged);
 
   ///
   /// 创建具有周期性的绑定属性
@@ -175,7 +195,7 @@ abstract class BindableProperty<TValue> extends ValueNotifier<TValue> {
           void Function(int tick)? onTick,
           void Function(PeriodicBindableProperty<int>)? statusChanged,
           PropertyValueChanged<int>? valueChanged}) =>
-      $periodic(
+      PeriodicBindableProperty(
           duration: duration,
           tickToValue: identity,
           initial: initial,
@@ -192,17 +212,17 @@ abstract class BindableProperty<TValue> extends ValueNotifier<TValue> {
   /// 将多个 [ValueListenable] 合并成一个新的 [ValueListenable],
   /// 新的 [ValueListenable] 值 `value` 为多个 [ValueListenable] 的值集合
   ///
-  /// [listenables] 指定将要合并的 [ValueListenable] 集合
+  /// [valueListenables] 指定将要合并的 [ValueListenable] 集合
   ///
   /// [valueChanged] 指定属性值变更后的回调方法
   ///
   static MergeBindableProperty<TValue> $merge<TValue>(
-          Iterable<ValueListenable<TValue>> listenables,
+          Iterable<ValueListenable<TValue>> valueListenables,
           {PropertyValueChanged<Iterable<TValue>>? valueChanged}) =>
-      MergeBindableProperty<TValue>(listenables, valueChanged: valueChanged);
+      MergeBindableProperty(valueListenables, valueChanged: valueChanged);
 
   ///
-  /// 创建合并的绑定属性，并为每个结果值指定键
+  /// 创建具有键的合并的绑定属性
   ///
   /// 将多个指定键的 [ValueListenable] 合并成一个新的 [ValueListenable],
   /// 新的 [ValueListenable] 值 `value` 为多个 [ValueListenable] 的键值集合
@@ -214,7 +234,7 @@ abstract class BindableProperty<TValue> extends ValueNotifier<TValue> {
   static MergeMapBindableProperty<TValue> $mergeMap<TValue>(
           Map<Object, ValueListenable<TValue>> map,
           {PropertyValueChanged<Map<Object, TValue>>? valueChanged}) =>
-      MergeMapBindableProperty<TValue>(map, valueChanged: valueChanged);
+      MergeMapBindableProperty(map, valueChanged: valueChanged);
 
   ///
   /// 将值 [TValue] 集合转换为绑定属性 [BindableProperty] 集合
@@ -223,23 +243,56 @@ abstract class BindableProperty<TValue> extends ValueNotifier<TValue> {
   ///
   /// [valueChanged] 指定属性值变更后的回调方法
   ///
-  static List<BindableProperty<TValue>> $multi<TValue>(Iterable<TValue> values,
+  static List<BindableProperty<TValue>> $map<TValue>(Iterable<TValue> values,
           {PropertyValueChanged<TValue>? valueChanged}) =>
-      values
-          .map((value) => $value(initial: value, valueChanged: valueChanged))
-          .toList();
+      _map(values, valueChanged: valueChanged);
 
-  VoidCallback? _listener;
+  ///
+  /// 从指定 [ValueListenable] 创建一个新的绑定属性
+  ///
+  /// [valueListenable] 指定来源 [ValueListenable]
+  ///
+  /// [transform] 指定属性值变换方法，当此方法返回值非 `null` 时则将此值写入属性
+  ///
+  /// [initial] 指定初始值
+  ///
+  /// [valueChanged] 指定属性值变更后的回调方法
+  ///
+  static BindableProperty<TValue> $pipe<TValue, TSValue>(
+          ValueListenable<TSValue> valueListenable,
+          {required TValue? Function(TSValue value) transform,
+          required TValue initial,
+          PropertyValueChanged<TValue>? valueChanged}) =>
+      TransformBindableProperty(valueListenable,
+          transform: transform, initial: initial, valueChanged: valueChanged);
+
+  ///
+  /// 从指定 [ValueListenable] 创建一个新的绑定属性
+  ///
+  /// [valueListenable] 指定来源 [ValueListenable]
+  ///
+  /// [filter] 指定过滤方法，当此方法返回值为 `true` 时则将此值写入属性
+  ///
+  /// [initial] 指定初始值
+  ///
+  /// [valueChanged] 指定属性值变更后的回调方法
+  ///
+  static BindableProperty<TValue> $filter<TValue>(
+          ValueListenable<TValue> valueListenable,
+          {required bool Function(TValue value) filter,
+          required TValue initial,
+          PropertyValueChanged<TValue>? valueChanged}) =>
+      TransformBindableProperty(valueListenable,
+          transform: (TValue value) => filter(value) ? value : null,
+          initial: initial,
+          valueChanged: valueChanged);
 
   /// BindableProperty
-  BindableProperty(
-      {PropertyValueChanged<TValue>? valueChanged, required TValue initial})
-      : super(initial) {
-    if (valueChanged != null) {
-      _listener = () => valueChanged(value);
-      addListener(_listener!);
-    }
-  }
+  BindableProperty({PropertyValueChanged<TValue>? valueChanged})
+      : super(valueChanged: valueChanged);
+
+  /// 设置值
+  set value(TValue value);
 
   ///
   /// 设置属性值
@@ -279,30 +332,33 @@ abstract class BindableProperty<TValue> extends ValueNotifier<TValue> {
     }
   }
 
-  /// dispose
-  @protected
-  @mustCallSuper
-  @override
-  void dispose() {
-    if (_listener != null) removeListener(_listener!);
-    super.dispose();
-  }
-
-  /// 发送通知
-  void notify() => notifyListeners();
+  ///
+  /// 从当前绑定属性创建一个新的绑定属性
+  ///
+  /// [transform] 指定属性值变换方法，当此方法返回值非 `null` 时则将此值写入属性
+  ///
+  /// [initial] 指定初始值
+  ///
+  /// [valueChanged] 指定属性值变更后的回调方法
+  ///
+  BindableProperty<T> pipe<T>(
+          {required T? Function(TValue) transform,
+          required T initial,
+          PropertyValueChanged<T>? valueChanged}) =>
+      $pipe(this,
+          transform: transform, initial: initial, valueChanged: valueChanged);
 }
 
-/// ReadonlyBindableProperty
+///
+/// 只读的绑定属性
 ///
 abstract class ReadonlyBindableProperty<TValue>
-    extends BindableProperty<TValue> {
-  /// ReadonlyBindableProperty
-  ReadonlyBindableProperty(
-      {required TValue initial, PropertyValueChanged<TValue>? valueChanged})
-      : super(initial: initial, valueChanged: valueChanged);
-
-  @override
-  set value(TValue value) {
-    throw UnsupportedError('Cannot modify an readonly value');
-  }
+    extends BindablePropertyBase<TValue> {
+  ///
+  /// 创建只读的绑定属性
+  ///
+  /// [valueChanged] 指定属性值变更后的回调方法
+  ///
+  ReadonlyBindableProperty({PropertyValueChanged<TValue>? valueChanged})
+      : super(valueChanged: valueChanged);
 }

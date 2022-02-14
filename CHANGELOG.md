@@ -1,3 +1,6 @@
+## 0.5.0
+* Optimized code 
+
 ## 0.4.0
 * Refactoring
 * Added `ViewBuildContext` class, which extends the function of building `Widget` based on `BuildContext`

@@ -11,73 +11,139 @@ A Flutter MVVM (Model-View-ViewModel) implementation. It uses property-based dat
 
 
 ```dart
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:mvvm/mvvm.dart';
-import 'dart:async';
 
-// ViewModel
-class Demo1ViewModel extends ViewModel {
-  late final timer$ = BindableProperty.$tick(
-      duration: const Duration(milliseconds: 10),
-      onTick: (tick) =>
-          tick % 100 == 0 ? setValue<String>(#text, "${tick ~/ 100}") : null,
-      statusChanged: (_) => setValue<bool>(#started, _.started),
-      autostart: true,
-      initial: 0);
+/// ViewModel
+class MyHomePageViewModel extends ViewModel {
+  final timer$ = BindableProperty.$tick(
+      duration: const Duration(milliseconds: 10), autostart: true, initial: 0);
 
-  Demo1ViewModel() {
-    registerProperty(#started, BindableProperty.$value(initial: false));
-    registerProperty(#text, BindableProperty.$value(initial: "-"));
+  @override
+  init() {
+    registerProperty(#counter, BindableProperty.$value(initial: 0));
+  }
+
+  void incrementCounter() {
+    updateValue<int>(#counter, (value) => value + 1);
   }
 }
 
-// View
-class Demo1View extends View<Demo1ViewModel> {
-  format(int value) => "${value % 100}";
+/// View
+class MyHomePage extends View<MyHomePageViewModel> {
+  final String title;
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
 
   @override
-  Demo1ViewModel createViewModel() => Demo1ViewModel();
+  MyHomePageViewModel createViewModel() => MyHomePageViewModel();
+
+  pad(int value) => '$value'.padLeft(2, '0');
 
   @override
-  Widget build(ViewBuildContext context, Demo1ViewModel model) {
-    return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      $watch<int>(model.timer$,
-          builder: (context, value, child) =>
-              Text(format(value), textDirection: TextDirection.ltr)),
-      context.$watchFor<String>(#text,
-          builder: (context, value, child) => Text(
-                value,
-                textDirection: TextDirection.ltr,
-                style: TextStyle(fontSize: 24),
-              )),
-      const SizedBox(height: 20),
-      GestureDetector(
-          onTap: model.timer$.toggle,
-          child: context.$watchFor<bool>(#started,
-              builder: (context, value, child) => Text(value ? "STOP" : "START",
-                  textDirection: TextDirection.ltr)))
-    ]);
+  Widget build(BuildContext context, MyHomePageViewModel model) {
+    return Scaffold(
+        appBar: AppBar(title: Text(title)),
+        body: Center(
+            child:
+                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          $watch<int>(model.timer$,
+              builder: (context, value, child) =>
+                  Text('${pad(value ~/ 60)}.${pad(value % 100)}')),
+          const Text('You have pushed the button this many times:'),
+          model.$watchFor<int>(#counter,
+              builder: (context, value, child) =>
+                  Text('$value', style: Theme.of(context).textTheme.headline4))
+        ])),
+        floatingActionButton: FloatingActionButton(
+            onPressed: model.incrementCounter,
+            tooltip: 'Increment',
+            child: const Icon(Icons.add)));
   }
 }
 
-// run
-void main() => runApp(Demo1View());
+/// run
+void main() => runApp(MaterialApp(
+      title: 'Flutter MVVM Demo',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: const MyHomePage(title: 'Flutter MVVM Demo Home Page'),
+    ));
 
 ```
 
-[![Watch the video](https://i1.hdslb.com/bfs/archive/6ac49f7c0e6ef2f4cbef1b09ecb3f033eb7f9e39.jpg@600w_375h)](https://www.bilibili.com/video/BV18r4y1Y7dP)
+## Examples
 
-[:arrow_forward: https://www.bilibili.com/video/BV18r4y1Y7dP](https://www.bilibili.com/video/BV18r4y1Y7dP)
-
-
-## Example
-
-- [Login](./example/lib/example_login.dart) 
-- [Bindable](./example/lib/example_bind.dart) 
-- [Timer](https://github.com/unicreators/mvvm_examples)
+- [https://www.bilibili.com/medialist/play/19955860?business=space_series&business_id=2029174 :arrow_forward:](https://www.bilibili.com/medialist/play/19955860?business=space_series&business_id=2029174)
+- [https://github.com/unicreators/mvvm_examples](https://github.com/unicreators/mvvm_examples)
 
 
 ## APIs
+
+### BindableProperty
+
+- $value
+- $adaptive
+- $async
+- $custom
+- $periodic
+- $tick
+- $merge
+- $mergeMap
+- $pipe
+- $filter
+
+
+### WidgetBuilder
+
+- $watch
+- $watchFor
+- $any
+- $anyFor
+- $anyMap
+- $anyMapFor
+- $cond
+- $condFor
+- $if
+- $ifFor
+- $switch
+- $switchFor
+- $select
+- $build
+
+
+### ViewModel
+
+- registerProperty
+- getProperty
+- requireProperty
+- getPropertyOf
+- requirePropertyOf
+- getProperties
+- requireProperties
+- getValue
+- requireValue
+- setValue
+- setValues
+- updateValue
+- notify
+
+
+### View
+
+- createViewModel
+- build
+- didChangeDependencies
+- activate
+- deactivate
+- didUpdateWidget
+
+
+### ViewBuildContext
+
+- setState
+- model
+
+
+##
 
 [Documentation](https://pub.dev/documentation/mvvm/latest/mvvm/mvvm-library.html)
 

@@ -17,7 +17,20 @@ class ValueBindableProperty<TValue> extends BindableProperty<TValue> {
   ///
   ValueBindableProperty(
       {PropertyValueChanged<TValue>? valueChanged, required TValue initial})
-      : super(valueChanged: valueChanged, initial: initial);
+      : _value = initial,
+        super(valueChanged: valueChanged);
+
+  TValue _value;
+
+  @override
+  TValue get value => _value;
+
+  @override
+  set value(TValue value) {
+    if (_value == value) return;
+    _value = value;
+    notifyListeners();
+  }
 }
 
 ///

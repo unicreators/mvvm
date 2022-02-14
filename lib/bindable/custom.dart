@@ -9,7 +9,7 @@ part of '../mvvm.dart';
 ///
 class CustomBindableProperty<TValue> extends BindableProperty<TValue> {
   final ValueGetter<TValue> _valueGetter;
-  final ValueSetter<TValue> _valueSetter;
+  final ValueSetter<TValue>? _valueSetter;
 
   ///
   /// 自定义的绑定属性
@@ -20,30 +20,22 @@ class CustomBindableProperty<TValue> extends BindableProperty<TValue> {
   ///
   /// [valueChanged] 指定属性值变更后的回调方法
   ///
-  /// [initial] 指定初始值
   ///
   CustomBindableProperty(
       {required ValueGetter<TValue> valueGetter,
-      required ValueSetter<TValue> valueSetter,
-      PropertyValueChanged<TValue>? valueChanged,
-      TValue? initial})
+      ValueSetter<TValue>? valueSetter,
+      PropertyValueChanged<TValue>? valueChanged})
       : _valueGetter = valueGetter,
         _valueSetter = valueSetter,
-        super(valueChanged: valueChanged, initial: initial ?? valueGetter()) {
-    if (initial != null) {
-      // no notify
-      _valueSetter(initial);
-    }
-  }
+        super(valueChanged: valueChanged);
 
   @override
   TValue get value => _valueGetter();
 
   @override
-  set value(TValue v) {
-    if (super.value != v) {
-      if (value != v) _valueSetter(v);
-      super.value = v;
-    }
+  set value(TValue value) {
+    if (this.value == value) return;
+    _valueSetter?.call(value);
+    notifyListeners();
   }
 }

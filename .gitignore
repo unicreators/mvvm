@@ -11,9 +11,11 @@
 
 **/pubspec.lock
 .vscode/
-ios/
-android/
-web/
+**/ios/
+**/android/
+**/web/
+**/macos/
+**/windows/
 pack.sh
 
 

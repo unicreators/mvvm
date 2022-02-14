@@ -8,7 +8,7 @@ part of '../mvvm.dart';
 /// 异步请求绑定属性
 ///
 class AsyncBindableProperty<TValue>
-    extends BindableProperty<AsyncSnapshot<TValue>> {
+    extends ValueBindableProperty<AsyncSnapshot<TValue>> {
   Object? _callbackIdentity;
 
   final AsyncValueGetter<TValue> _futureGetter;
@@ -94,47 +94,6 @@ class AsyncBindableProperty<TValue>
 /// 异步请求绑定属性
 ///
 mixin AsyncBindablePropertyMixin on BindableObjectMixin {
-  ///
-  /// 创建并注册异步请求 [Future<TValue>] 绑定属性
-  ///
-  /// [propertyKey] 指定属性键
-  ///
-  /// [futureGetter] 用于获取 [Future<TValue>] 的方法
-  ///
-  /// [handle] 指定请求成功时对结果进行处理的方法
-  ///
-  /// [onStart] 指定请求发起时执行的方法
-  ///
-  /// [onEnd] 指定请求结束时执行的方法
-  ///
-  /// [onSuccess] 指定请求成功时执行的方法
-  ///
-  /// [onError] 指定请求出错时执行的方法
-  ///
-  /// [valueChanged] 指定属性值变更后的回调方法
-  ///
-  /// [initial] 指定初始值
-  ///
-  BindableProperty<AsyncSnapshot<TValue>> propertyAsync<TValue>(
-          Object propertyKey, AsyncValueGetter<TValue> futureGetter,
-          {TValue Function(TValue)? handle,
-          void Function()? onStart,
-          void Function()? onEnd,
-          void Function(TValue)? onSuccess,
-          void Function(dynamic)? onError,
-          PropertyValueChanged<AsyncSnapshot<TValue>>? valueChanged,
-          TValue? initial}) =>
-      registerProperty(
-          propertyKey,
-          AsyncBindableProperty<TValue>(futureGetter,
-              handle: handle,
-              onStart: onStart,
-              onEnd: onEnd,
-              onSuccess: onSuccess,
-              onError: onError,
-              valueChanged: valueChanged,
-              initial: initial));
-
   ///
   /// 获取指定 [propertyKey] 对应异步请求属性的请求发起方法
   ///

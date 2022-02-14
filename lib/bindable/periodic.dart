@@ -7,7 +7,7 @@ part of '../mvvm.dart';
 ///
 /// 具有周期性的绑定属性
 ///
-class PeriodicBindableProperty<TValue> extends BindableProperty<TValue> {
+class PeriodicBindableProperty<TValue> extends ValueBindableProperty<TValue> {
   final Duration _duration;
   Timer? _timer;
   final TValue _initial;
@@ -56,7 +56,7 @@ class PeriodicBindableProperty<TValue> extends BindableProperty<TValue> {
         super(valueChanged: valueChanged, initial: initial) {
     var _repeat = repeat == null || repeat == 0 ? null : repeat.abs(),
         _fn = (Timer _) {
-          value = tickToValue(_tick++);
+          value = tickToValue(++_tick);
           onTick?.call(_tick);
         };
     _callback = _repeat == null

@@ -12,8 +12,6 @@ abstract class ViewModel extends ViewModelBase
         BindableObjectValueMixin,
         ValueWidgetBuilderMixin,
         BindableObjectWidgetBuilderMixin,
-        ValueBindablePropertyMixin,
-        AdaptiveBindablePropertyMixin,
         AsyncBindablePropertyMixin {}
 
 /// ViewModelBase
