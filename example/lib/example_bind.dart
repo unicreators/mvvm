@@ -43,24 +43,23 @@ class PageViewModel extends ViewModel {
 
   PageViewModel(this.service, {required String name}) {
     // define bindable property
-    propertyValue<String>(#any, initial: "jerry");
-    propertyValue<int>(#age, initial: -1);
-    propertyValue<DateTime>(#time, initial: DateTime.now());
+    registerProperty(#any, BindableProperty.$value(initial: "jerry"));
+    registerProperty(#age, BindableProperty.$value(initial: -1));
+    registerProperty(#time, BindableProperty.$value(initial: DateTime.now()));
 
     // define adaptive property
-    propertyAdaptive<String, TextEditingController>(#name, nameCtrl,
-        // convert
-        valueGetter: (v) => v.text,
-        valueSetter: (a, v) => a.text = v,
-        initial: name);
+    registerProperty(
+        #name,
+        BindableProperty.$adaptive<String, TextEditingController>(nameCtrl,
+            valueGetter: (v) => v.text,
+            valueSetter: (a, v) => a.text = v,
+            initial: name));
 
     // define Future property
-    propertyAsync<User>(
+    registerProperty(
         #getUser,
-        // async method
-        () => service.findUser(this.name),
-        // on success
-        onSuccess: (user) => age = user.age);
+        BindableProperty.$async<User>(() => service.findUser(this.name),
+            onSuccess: (user) => age = user.age));
 
     // timer
     start();
@@ -116,7 +115,7 @@ class Page extends View<PageViewModel> {
       PageViewModel(RemoteService(), name: "tom");
 
   @override
-  Widget build(BuildContext context, PageViewModel model) {
+  Widget build(ViewBuildContext context, PageViewModel model) {
     return Scaffold(
         body: Container(
             padding: EdgeInsets.all(20),

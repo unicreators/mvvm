@@ -1,3 +1,6 @@
+## 0.5.0
+* 优化代码 
+
 ## 0.4.0
 * 代码重构
 * 增加 `ViewBuildContext` 类，它在 `BuildContext` 基础上扩展了构建 `Widget` 的功能

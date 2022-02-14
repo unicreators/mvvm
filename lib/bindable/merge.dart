@@ -5,7 +5,7 @@
 part of '../mvvm.dart';
 
 ///
-/// MergeBindableProperty
+/// 合并的绑定属性
 ///
 /// - 将多个 [ValueListenable] 合并为一个新的 [ValueListenable],
 ///   当多个 [ValueListenable] 中任一发生变更时即引发新的 [ValueListenable] 变更
@@ -16,12 +16,21 @@ class MergeBindableProperty<TValue>
   final List<TValue> _realValue = [];
   late final UnmodifiableListView<TValue> _value;
 
-  /// MergeBindableProperty
-  MergeBindableProperty(Iterable<ValueListenable<TValue>> _listenables,
+  ///
+  /// 创建合并的绑定属性
+  ///
+  /// 将多个 [ValueListenable] 合并成一个新的 [ValueListenable],
+  /// 新的 [ValueListenable] 值 `value` 为多个 [ValueListenable] 的值集合
+  ///
+  /// [listenables] 指定将要合并的 [ValueListenable] 集合
+  ///
+  /// [valueChanged] 指定属性值变更后的回调方法
+  ///
+  MergeBindableProperty(Iterable<ValueListenable<TValue>> listenables,
       {PropertyValueChanged<Iterable<TValue>>? valueChanged})
-      : super(initial: [], valueChanged: valueChanged) {
+      : super(valueChanged: valueChanged) {
     _value = UnmodifiableListView(_realValue);
-    for (var vl in _listenables) {
+    for (var vl in listenables) {
       var index = _realValue.length;
       var listener = () {
         _realValue[index] = vl.value;
@@ -38,7 +47,7 @@ class MergeBindableProperty<TValue>
 }
 
 ///
-/// MergeMapBindableProperty
+/// 具有键的合并的绑定属性
 ///
 /// - 将多个具有键的 [ValueListenable] 合并为一个新的 [ValueListenable],
 ///   当多个 [ValueListenable] 中任一发生变更时即引发新的 [ValueListenable] 变更
@@ -49,12 +58,21 @@ class MergeMapBindableProperty<TValue>
   final Map<Object, TValue> _realValue = {};
   late final UnmodifiableMapView<Object, TValue> _value;
 
-  /// MergeMapBindableProperty
-  MergeMapBindableProperty(Map<Object, ValueListenable<TValue>> _keyListenables,
+  ///
+  /// 创建具有键的合并的绑定属性
+  ///
+  /// 将多个指定键的 [ValueListenable] 合并成一个新的 [ValueListenable],
+  /// 新的 [ValueListenable] 值 `value` 为多个 [ValueListenable] 的键值集合
+  ///
+  /// [map] 指定将要合并的具有键的 [ValueListenable] 集合
+  ///
+  /// [valueChanged] 指定属性值变更后的回调方法
+  ///
+  MergeMapBindableProperty(Map<Object, ValueListenable<TValue>> map,
       {PropertyValueChanged<Map<Object, TValue>>? valueChanged})
-      : super(initial: {}, valueChanged: valueChanged) {
+      : super(valueChanged: valueChanged) {
     _value = UnmodifiableMapView(_realValue);
-    for (var kv in _keyListenables.entries) {
+    for (var kv in map.entries) {
       var key = kv.key, vl = kv.value;
       var listener = () {
         _realValue[key] = vl.value;
@@ -74,9 +92,8 @@ abstract class _MergingBindableProperty<TValue>
     extends ReadonlyBindableProperty<TValue> {
   final List<void Function()> _disposeFns = [];
 
-  _MergingBindableProperty(
-      {required TValue initial, PropertyValueChanged<TValue>? valueChanged})
-      : super(initial: initial, valueChanged: valueChanged);
+  _MergingBindableProperty({PropertyValueChanged<TValue>? valueChanged})
+      : super(valueChanged: valueChanged);
 
   @protected
   void disposeFn(void Function() fn) => _disposeFns.add(fn);
