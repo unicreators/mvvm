@@ -4,7 +4,9 @@
 
 part of '../../mvvm.dart';
 
+///
 /// identity
+///
 TValue identity<TValue>(TValue value) => value;
 
 ///

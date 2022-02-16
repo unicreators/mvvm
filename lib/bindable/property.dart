@@ -291,12 +291,45 @@ abstract class BindableProperty<TValue> extends BindablePropertyBase<TValue> {
   BindableProperty({PropertyValueChanged<TValue>? valueChanged})
       : super(valueChanged: valueChanged);
 
+  ///
+  /// 从当前绑定属性创建一个新的绑定属性
+  ///
+  /// [transform] 指定属性值变换方法，当此方法返回值非 `null` 时则将此值写入属性
+  ///
+  /// [initial] 指定初始值
+  ///
+  /// [valueChanged] 指定属性值变更后的回调方法
+  ///
+  BindableProperty<T> pipe<T>(
+          {required T? Function(TValue) transform,
+          required T initial,
+          PropertyValueChanged<T>? valueChanged}) =>
+      $pipe(this,
+          transform: transform, initial: initial, valueChanged: valueChanged);
+}
+
+///
+/// 可设置值的绑定属性
+///
+abstract class WriteableBindableProperty<TValue>
+    extends BindableProperty<TValue> {
+  ///
+  /// 创建可设置值的绑定属性
+  ///
+  /// [valueChanged] 指定属性值变更后的回调方法
+  ///
+  WriteableBindableProperty({PropertyValueChanged<TValue>? valueChanged})
+      : super(valueChanged: valueChanged);
+
+  ///
   /// 设置值
+  ///
   set value(TValue value);
 
   ///
   /// 设置属性值
-  /// 如传入值 `value` 为 `null` 则跳过设置
+  ///
+  /// - 如传入值 `value` 为 `null` 则跳过设置
   ///
   void set(TValue? value) {
     if (value != null) this.value = value;
@@ -331,34 +364,4 @@ abstract class BindableProperty<TValue> extends BindablePropertyBase<TValue> {
         notify();
     }
   }
-
-  ///
-  /// 从当前绑定属性创建一个新的绑定属性
-  ///
-  /// [transform] 指定属性值变换方法，当此方法返回值非 `null` 时则将此值写入属性
-  ///
-  /// [initial] 指定初始值
-  ///
-  /// [valueChanged] 指定属性值变更后的回调方法
-  ///
-  BindableProperty<T> pipe<T>(
-          {required T? Function(TValue) transform,
-          required T initial,
-          PropertyValueChanged<T>? valueChanged}) =>
-      $pipe(this,
-          transform: transform, initial: initial, valueChanged: valueChanged);
-}
-
-///
-/// 只读的绑定属性
-///
-abstract class ReadonlyBindableProperty<TValue>
-    extends BindablePropertyBase<TValue> {
-  ///
-  /// 创建只读的绑定属性
-  ///
-  /// [valueChanged] 指定属性值变更后的回调方法
-  ///
-  ReadonlyBindableProperty({PropertyValueChanged<TValue>? valueChanged})
-      : super(valueChanged: valueChanged);
 }

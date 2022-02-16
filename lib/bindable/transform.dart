@@ -7,7 +7,7 @@ part of '../mvvm.dart';
 ///
 /// 具有转换功能的绑定属性
 ///
-class TransformBindableProperty<S, T> extends ValueBindableProperty<T> {
+class TransformBindableProperty<S, T> extends BindableProperty<T> {
   final ValueListenable<S> _source;
   late final VoidCallback _transformListener;
 
@@ -30,11 +30,21 @@ class TransformBindableProperty<S, T> extends ValueBindableProperty<T> {
       required T initial,
       PropertyValueChanged<T>? valueChanged})
       : _source = source,
-        super(
-            initial: transform(source.value) ?? initial,
-            valueChanged: valueChanged) {
-    _transformListener = () => set(transform(source.value));
+        _value = transform(source.value) ?? initial,
+        super(valueChanged: valueChanged) {
+    _transformListener = () => _setValue(transform(source.value));
     _source.addListener(_transformListener);
+  }
+
+  T _value;
+  @override
+  T get value => _value;
+
+  void _setValue(T? value) {
+    if (value != null && _value != value) {
+      _value = value;
+      notifyListeners();
+    }
   }
 
   @override

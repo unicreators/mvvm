@@ -8,7 +8,7 @@ part of '../mvvm.dart';
 /// 异步请求绑定属性
 ///
 class AsyncBindableProperty<TValue>
-    extends ValueBindableProperty<AsyncSnapshot<TValue>> {
+    extends BindableProperty<AsyncSnapshot<TValue>> {
   Object? _callbackIdentity;
 
   final AsyncValueGetter<TValue> _futureGetter;
@@ -52,12 +52,21 @@ class AsyncBindableProperty<TValue>
         _onEnd = onEnd,
         _onSuccess = onSuccess,
         _onError = onError,
-        super(
-            valueChanged: valueChanged,
-            initial: initial == null
-                ? AsyncSnapshot<TValue>.nothing()
-                : AsyncSnapshot<TValue>.withData(
-                    ConnectionState.none, initial));
+        _value = initial == null
+            ? AsyncSnapshot<TValue>.nothing()
+            : AsyncSnapshot<TValue>.withData(ConnectionState.none, initial),
+        super(valueChanged: valueChanged);
+  AsyncSnapshot<TValue> _value;
+
+  @override
+  AsyncSnapshot<TValue> get value => _value;
+
+  void _setValue(AsyncSnapshot<TValue> value) {
+    if (value != _value) {
+      _value = value;
+      notifyListeners();
+    }
+  }
 
   ///
   /// 发起请求
@@ -65,7 +74,7 @@ class AsyncBindableProperty<TValue>
   @protected
   void invoke({bool resetOnBefore = true}) {
     if (resetOnBefore) {
-      value = AsyncSnapshot<TValue>.nothing();
+      _setValue(AsyncSnapshot<TValue>.nothing());
     }
 
     var future = _futureGetter();
@@ -75,18 +84,18 @@ class AsyncBindableProperty<TValue>
     future.then<void>((TValue data) {
       if (_callbackIdentity == callbackIdentity) {
         _onSuccess?.call(data);
-        value = AsyncSnapshot<TValue>.withData(
-            ConnectionState.done, _handle == null ? data : _handle!(data));
+        _setValue(AsyncSnapshot<TValue>.withData(
+            ConnectionState.done, _handle == null ? data : _handle!(data)));
       }
       _onEnd?.call();
     }, onError: (Object error) {
       if (_callbackIdentity == callbackIdentity) {
-        value = AsyncSnapshot<TValue>.withError(ConnectionState.done, error);
+        _setValue(AsyncSnapshot<TValue>.withError(ConnectionState.done, error));
         _onError?.call(error);
       }
       _onEnd?.call();
     });
-    value = value.inState(ConnectionState.waiting);
+    _setValue(value.inState(ConnectionState.waiting));
   }
 }
 

@@ -148,7 +148,10 @@ mixin BindableObjectValueMixin on BindableObjectMixin {
       getProperty<TValue>(propertyKey, required: true)!.value;
 
   ///
-  /// 设置指定 [propertyKey] 对应的属性值
+  /// 设置指定 [propertyKey] 对应的属性值,
+  ///
+  /// - [propertyKey] 对应的绑定属性 [BindableProperty]
+  ///   必须继承自 [WriteableBindableProperty]
   ///
   /// [propertyKey] 属性键
   ///
@@ -160,11 +163,15 @@ mixin BindableObjectValueMixin on BindableObjectMixin {
   ///
   void setValue<TValue>(Object propertyKey, TValue value,
           {bool requiredProperty = true}) =>
-      getProperty<TValue>(propertyKey, required: requiredProperty)?.value =
-          value;
+      getPropertyOf<TValue, WriteableBindableProperty<TValue>>(propertyKey,
+              required: requiredProperty)
+          ?.value = value;
 
   ///
   /// 设置指定 [propertyKeys] 对应的属性值
+  ///
+  /// - [propertyKeys] 对应的绑定属性 [BindableProperty]
+  ///   必须继承自 [WriteableBindableProperty]
   ///
   /// [propertyKeys] 属性键集合
   ///
@@ -176,10 +183,11 @@ mixin BindableObjectValueMixin on BindableObjectMixin {
   ///
   void setValues(Iterable<Object> propertyKeys, Iterable<Object?> values,
       {bool requiredProperty = true}) {
-    var properties =
-            getProperties<dynamic>(propertyKeys, required: requiredProperty),
-        index = 0;
-    for (var property in properties) {
+    var index = 0;
+    for (var propertyKey in propertyKeys) {
+      var property = getPropertyOf<dynamic, WriteableBindableProperty<dynamic>>(
+          propertyKey,
+          required: requiredProperty);
       if (property == null) {
         index++;
         continue;
@@ -203,6 +211,9 @@ mixin BindableObjectValueMixin on BindableObjectMixin {
   ///
   /// 更新指定 [propertyKey] 对应的属性值
   ///
+  /// - [propertyKey] 对应的绑定属性 [BindableProperty]
+  ///   必须继承自 [WriteableBindableProperty]
+  ///
   /// [propertyKey] 属性键
   ///
   /// [updator] 指定值更新处理器
@@ -213,9 +224,8 @@ mixin BindableObjectValueMixin on BindableObjectMixin {
   ///   默认值为 `true`
   ///
   void updateValue<TValue>(Object propertyKey, TValue? Function(TValue) updator,
-      {bool requiredProperty = true}) {
-    var property = getProperty<TValue>(propertyKey, required: requiredProperty);
-    if (property == null) return;
-    property.update(updator);
-  }
+          {bool requiredProperty = true}) =>
+      getPropertyOf<TValue, WriteableBindableProperty<TValue>>(propertyKey,
+              required: requiredProperty)
+          ?.update(updator);
 }
