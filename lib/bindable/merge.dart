@@ -89,7 +89,7 @@ class MergeMapBindableProperty<TValue>
 }
 
 abstract class _MergingBindableProperty<TValue>
-    extends ReadonlyBindableProperty<TValue> {
+    extends BindableProperty<TValue> {
   final List<void Function()> _disposeFns = [];
 
   _MergingBindableProperty({PropertyValueChanged<TValue>? valueChanged})

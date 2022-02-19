@@ -7,7 +7,7 @@ part of '../mvvm.dart';
 ///
 /// 自定义的绑定属性
 ///
-class CustomBindableProperty<TValue> extends BindableProperty<TValue> {
+class CustomBindableProperty<TValue> extends WriteableBindableProperty<TValue> {
   final ValueGetter<TValue> _valueGetter;
   final ValueSetter<TValue>? _valueSetter;
 

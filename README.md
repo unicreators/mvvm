@@ -78,6 +78,8 @@ void main() => runApp(MaterialApp(
 
 ## APIs
 
+[Documentation](https://pub.dev/documentation/mvvm/latest/mvvm/mvvm-library.html)
+
 ### BindableProperty
 
 - $value
@@ -143,9 +145,6 @@ void main() => runApp(MaterialApp(
 - model
 
 
-##
-
-[Documentation](https://pub.dev/documentation/mvvm/latest/mvvm/mvvm-library.html)
 
 
 ## License

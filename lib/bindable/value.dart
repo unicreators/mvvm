@@ -7,7 +7,7 @@ part of '../mvvm.dart';
 ///
 /// 值绑定属性
 ///
-class ValueBindableProperty<TValue> extends BindableProperty<TValue> {
+class ValueBindableProperty<TValue> extends WriteableBindableProperty<TValue> {
   ///
   /// 创建一个值绑定属性
   ///
@@ -31,26 +31,4 @@ class ValueBindableProperty<TValue> extends BindableProperty<TValue> {
     _value = value;
     notifyListeners();
   }
-}
-
-///
-/// 值绑定属性
-///
-mixin ValueBindablePropertyMixin on BindableObject {
-  ///
-  /// 创建并注册值绑定属性
-  ///
-  /// [propertyKey] 指定属性键
-  ///
-  /// [valueChanged] 指定属性值变更后的回调方法
-  ///
-  /// [initial] 指定初始值
-  ///
-  BindableProperty<TValue> propertyValue<TValue>(Object propertyKey,
-          {PropertyValueChanged<TValue>? valueChanged,
-          required TValue initial}) =>
-      registerProperty(
-          propertyKey,
-          ValueBindableProperty<TValue>(
-              valueChanged: valueChanged, initial: initial));
 }

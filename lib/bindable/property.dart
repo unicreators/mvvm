@@ -8,36 +8,10 @@ part of '../mvvm.dart';
 /// 属性值改变
 typedef PropertyValueChanged<TValue> = void Function(TValue value);
 
-/// BindablePropertyBase
-///
-abstract class BindablePropertyBase<TValue> extends ChangeNotifier
-    implements ValueListenable<TValue> {
-  VoidCallback? _listener;
-
-  /// BindablePropertyBase
-  BindablePropertyBase({PropertyValueChanged<TValue>? valueChanged}) {
-    if (valueChanged != null) {
-      _listener = () => valueChanged(value);
-      addListener(_listener!);
-    }
-  }
-
-  /// 发送通知
-  void notify() => notifyListeners();
-
-  /// dispose
-  @protected
-  @mustCallSuper
-  @override
-  void dispose() {
-    if (_listener != null) removeListener(_listener!);
-    super.dispose();
-  }
-}
-
 /// 绑定属性
 ///
-abstract class BindableProperty<TValue> extends BindablePropertyBase<TValue> {
+abstract class BindableProperty<TValue> extends ChangeNotifier
+    implements ValueListenable<TValue> {
   ///
   /// 创建值绑定属性
   ///
@@ -248,26 +222,28 @@ abstract class BindableProperty<TValue> extends BindablePropertyBase<TValue> {
       _map(values, valueChanged: valueChanged);
 
   ///
-  /// 从指定 [ValueListenable] 创建一个新的绑定属性
+  /// 从指定 [ValueListenable] 转换到一个新的绑定属性
   ///
   /// [valueListenable] 指定来源 [ValueListenable]
   ///
-  /// [transform] 指定属性值变换方法，当此方法返回值非 `null` 时则将此值写入属性
+  /// [transformer] 指定属性值变换方法，当此方法返回值非 `null` 时则将此值写入属性
   ///
   /// [initial] 指定初始值
   ///
   /// [valueChanged] 指定属性值变更后的回调方法
   ///
-  static BindableProperty<TValue> $pipe<TValue, TSValue>(
+  static BindableProperty<TValue> $transform<TValue, TSValue>(
           ValueListenable<TSValue> valueListenable,
-          {required TValue? Function(TSValue value) transform,
+          {required TValue? Function(TSValue value) transformer,
           required TValue initial,
           PropertyValueChanged<TValue>? valueChanged}) =>
       TransformBindableProperty(valueListenable,
-          transform: transform, initial: initial, valueChanged: valueChanged);
+          transformer: transformer,
+          initial: initial,
+          valueChanged: valueChanged);
 
   ///
-  /// 从指定 [ValueListenable] 创建一个新的绑定属性
+  /// 过滤指定 [ValueListenable] 得到一个新的绑定属性
   ///
   /// [valueListenable] 指定来源 [ValueListenable]
   ///
@@ -283,20 +259,73 @@ abstract class BindableProperty<TValue> extends BindablePropertyBase<TValue> {
           required TValue initial,
           PropertyValueChanged<TValue>? valueChanged}) =>
       TransformBindableProperty(valueListenable,
-          transform: (TValue value) => filter(value) ? value : null,
+          transformer: (TValue value) => filter(value) ? value : null,
           initial: initial,
           valueChanged: valueChanged);
 
+  VoidCallback? _listener;
+
   /// BindableProperty
-  BindableProperty({PropertyValueChanged<TValue>? valueChanged})
+  BindableProperty({PropertyValueChanged<TValue>? valueChanged}) {
+    if (valueChanged != null) {
+      _listener = () => valueChanged(value);
+      addListener(_listener!);
+    }
+  }
+
+  /// 发送通知
+  void notify() => notifyListeners();
+
+  /// dispose
+  @protected
+  @mustCallSuper
+  @override
+  void dispose() {
+    if (_listener != null) removeListener(_listener!);
+    super.dispose();
+  }
+
+  ///
+  /// 从当前绑定属性转换到一个新的绑定属性
+  ///
+  /// [transform] 指定属性值变换方法，当此方法返回值非 `null` 时则将此值写入属性
+  ///
+  /// [initial] 指定初始值
+  ///
+  /// [valueChanged] 指定属性值变更后的回调方法
+  ///
+  BindableProperty<T> transform<T>(
+          {required T? Function(TValue) transformer,
+          required T initial,
+          PropertyValueChanged<T>? valueChanged}) =>
+      $transform(this,
+          transformer: transformer,
+          initial: initial,
+          valueChanged: valueChanged);
+}
+
+///
+/// 可设置值的绑定属性
+///
+abstract class WriteableBindableProperty<TValue>
+    extends BindableProperty<TValue> {
+  ///
+  /// 创建可设置值的绑定属性
+  ///
+  /// [valueChanged] 指定属性值变更后的回调方法
+  ///
+  WriteableBindableProperty({PropertyValueChanged<TValue>? valueChanged})
       : super(valueChanged: valueChanged);
 
+  ///
   /// 设置值
+  ///
   set value(TValue value);
 
   ///
   /// 设置属性值
-  /// 如传入值 `value` 为 `null` 则跳过设置
+  ///
+  /// - 如传入值 `value` 为 `null` 则跳过设置
   ///
   void set(TValue? value) {
     if (value != null) this.value = value;
@@ -331,34 +360,4 @@ abstract class BindableProperty<TValue> extends BindablePropertyBase<TValue> {
         notify();
     }
   }
-
-  ///
-  /// 从当前绑定属性创建一个新的绑定属性
-  ///
-  /// [transform] 指定属性值变换方法，当此方法返回值非 `null` 时则将此值写入属性
-  ///
-  /// [initial] 指定初始值
-  ///
-  /// [valueChanged] 指定属性值变更后的回调方法
-  ///
-  BindableProperty<T> pipe<T>(
-          {required T? Function(TValue) transform,
-          required T initial,
-          PropertyValueChanged<T>? valueChanged}) =>
-      $pipe(this,
-          transform: transform, initial: initial, valueChanged: valueChanged);
-}
-
-///
-/// 只读的绑定属性
-///
-abstract class ReadonlyBindableProperty<TValue>
-    extends BindablePropertyBase<TValue> {
-  ///
-  /// 创建只读的绑定属性
-  ///
-  /// [valueChanged] 指定属性值变更后的回调方法
-  ///
-  ReadonlyBindableProperty({PropertyValueChanged<TValue>? valueChanged})
-      : super(valueChanged: valueChanged);
 }
