@@ -83,9 +83,9 @@ class AsyncBindableProperty<TValue>
     _callbackIdentity = callbackIdentity;
     future.then<void>((TValue data) {
       if (_callbackIdentity == callbackIdentity) {
-        _onSuccess?.call(data);
-        _setValue(AsyncSnapshot<TValue>.withData(
-            ConnectionState.done, _handle == null ? data : _handle!(data)));
+        var _data = _handle == null ? data : _handle!(data);
+        _onSuccess?.call(_data);
+        _setValue(AsyncSnapshot<TValue>.withData(ConnectionState.done, _data));
       }
       _onEnd?.call();
     }, onError: (Object error) {

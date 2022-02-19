@@ -13,12 +13,12 @@ class TransformBindableProperty<S, T> extends BindableProperty<T> {
 
   ///
   /// 创建一个具有转换功能的绑定属性，该绑定属性监视 [source] 的值变化，当
-  /// [source] 值发生变化时使用 [transform] 对值进行转换，
+  /// [source] 值发生变化时使用 [transformer] 对值进行转换，
   /// 如转换结果非 `null`，则将结果值写入属性(可能会触发 `notify`)
   ///
   /// [source] 指定源
   ///
-  /// [transform] 指定值转换方法，如该方法返回 `null`
+  /// [transformer] 指定值转换方法，如该方法返回 `null`
   /// 则将该值写入属性(可能会触发 `notify`)
   ///
   /// [initial] 指定初始值
@@ -26,13 +26,13 @@ class TransformBindableProperty<S, T> extends BindableProperty<T> {
   /// [valueChanged] 指定属性值变更后的回调方法
   ///
   TransformBindableProperty(ValueListenable<S> source,
-      {required T? Function(S) transform,
+      {required T? Function(S) transformer,
       required T initial,
       PropertyValueChanged<T>? valueChanged})
       : _source = source,
-        _value = transform(source.value) ?? initial,
+        _value = transformer(source.value) ?? initial,
         super(valueChanged: valueChanged) {
-    _transformListener = () => _setValue(transform(source.value));
+    _transformListener = () => _setValue(transformer(source.value));
     _source.addListener(_transformListener);
   }
 

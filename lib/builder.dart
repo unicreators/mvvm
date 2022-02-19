@@ -57,19 +57,24 @@ mixin ValueWidgetBuilderMixin {
   ///
   /// 构建多个 [Widget]
   ///
-  /// 当指定 [elements] 中 [ValueListenable] 值发生变化时,
-  /// 使用 [builder] 构建 [Widget]
+  /// [valueListeneables] 指定 [ValueListenable] 集合
+  /// 当 [ValueListenable] 值发生变更时, 使用 [builder] 构建 [Widget]
   ///
   /// [childBuilder] 用于构建向 [builder] 中传入的 [Widget]
   ///
   @protected
-  List<Widget> $multi<TValue>(Iterable<ValueListenable<TValue>> elements,
-          {required Widget Function(BuildContext context, TValue value,
-                  Widget? child, int index, ValueListenable<TValue> element)
+  List<Widget> $multi<TValue>(
+          Iterable<ValueListenable<TValue>> valueListeneables,
+          {required Widget Function(
+                  BuildContext context,
+                  TValue value,
+                  Widget? child,
+                  int index,
+                  ValueListenable<TValue> valueListeneable)
               builder,
           Widget? Function(int index)? childBuilder}) =>
-      List.generate(elements.length, (index) {
-        var element = elements.elementAt(index);
+      List.generate(valueListeneables.length, (index) {
+        var element = valueListeneables.elementAt(index);
         return $build<TValue>(element,
             builder: (context, value, child) =>
                 builder(context, value, child, index, element),
@@ -146,7 +151,7 @@ mixin ValueWidgetBuilderMixin {
           builder: builder, child: child);
 
   ///
-  /// 绑定到指定 [valueListenable], 当 [valueListenable] 值发生变化时,
+  /// 绑定到指定 [ValueListenable], 当 [valueListenable] 值发生变化时,
   /// 若值判定结果为 `true` 则使用 [$true] 构建 [Widget], 否则使用 `$false` 构建 [Widget]
   ///
   ///   当值类型不为 [bool] 时, 非 `null` 即被判定为 `true`, 否则为 `false`
