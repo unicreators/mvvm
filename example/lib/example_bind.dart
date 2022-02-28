@@ -8,15 +8,14 @@ void main() => runApp(App());
 class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MaterialApp(
-        title: 'Flutter MVVM',
-        theme: ThemeData(
-            primarySwatch: Colors.blue,
-            buttonTheme: ButtonThemeData(
-              buttonColor: Colors.blueAccent,
-              textTheme: ButtonTextTheme.primary,
-            )),
-        home: Page(),
-      );
+      title: 'Flutter MVVM',
+      theme: ThemeData(
+          primarySwatch: Colors.blue,
+          buttonTheme: ButtonThemeData(
+            buttonColor: Colors.blueAccent,
+            textTheme: ButtonTextTheme.primary,
+          )),
+      home: Scaffold(body: Page()));
 }
 
 // Model
@@ -116,168 +115,153 @@ class Page extends View<PageViewModel> {
 
   @override
   Widget build(ViewBuildContext context, PageViewModel model) {
-    return Scaffold(
-        body: Container(
-            padding: EdgeInsets.all(20),
-            child: Column(
+    return SingleChildScrollView(
+        padding: EdgeInsets.all(20),
+        child: Column(
+          children: [
+            model.$watchFor<DateTime>(#time,
+                builder: (context, value, child) => Text(model.format(value),
+                    style: TextStyle(color: Colors.redAccent, fontSize: 48))),
+            SizedBox(height: 10),
+            TextField(
+              controller: model.nameCtrl,
+              decoration: InputDecoration(
+                border: UnderlineInputBorder(),
+                labelText: 'Name',
+              ),
+            ),
+            SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                model.$watchFor<DateTime>(#time,
-                    builder: (context, value, child) => Text(
-                        model.format(value),
-                        style:
-                            TextStyle(color: Colors.redAccent, fontSize: 48))),
-                SizedBox(height: 10),
-                TextField(
-                  controller: model.nameCtrl,
-                  decoration: InputDecoration(
-                    border: UnderlineInputBorder(),
-                    labelText: 'Name',
-                  ),
-                ),
-                SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text("model.\$watchFor(name):",
-                        style: TextStyle(color: Colors.grey)),
-                    //
-                    // model.$watchFor
-                    model.$watchFor(#name,
-                        builder: (context, value, child) => Text("$value")),
-                  ],
-                ),
-                Container(
-                    margin: EdgeInsets.only(top: 10),
-                    width: double.infinity,
-                    child: ElevatedButton(
-                        child: model.$watchFor(#getUser,
-                            builder: (context, AsyncSnapshot snapshot, child) =>
-                                snapshot.connectionState ==
-                                        ConnectionState.waiting
-                                    ? SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: CircularProgressIndicator(
-                                          backgroundColor: Colors.white,
-                                          strokeWidth: 2,
-                                        ))
-                                    : child!,
-                            child: Text("remote")),
-                        onPressed: model.link(#getUser))),
-                SizedBox(height: 20),
-                Text("age", style: TextStyle(color: Colors.grey, fontSize: 22)),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    ElevatedButton(
-                        child: Text("-"),
-                        onPressed: () {
-                          model.age--;
-                        }),
-                    model.$watchFor(#age,
-                        builder: (context, value, child) => Text("$value",
-                            style: TextStyle(
-                                color: Colors.blueAccent, fontSize: 26))),
-                    ElevatedButton(
-                        child: Text("+"),
-                        onPressed: () {
-                          model.age++;
-                        })
-                  ],
-                ),
-                SizedBox(height: 20),
-
+                Text("model.\$watchFor(name):",
+                    style: TextStyle(color: Colors.grey)),
                 //
-                // binding for (propertyKey)
-                //
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text("model.\$condFor(age):",
-                        style: TextStyle(color: Colors.grey)),
-                    model.$condFor<int>(#age,
-                        valueHandle: (v) => v < 3,
-                        $true: (context, value, child) =>
-                            Text("(age < 3) == true"),
-                        $false: (context, value, child) =>
-                            Text("(age < 3) == false")),
-                  ],
-                ),
-                Divider(),
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("model.\$ifFor(age):",
-                          style: TextStyle(color: Colors.grey)),
-                      model.$ifFor<int>(#age,
-                          valueHandle: (v) => v < 3,
-                          builder: (context, value, child) => Text("age < 3"))
-                    ]),
-                Divider(),
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("model.\$switchFor(age):",
-                          style: TextStyle(color: Colors.grey)),
-                      model.$switchFor(#age,
-                          options: {
-                            1: (context, value, child) => Text("case 1"),
-                            3: (context, value, child) => Text("case 3")
-                          },
-                          defalut: (context, value, child) =>
-                              Text("case default"))
-                    ]),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    ElevatedButton(child: Text("<"), onPressed: model.prev),
-                    $watch(model.anyValueListenable,
-                        builder: (context, value, child) => Text("$value",
-                            style: TextStyle(
-                                color: Colors.blueAccent, fontSize: 26))),
-                    ElevatedButton(child: Text(">"), onPressed: model.next)
-                  ],
-                ),
-                SizedBox(height: 40),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text("\$cond(valueListenable):",
-                        style: TextStyle(color: Colors.grey)),
-                    $cond(model.anyValueListenable,
-                        valueHandle: (v) => v == "jerry",
-                        $true: (context, value, child) => Text("mouse"),
-                        $false: (context, value, child) => Text("other")),
-                  ],
-                ),
-                Divider(),
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("\$if(valueListenable):",
-                          style: TextStyle(color: Colors.grey)),
-                      $if(model.anyValueListenable,
-                          valueHandle: (v) => v == "lily",
-                          builder: (context, value, child) => Text("lily"))
-                    ]),
-                Divider(),
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("\$switch(valueListenable):",
-                          style: TextStyle(color: Colors.grey)),
-                      $switch(model.anyValueListenable,
-                          options: {
-                            "tom": (context, value, child) =>
-                                Text("case $value: bad $value!"),
-                            "jerry": (context, value, child) =>
-                                Text("case $value: hello mouse..")
-                          },
-                          defalut: (context, value, child) =>
-                              Text("case default: $value"))
-                    ]),
+                // model.$watchFor
+                model.$watchFor(#name,
+                    builder: (context, value, child) => Text("$value")),
               ],
-            )));
+            ),
+            Container(
+                margin: EdgeInsets.only(top: 10),
+                width: double.infinity,
+                child: ElevatedButton(
+                    child: model.$watchFor(#getUser,
+                        builder: (context, AsyncSnapshot snapshot, child) =>
+                            snapshot.connectionState == ConnectionState.waiting
+                                ? SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      backgroundColor: Colors.white,
+                                      strokeWidth: 2,
+                                    ))
+                                : child!,
+                        child: Text("remote")),
+                    onPressed: model.link(#getUser))),
+            SizedBox(height: 20),
+            Text("age", style: TextStyle(color: Colors.grey, fontSize: 22)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                ElevatedButton(
+                    child: Text("-"),
+                    onPressed: () {
+                      model.age--;
+                    }),
+                model.$watchFor(#age,
+                    builder: (context, value, child) => Text("$value",
+                        style:
+                            TextStyle(color: Colors.blueAccent, fontSize: 26))),
+                ElevatedButton(
+                    child: Text("+"),
+                    onPressed: () {
+                      model.age++;
+                    })
+              ],
+            ),
+            SizedBox(height: 20),
+
+            //
+            // binding for (propertyKey)
+            //
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("model.\$condFor(age):",
+                    style: TextStyle(color: Colors.grey)),
+                model.$condFor<int>(#age,
+                    valueHandle: (v) => v < 3,
+                    $true: (context, value, child) => Text("(age < 3) == true"),
+                    $false: (context, value, child) =>
+                        Text("(age < 3) == false")),
+              ],
+            ),
+            Divider(),
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              Text("model.\$ifFor(age):", style: TextStyle(color: Colors.grey)),
+              model.$ifFor<int>(#age,
+                  valueHandle: (v) => v < 3,
+                  builder: (context, value, child) => Text("age < 3"))
+            ]),
+            Divider(),
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              Text("model.\$switchFor(age):",
+                  style: TextStyle(color: Colors.grey)),
+              model.$switchFor(#age,
+                  options: {
+                    1: (context, value, child) => Text("case 1"),
+                    3: (context, value, child) => Text("case 3")
+                  },
+                  defalut: (context, value, child) => Text("case default"))
+            ]),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                ElevatedButton(child: Text("<"), onPressed: model.prev),
+                $watch(model.anyValueListenable,
+                    builder: (context, value, child) => Text("$value",
+                        style:
+                            TextStyle(color: Colors.blueAccent, fontSize: 26))),
+                ElevatedButton(child: Text(">"), onPressed: model.next)
+              ],
+            ),
+            SizedBox(height: 40),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("\$cond(valueListenable):",
+                    style: TextStyle(color: Colors.grey)),
+                $cond(model.anyValueListenable,
+                    valueHandle: (v) => v == "jerry",
+                    $true: (context, value, child) => Text("mouse"),
+                    $false: (context, value, child) => Text("other")),
+              ],
+            ),
+            Divider(),
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              Text("\$if(valueListenable):",
+                  style: TextStyle(color: Colors.grey)),
+              $if(model.anyValueListenable,
+                  valueHandle: (v) => v == "lily",
+                  builder: (context, value, child) => Text("lily"))
+            ]),
+            Divider(),
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              Text("\$switch(valueListenable):",
+                  style: TextStyle(color: Colors.grey)),
+              $switch(model.anyValueListenable,
+                  options: {
+                    "tom": (context, value, child) =>
+                        Text("case $value: bad $value!"),
+                    "jerry": (context, value, child) =>
+                        Text("case $value: hello mouse..")
+                  },
+                  defalut: (context, value, child) =>
+                      Text("case default: $value"))
+            ]),
+          ],
+        ));
   }
 }

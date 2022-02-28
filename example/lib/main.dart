@@ -39,7 +39,7 @@ class MyHomePage extends View<MyHomePageViewModel> {
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           $watch<int>(model.timer$,
               builder: (context, value, child) =>
-                  Text('${pad(value ~/ 60)}.${pad(value % 100)}')),
+                  Text('${pad(value ~/ 100)}.${pad(value % 100)}')),
           const Text('You have pushed the button this many times:'),
           model.$watchFor<int>(#counter,
               builder: (context, value, child) =>
