@@ -3,10 +3,7 @@ import 'package:mvvm/mvvm.dart';
 import 'dart:async';
 
 void main() => runApp(MaterialApp(
-      home: Scaffold(
-          body: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-              child: LoginView())),
+      home: Scaffold(body: LoginView()),
       theme: ThemeData(
           textTheme: TextTheme(
               button: TextStyle(color: Colors.redAccent, fontSize: 48),
@@ -75,61 +72,62 @@ class LoginView extends View<LoginViewModel> {
 
   @override
   Widget build(BuildContext context, LoginViewModel model) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        $watch<DateTime>(model.$time,
-            builder: (context, time, child) => Text(format(time),
-                style: Theme.of(context).textTheme.headline1)),
-        SizedBox(height: 10),
-        TextField(
-          controller: model.$userName.adaptee,
-          decoration: InputDecoration(labelText: 'UserName'),
-        ),
-        SizedBox(height: 10),
-        TextField(
-          obscureText: true,
-          controller: model.$password.adaptee,
-          decoration: InputDecoration(labelText: 'Password'),
-        ),
-        SizedBox(height: 10),
-        Expanded(
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          $if(model.$login,
-              valueHandle: (AsyncSnapshot snapshot) => snapshot.hasError,
-              builder: (context, AsyncSnapshot snapshot, child) => Text(
-                  "${snapshot.error}",
-                  style: TextStyle(color: Colors.redAccent))),
-          SizedBox(height: 10),
-          $any<String>(
-            [model.$userName, model.$password],
-            builder: (context, _, child) => SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                    onPressed: model.inputValid ? model.$login.invoke : null,
-                    child: child)),
-            child: $watch(model.$login,
-                builder: (context, AsyncSnapshot snapshot, child) =>
-                    snapshot.connectionState == ConnectionState.waiting
-                        ? _buildWaitingWidget()
-                        : child!,
-                child: Text("login")),
-          ),
-          SizedBox(height: 10),
-          $if<AsyncSnapshot<User>>(model.$login,
-              valueHandle: (AsyncSnapshot snapshot) => snapshot.hasData,
-              builder: (context, AsyncSnapshot<User> snapshot, child) => Text(
-                  "${snapshot.data?.displayName}",
-                  style: TextStyle(color: Colors.blueAccent)))
-        ]))
-      ],
-    );
+    return SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            $watch<DateTime>(model.$time,
+                builder: (context, time, child) => Text(format(time),
+                    style: Theme.of(context).textTheme.headline1)),
+            SizedBox(height: 10),
+            TextField(
+              controller: model.$userName.adaptee,
+              decoration: InputDecoration(labelText: 'UserName'),
+            ),
+            SizedBox(height: 20),
+            TextField(
+              obscureText: true,
+              controller: model.$password.adaptee,
+              decoration: InputDecoration(labelText: 'Password'),
+            ),
+            SizedBox(height: 20),
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              $if(model.$login,
+                  valueHandle: (AsyncSnapshot snapshot) => snapshot.hasError,
+                  builder: (context, AsyncSnapshot snapshot, child) => Text(
+                      "${snapshot.error}",
+                      style: TextStyle(color: Colors.redAccent))),
+              SizedBox(height: 10),
+              $any<String>(
+                [model.$userName, model.$password],
+                builder: (context, _, child) => SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                        onPressed:
+                            model.inputValid ? model.$login.invoke : null,
+                        child: child)),
+                child: $watch(model.$login,
+                    builder: (context, AsyncSnapshot snapshot, child) =>
+                        snapshot.connectionState == ConnectionState.waiting
+                            ? _buildWaitingWidget()
+                            : child!,
+                    child: Text("login")),
+              ),
+              SizedBox(height: 10),
+              $if<AsyncSnapshot<User>>(model.$login,
+                  valueHandle: (AsyncSnapshot snapshot) => snapshot.hasData,
+                  builder: (context, AsyncSnapshot<User> snapshot, child) =>
+                      Text("${snapshot.data?.displayName}",
+                          style: TextStyle(color: Colors.blueAccent)))
+            ])
+          ],
+        ));
   }
 
-  Widget _buildWaitingWidget() => SizedBox(
-      width: 20,
-      height: 20,
+  Widget _buildWaitingWidget() => SizedBox.square(
+      dimension: 20,
       child: CircularProgressIndicator(
         backgroundColor: Colors.white,
         strokeWidth: 2,

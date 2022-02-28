@@ -40,7 +40,7 @@ class MyHomePage extends View<MyHomePageViewModel> {
   pad(int value) => '$value'.padLeft(2, '0');
 
   @override
-  Widget build(BuildContext context, MyHomePageViewModel model) {
+  Widget build(BuildContext context, MyHomePageViewModel model) {    
     return Scaffold(
         appBar: AppBar(title: Text(title)),
         body: Center(
@@ -48,7 +48,7 @@ class MyHomePage extends View<MyHomePageViewModel> {
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           $watch<int>(model.timer$,
               builder: (context, value, child) =>
-                  Text('${pad(value ~/ 60)}.${pad(value % 100)}')),
+                  Text('${pad(value ~/ 100)}.${pad(value % 100)}')),
           const Text('You have pushed the button this many times:'),
           model.$watchFor<int>(#counter,
               builder: (context, value, child) =>
@@ -90,7 +90,7 @@ void main() => runApp(MaterialApp(
 - $tick
 - $merge
 - $mergeMap
-- $pipe
+- $transform
 - $filter
 
 

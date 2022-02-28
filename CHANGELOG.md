@@ -1,3 +1,6 @@
+## 0.5.2
+* Optimized code 
+
 ## 0.5.1
 * Added `WriteableBindableProperty` class
 

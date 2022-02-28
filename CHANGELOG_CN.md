@@ -1,3 +1,6 @@
+## 0.5.2
+* 优化代码 
+
 ## 0.5.1
 * 增加 `WriteableBindableProperty` 类
 

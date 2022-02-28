@@ -19,7 +19,7 @@ abstract class BindableProperty<TValue> extends ChangeNotifier
   ///
   /// [initial] 指定初始值
   ///
-  static BindableProperty<TValue> $value<TValue>(
+  static ValueBindableProperty<TValue> $value<TValue>(
           {required TValue initial,
           PropertyValueChanged<TValue>? valueChanged}) =>
       ValueBindableProperty(initial: initial, valueChanged: valueChanged);

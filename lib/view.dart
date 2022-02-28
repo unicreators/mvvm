@@ -85,7 +85,6 @@ class ViewElement<TViewModel extends ViewModel>
     extends ViewElementBase<TViewModel>
     with
         BindableObjectMixin,
-        BindableObjectMixin,
         BindableObjectValueMixin,
         BindableObjectWidgetBuilderMixin,
         ValueWidgetBuilderMixin {
